@@ -3,7 +3,7 @@ import { AppShell, ROASTER_NAV, ADMIN_NAV } from "@/components/shell";
 import { ModulePage } from "@/components/module-page";
 import { seo } from "@/lib/seo";
 
-export const Route = createFileRoute("/app/vaults")({
+export const Route = createFileRoute("/app/vaults/")({
   head: () => seo("Vaults", "ROASTAKE Vaults — simulated demo module."),
   component: Page,
 });
