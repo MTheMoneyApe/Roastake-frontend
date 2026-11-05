@@ -10,14 +10,202 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DiscoveryBoxesRouteImport } from './routes/discovery-boxes'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
+import { Route as WholesaleRouteImport } from './routes/wholesale'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminSectionRouteImport } from './routes/admin.$section'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppActivityRouteImport } from './routes/app.activity'
+import { Route as AppBorrowingRouteImport } from './routes/app.borrowing'
+import { Route as AppCoffeePassportRouteImport } from './routes/app.coffee-passport'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppDocsRouteImport } from './routes/app.docs'
+import { Route as AppFarmingRouteImport } from './routes/app.farming'
+import { Route as AppLendingRouteImport } from './routes/app.lending'
+import { Route as AppMarketAnalyticsRouteImport } from './routes/app.market-analytics'
+import { Route as AppMarketsRouteImport } from './routes/app.markets'
+import { Route as AppMultichainRouteImport } from './routes/app.multichain'
+import { Route as AppPortfolioRouteImport } from './routes/app.portfolio'
+import { Route as AppPositionsRouteImport } from './routes/app.positions'
+import { Route as AppRedeemRouteImport } from './routes/app.redeem'
+import { Route as AppRiskCenterRouteImport } from './routes/app.risk-center'
+import { Route as AppRoastRouteImport } from './routes/app.roast'
+import { Route as AppStakingRouteImport } from './routes/app.staking'
+import { Route as AppSwapRouteImport } from './routes/app.swap'
+import { Route as AppTokenizationRouteImport } from './routes/app.tokenization'
+import { Route as AppTreasuryRouteImport } from './routes/app.treasury'
+import { Route as AppWalletRouteImport } from './routes/app.wallet'
 import { Route as MarketIndexRouteImport } from './routes/market.index'
 import { Route as MarketIdRouteImport } from './routes/market.$id'
+import { Route as RoasterIndexRouteImport } from './routes/roaster.index'
+import { Route as RoasterSectionRouteImport } from './routes/roaster.$section'
 import { Route as RoastersIndexRouteImport } from './routes/roasters.index'
 import { Route as RoastersIdRouteImport } from './routes/roasters.$id'
+import { Route as AppAssetsIndexRouteImport } from './routes/app.assets.index'
+import { Route as AppAssetsIdRouteImport } from './routes/app.assets.$id'
+import { Route as AppGovernanceIndexRouteImport } from './routes/app.governance.index'
+import { Route as AppPerpsIndexRouteImport } from './routes/app.perps.index'
+import { Route as AppPerpsMarketRouteImport } from './routes/app.perps.$market'
+import { Route as AppVaultsIndexRouteImport } from './routes/app.vaults.index'
+import { Route as AppVaultsIdRouteImport } from './routes/app.vaults.$id'
+import { Route as AppVenturesIndexRouteImport } from './routes/app.ventures.index'
+import { Route as AppVenturesIdRouteImport } from './routes/app.ventures.$id'
+import { Route as AppVenturesApplyRouteImport } from './routes/app.ventures.apply'
+import { Route as AppGovernanceProposalsIndexRouteImport } from './routes/app.governance.proposals.index'
+import { Route as AppGovernanceProposalsIdRouteImport } from './routes/app.governance.proposals.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoveryBoxesRoute = DiscoveryBoxesRouteImport.update({
+  id: '/discovery-boxes',
+  path: '/discovery-boxes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubscriptionsRoute = SubscriptionsRouteImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WholesaleRoute = WholesaleRouteImport.update({
+  id: '/wholesale',
+  path: '/wholesale',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSectionRoute = AdminSectionRouteImport.update({
+  id: '/admin/$section',
+  path: '/admin/$section',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/app/',
+  path: '/app/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppActivityRoute = AppActivityRouteImport.update({
+  id: '/app/activity',
+  path: '/app/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppBorrowingRoute = AppBorrowingRouteImport.update({
+  id: '/app/borrowing',
+  path: '/app/borrowing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppCoffeePassportRoute = AppCoffeePassportRouteImport.update({
+  id: '/app/coffee-passport',
+  path: '/app/coffee-passport',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/app/dashboard',
+  path: '/app/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppDocsRoute = AppDocsRouteImport.update({
+  id: '/app/docs',
+  path: '/app/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppFarmingRoute = AppFarmingRouteImport.update({
+  id: '/app/farming',
+  path: '/app/farming',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppLendingRoute = AppLendingRouteImport.update({
+  id: '/app/lending',
+  path: '/app/lending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppMarketAnalyticsRoute = AppMarketAnalyticsRouteImport.update({
+  id: '/app/market-analytics',
+  path: '/app/market-analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppMarketsRoute = AppMarketsRouteImport.update({
+  id: '/app/markets',
+  path: '/app/markets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppMultichainRoute = AppMultichainRouteImport.update({
+  id: '/app/multichain',
+  path: '/app/multichain',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppPortfolioRoute = AppPortfolioRouteImport.update({
+  id: '/app/portfolio',
+  path: '/app/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppPositionsRoute = AppPositionsRouteImport.update({
+  id: '/app/positions',
+  path: '/app/positions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRedeemRoute = AppRedeemRouteImport.update({
+  id: '/app/redeem',
+  path: '/app/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRiskCenterRoute = AppRiskCenterRouteImport.update({
+  id: '/app/risk-center',
+  path: '/app/risk-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoastRoute = AppRoastRouteImport.update({
+  id: '/app/roast',
+  path: '/app/roast',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppStakingRoute = AppStakingRouteImport.update({
+  id: '/app/staking',
+  path: '/app/staking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppSwapRoute = AppSwapRouteImport.update({
+  id: '/app/swap',
+  path: '/app/swap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTokenizationRoute = AppTokenizationRouteImport.update({
+  id: '/app/tokenization',
+  path: '/app/tokenization',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTreasuryRoute = AppTreasuryRouteImport.update({
+  id: '/app/treasury',
+  path: '/app/treasury',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppWalletRoute = AppWalletRouteImport.update({
+  id: '/app/wallet',
+  path: '/app/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketIndexRoute = MarketIndexRouteImport.update({
@@ -30,6 +218,16 @@ const MarketIdRoute = MarketIdRouteImport.update({
   path: '/market/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoasterIndexRoute = RoasterIndexRouteImport.update({
+  id: '/roaster/',
+  path: '/roaster/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoasterSectionRoute = RoasterSectionRouteImport.update({
+  id: '/roaster/$section',
+  path: '/roaster/$section',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoastersIndexRoute = RoastersIndexRouteImport.update({
   id: '/roasters/',
   path: '/roasters/',
@@ -40,49 +238,422 @@ const RoastersIdRoute = RoastersIdRouteImport.update({
   path: '/roasters/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppAssetsIndexRoute = AppAssetsIndexRouteImport.update({
+  id: '/app/assets/',
+  path: '/app/assets/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppAssetsIdRoute = AppAssetsIdRouteImport.update({
+  id: '/app/assets/$id',
+  path: '/app/assets/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppGovernanceIndexRoute = AppGovernanceIndexRouteImport.update({
+  id: '/app/governance/',
+  path: '/app/governance/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppPerpsIndexRoute = AppPerpsIndexRouteImport.update({
+  id: '/app/perps/',
+  path: '/app/perps/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppPerpsMarketRoute = AppPerpsMarketRouteImport.update({
+  id: '/app/perps/$market',
+  path: '/app/perps/$market',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppVaultsIndexRoute = AppVaultsIndexRouteImport.update({
+  id: '/app/vaults/',
+  path: '/app/vaults/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppVaultsIdRoute = AppVaultsIdRouteImport.update({
+  id: '/app/vaults/$id',
+  path: '/app/vaults/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppVenturesIndexRoute = AppVenturesIndexRouteImport.update({
+  id: '/app/ventures/',
+  path: '/app/ventures/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppVenturesIdRoute = AppVenturesIdRouteImport.update({
+  id: '/app/ventures/$id',
+  path: '/app/ventures/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppVenturesApplyRoute = AppVenturesApplyRouteImport.update({
+  id: '/app/ventures/apply',
+  path: '/app/ventures/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppGovernanceProposalsIndexRoute =
+  AppGovernanceProposalsIndexRouteImport.update({
+    id: '/app/governance/proposals/',
+    path: '/app/governance/proposals/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AppGovernanceProposalsIdRoute =
+  AppGovernanceProposalsIdRouteImport.update({
+    id: '/app/governance/proposals/$id',
+    path: '/app/governance/proposals/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
+  '/discovery-boxes': typeof DiscoveryBoxesRoute
+  '/orders': typeof OrdersRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/wholesale': typeof WholesaleRoute
+  '/admin/$section': typeof AdminSectionRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/borrowing': typeof AppBorrowingRoute
+  '/app/coffee-passport': typeof AppCoffeePassportRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/docs': typeof AppDocsRoute
+  '/app/farming': typeof AppFarmingRoute
+  '/app/lending': typeof AppLendingRoute
+  '/app/market-analytics': typeof AppMarketAnalyticsRoute
+  '/app/markets': typeof AppMarketsRoute
+  '/app/multichain': typeof AppMultichainRoute
+  '/app/portfolio': typeof AppPortfolioRoute
+  '/app/positions': typeof AppPositionsRoute
+  '/app/redeem': typeof AppRedeemRoute
+  '/app/risk-center': typeof AppRiskCenterRoute
+  '/app/roast': typeof AppRoastRoute
+  '/app/staking': typeof AppStakingRoute
+  '/app/swap': typeof AppSwapRoute
+  '/app/tokenization': typeof AppTokenizationRoute
+  '/app/treasury': typeof AppTreasuryRoute
+  '/app/wallet': typeof AppWalletRoute
   '/market/$id': typeof MarketIdRoute
+  '/roaster/$section': typeof RoasterSectionRoute
   '/roasters/$id': typeof RoastersIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
   '/market/': typeof MarketIndexRoute
+  '/roaster/': typeof RoasterIndexRoute
   '/roasters/': typeof RoastersIndexRoute
+  '/app/assets/$id': typeof AppAssetsIdRoute
+  '/app/perps/$market': typeof AppPerpsMarketRoute
+  '/app/vaults/$id': typeof AppVaultsIdRoute
+  '/app/ventures/$id': typeof AppVenturesIdRoute
+  '/app/ventures/apply': typeof AppVenturesApplyRoute
+  '/app/assets/': typeof AppAssetsIndexRoute
+  '/app/governance/': typeof AppGovernanceIndexRoute
+  '/app/perps/': typeof AppPerpsIndexRoute
+  '/app/vaults/': typeof AppVaultsIndexRoute
+  '/app/ventures/': typeof AppVenturesIndexRoute
+  '/app/governance/proposals/$id': typeof AppGovernanceProposalsIdRoute
+  '/app/governance/proposals/': typeof AppGovernanceProposalsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
+  '/discovery-boxes': typeof DiscoveryBoxesRoute
+  '/orders': typeof OrdersRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/wholesale': typeof WholesaleRoute
+  '/admin/$section': typeof AdminSectionRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/borrowing': typeof AppBorrowingRoute
+  '/app/coffee-passport': typeof AppCoffeePassportRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/docs': typeof AppDocsRoute
+  '/app/farming': typeof AppFarmingRoute
+  '/app/lending': typeof AppLendingRoute
+  '/app/market-analytics': typeof AppMarketAnalyticsRoute
+  '/app/markets': typeof AppMarketsRoute
+  '/app/multichain': typeof AppMultichainRoute
+  '/app/portfolio': typeof AppPortfolioRoute
+  '/app/positions': typeof AppPositionsRoute
+  '/app/redeem': typeof AppRedeemRoute
+  '/app/risk-center': typeof AppRiskCenterRoute
+  '/app/roast': typeof AppRoastRoute
+  '/app/staking': typeof AppStakingRoute
+  '/app/swap': typeof AppSwapRoute
+  '/app/tokenization': typeof AppTokenizationRoute
+  '/app/treasury': typeof AppTreasuryRoute
+  '/app/wallet': typeof AppWalletRoute
   '/market/$id': typeof MarketIdRoute
+  '/roaster/$section': typeof RoasterSectionRoute
   '/roasters/$id': typeof RoastersIdRoute
+  '/admin': typeof AdminIndexRoute
+  '/app': typeof AppIndexRoute
   '/market': typeof MarketIndexRoute
+  '/roaster': typeof RoasterIndexRoute
   '/roasters': typeof RoastersIndexRoute
+  '/app/assets/$id': typeof AppAssetsIdRoute
+  '/app/perps/$market': typeof AppPerpsMarketRoute
+  '/app/vaults/$id': typeof AppVaultsIdRoute
+  '/app/ventures/$id': typeof AppVenturesIdRoute
+  '/app/ventures/apply': typeof AppVenturesApplyRoute
+  '/app/assets': typeof AppAssetsIndexRoute
+  '/app/governance': typeof AppGovernanceIndexRoute
+  '/app/perps': typeof AppPerpsIndexRoute
+  '/app/vaults': typeof AppVaultsIndexRoute
+  '/app/ventures': typeof AppVenturesIndexRoute
+  '/app/governance/proposals/$id': typeof AppGovernanceProposalsIdRoute
+  '/app/governance/proposals': typeof AppGovernanceProposalsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
+  '/discovery-boxes': typeof DiscoveryBoxesRoute
+  '/orders': typeof OrdersRoute
+  '/subscriptions': typeof SubscriptionsRoute
+  '/wholesale': typeof WholesaleRoute
+  '/admin/$section': typeof AdminSectionRoute
+  '/app/activity': typeof AppActivityRoute
+  '/app/borrowing': typeof AppBorrowingRoute
+  '/app/coffee-passport': typeof AppCoffeePassportRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/docs': typeof AppDocsRoute
+  '/app/farming': typeof AppFarmingRoute
+  '/app/lending': typeof AppLendingRoute
+  '/app/market-analytics': typeof AppMarketAnalyticsRoute
+  '/app/markets': typeof AppMarketsRoute
+  '/app/multichain': typeof AppMultichainRoute
+  '/app/portfolio': typeof AppPortfolioRoute
+  '/app/positions': typeof AppPositionsRoute
+  '/app/redeem': typeof AppRedeemRoute
+  '/app/risk-center': typeof AppRiskCenterRoute
+  '/app/roast': typeof AppRoastRoute
+  '/app/staking': typeof AppStakingRoute
+  '/app/swap': typeof AppSwapRoute
+  '/app/tokenization': typeof AppTokenizationRoute
+  '/app/treasury': typeof AppTreasuryRoute
+  '/app/wallet': typeof AppWalletRoute
   '/market/$id': typeof MarketIdRoute
+  '/roaster/$section': typeof RoasterSectionRoute
   '/roasters/$id': typeof RoastersIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
   '/market/': typeof MarketIndexRoute
+  '/roaster/': typeof RoasterIndexRoute
   '/roasters/': typeof RoastersIndexRoute
+  '/app/assets/$id': typeof AppAssetsIdRoute
+  '/app/perps/$market': typeof AppPerpsMarketRoute
+  '/app/vaults/$id': typeof AppVaultsIdRoute
+  '/app/ventures/$id': typeof AppVenturesIdRoute
+  '/app/ventures/apply': typeof AppVenturesApplyRoute
+  '/app/assets/': typeof AppAssetsIndexRoute
+  '/app/governance/': typeof AppGovernanceIndexRoute
+  '/app/perps/': typeof AppPerpsIndexRoute
+  '/app/vaults/': typeof AppVaultsIndexRoute
+  '/app/ventures/': typeof AppVenturesIndexRoute
+  '/app/governance/proposals/$id': typeof AppGovernanceProposalsIdRoute
+  '/app/governance/proposals/': typeof AppGovernanceProposalsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/market/$id' | '/roasters/$id' | '/market/' | '/roasters/'
+  fullPaths:
+    | '/'
+    | '/cart'
+    | '/checkout'
+    | '/discovery-boxes'
+    | '/orders'
+    | '/subscriptions'
+    | '/wholesale'
+    | '/admin/$section'
+    | '/app/activity'
+    | '/app/borrowing'
+    | '/app/coffee-passport'
+    | '/app/dashboard'
+    | '/app/docs'
+    | '/app/farming'
+    | '/app/lending'
+    | '/app/market-analytics'
+    | '/app/markets'
+    | '/app/multichain'
+    | '/app/portfolio'
+    | '/app/positions'
+    | '/app/redeem'
+    | '/app/risk-center'
+    | '/app/roast'
+    | '/app/staking'
+    | '/app/swap'
+    | '/app/tokenization'
+    | '/app/treasury'
+    | '/app/wallet'
+    | '/market/$id'
+    | '/roaster/$section'
+    | '/roasters/$id'
+    | '/admin/'
+    | '/app/'
+    | '/market/'
+    | '/roaster/'
+    | '/roasters/'
+    | '/app/assets/$id'
+    | '/app/perps/$market'
+    | '/app/vaults/$id'
+    | '/app/ventures/$id'
+    | '/app/ventures/apply'
+    | '/app/assets/'
+    | '/app/governance/'
+    | '/app/perps/'
+    | '/app/vaults/'
+    | '/app/ventures/'
+    | '/app/governance/proposals/$id'
+    | '/app/governance/proposals/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/market/$id' | '/roasters/$id' | '/market' | '/roasters'
+  to:
+    | '/'
+    | '/cart'
+    | '/checkout'
+    | '/discovery-boxes'
+    | '/orders'
+    | '/subscriptions'
+    | '/wholesale'
+    | '/admin/$section'
+    | '/app/activity'
+    | '/app/borrowing'
+    | '/app/coffee-passport'
+    | '/app/dashboard'
+    | '/app/docs'
+    | '/app/farming'
+    | '/app/lending'
+    | '/app/market-analytics'
+    | '/app/markets'
+    | '/app/multichain'
+    | '/app/portfolio'
+    | '/app/positions'
+    | '/app/redeem'
+    | '/app/risk-center'
+    | '/app/roast'
+    | '/app/staking'
+    | '/app/swap'
+    | '/app/tokenization'
+    | '/app/treasury'
+    | '/app/wallet'
+    | '/market/$id'
+    | '/roaster/$section'
+    | '/roasters/$id'
+    | '/admin'
+    | '/app'
+    | '/market'
+    | '/roaster'
+    | '/roasters'
+    | '/app/assets/$id'
+    | '/app/perps/$market'
+    | '/app/vaults/$id'
+    | '/app/ventures/$id'
+    | '/app/ventures/apply'
+    | '/app/assets'
+    | '/app/governance'
+    | '/app/perps'
+    | '/app/vaults'
+    | '/app/ventures'
+    | '/app/governance/proposals/$id'
+    | '/app/governance/proposals'
   id:
     | '__root__'
     | '/'
+    | '/cart'
+    | '/checkout'
+    | '/discovery-boxes'
+    | '/orders'
+    | '/subscriptions'
+    | '/wholesale'
+    | '/admin/$section'
+    | '/app/activity'
+    | '/app/borrowing'
+    | '/app/coffee-passport'
+    | '/app/dashboard'
+    | '/app/docs'
+    | '/app/farming'
+    | '/app/lending'
+    | '/app/market-analytics'
+    | '/app/markets'
+    | '/app/multichain'
+    | '/app/portfolio'
+    | '/app/positions'
+    | '/app/redeem'
+    | '/app/risk-center'
+    | '/app/roast'
+    | '/app/staking'
+    | '/app/swap'
+    | '/app/tokenization'
+    | '/app/treasury'
+    | '/app/wallet'
     | '/market/$id'
+    | '/roaster/$section'
     | '/roasters/$id'
+    | '/admin/'
+    | '/app/'
     | '/market/'
+    | '/roaster/'
     | '/roasters/'
+    | '/app/assets/$id'
+    | '/app/perps/$market'
+    | '/app/vaults/$id'
+    | '/app/ventures/$id'
+    | '/app/ventures/apply'
+    | '/app/assets/'
+    | '/app/governance/'
+    | '/app/perps/'
+    | '/app/vaults/'
+    | '/app/ventures/'
+    | '/app/governance/proposals/$id'
+    | '/app/governance/proposals/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CartRoute: typeof CartRoute
+  CheckoutRoute: typeof CheckoutRoute
+  DiscoveryBoxesRoute: typeof DiscoveryBoxesRoute
+  OrdersRoute: typeof OrdersRoute
+  SubscriptionsRoute: typeof SubscriptionsRoute
+  WholesaleRoute: typeof WholesaleRoute
+  AdminSectionRoute: typeof AdminSectionRoute
+  AppActivityRoute: typeof AppActivityRoute
+  AppBorrowingRoute: typeof AppBorrowingRoute
+  AppCoffeePassportRoute: typeof AppCoffeePassportRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppDocsRoute: typeof AppDocsRoute
+  AppFarmingRoute: typeof AppFarmingRoute
+  AppLendingRoute: typeof AppLendingRoute
+  AppMarketAnalyticsRoute: typeof AppMarketAnalyticsRoute
+  AppMarketsRoute: typeof AppMarketsRoute
+  AppMultichainRoute: typeof AppMultichainRoute
+  AppPortfolioRoute: typeof AppPortfolioRoute
+  AppPositionsRoute: typeof AppPositionsRoute
+  AppRedeemRoute: typeof AppRedeemRoute
+  AppRiskCenterRoute: typeof AppRiskCenterRoute
+  AppRoastRoute: typeof AppRoastRoute
+  AppStakingRoute: typeof AppStakingRoute
+  AppSwapRoute: typeof AppSwapRoute
+  AppTokenizationRoute: typeof AppTokenizationRoute
+  AppTreasuryRoute: typeof AppTreasuryRoute
+  AppWalletRoute: typeof AppWalletRoute
   MarketIdRoute: typeof MarketIdRoute
+  RoasterSectionRoute: typeof RoasterSectionRoute
   RoastersIdRoute: typeof RoastersIdRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AppIndexRoute: typeof AppIndexRoute
   MarketIndexRoute: typeof MarketIndexRoute
+  RoasterIndexRoute: typeof RoasterIndexRoute
   RoastersIndexRoute: typeof RoastersIndexRoute
+  AppAssetsIdRoute: typeof AppAssetsIdRoute
+  AppPerpsMarketRoute: typeof AppPerpsMarketRoute
+  AppVaultsIdRoute: typeof AppVaultsIdRoute
+  AppVenturesIdRoute: typeof AppVenturesIdRoute
+  AppVenturesApplyRoute: typeof AppVenturesApplyRoute
+  AppAssetsIndexRoute: typeof AppAssetsIndexRoute
+  AppGovernanceIndexRoute: typeof AppGovernanceIndexRoute
+  AppPerpsIndexRoute: typeof AppPerpsIndexRoute
+  AppVaultsIndexRoute: typeof AppVaultsIndexRoute
+  AppVenturesIndexRoute: typeof AppVenturesIndexRoute
+  AppGovernanceProposalsIdRoute: typeof AppGovernanceProposalsIdRoute
+  AppGovernanceProposalsIndexRoute: typeof AppGovernanceProposalsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,6 +663,209 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discovery-boxes': {
+      id: '/discovery-boxes'
+      path: '/discovery-boxes'
+      fullPath: '/discovery-boxes'
+      preLoaderRoute: typeof DiscoveryBoxesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subscriptions': {
+      id: '/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof SubscriptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wholesale': {
+      id: '/wholesale'
+      path: '/wholesale'
+      fullPath: '/wholesale'
+      preLoaderRoute: typeof WholesaleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/$section': {
+      id: '/admin/$section'
+      path: '/admin/$section'
+      fullPath: '/admin/$section'
+      preLoaderRoute: typeof AdminSectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/app'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/activity': {
+      id: '/app/activity'
+      path: '/app/activity'
+      fullPath: '/app/activity'
+      preLoaderRoute: typeof AppActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/borrowing': {
+      id: '/app/borrowing'
+      path: '/app/borrowing'
+      fullPath: '/app/borrowing'
+      preLoaderRoute: typeof AppBorrowingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/coffee-passport': {
+      id: '/app/coffee-passport'
+      path: '/app/coffee-passport'
+      fullPath: '/app/coffee-passport'
+      preLoaderRoute: typeof AppCoffeePassportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
+      path: '/app/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/docs': {
+      id: '/app/docs'
+      path: '/app/docs'
+      fullPath: '/app/docs'
+      preLoaderRoute: typeof AppDocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/farming': {
+      id: '/app/farming'
+      path: '/app/farming'
+      fullPath: '/app/farming'
+      preLoaderRoute: typeof AppFarmingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/lending': {
+      id: '/app/lending'
+      path: '/app/lending'
+      fullPath: '/app/lending'
+      preLoaderRoute: typeof AppLendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/market-analytics': {
+      id: '/app/market-analytics'
+      path: '/app/market-analytics'
+      fullPath: '/app/market-analytics'
+      preLoaderRoute: typeof AppMarketAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/markets': {
+      id: '/app/markets'
+      path: '/app/markets'
+      fullPath: '/app/markets'
+      preLoaderRoute: typeof AppMarketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/multichain': {
+      id: '/app/multichain'
+      path: '/app/multichain'
+      fullPath: '/app/multichain'
+      preLoaderRoute: typeof AppMultichainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/portfolio': {
+      id: '/app/portfolio'
+      path: '/app/portfolio'
+      fullPath: '/app/portfolio'
+      preLoaderRoute: typeof AppPortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/positions': {
+      id: '/app/positions'
+      path: '/app/positions'
+      fullPath: '/app/positions'
+      preLoaderRoute: typeof AppPositionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/redeem': {
+      id: '/app/redeem'
+      path: '/app/redeem'
+      fullPath: '/app/redeem'
+      preLoaderRoute: typeof AppRedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/risk-center': {
+      id: '/app/risk-center'
+      path: '/app/risk-center'
+      fullPath: '/app/risk-center'
+      preLoaderRoute: typeof AppRiskCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/roast': {
+      id: '/app/roast'
+      path: '/app/roast'
+      fullPath: '/app/roast'
+      preLoaderRoute: typeof AppRoastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/staking': {
+      id: '/app/staking'
+      path: '/app/staking'
+      fullPath: '/app/staking'
+      preLoaderRoute: typeof AppStakingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/swap': {
+      id: '/app/swap'
+      path: '/app/swap'
+      fullPath: '/app/swap'
+      preLoaderRoute: typeof AppSwapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/tokenization': {
+      id: '/app/tokenization'
+      path: '/app/tokenization'
+      fullPath: '/app/tokenization'
+      preLoaderRoute: typeof AppTokenizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/treasury': {
+      id: '/app/treasury'
+      path: '/app/treasury'
+      fullPath: '/app/treasury'
+      preLoaderRoute: typeof AppTreasuryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/wallet': {
+      id: '/app/wallet'
+      path: '/app/wallet'
+      fullPath: '/app/wallet'
+      preLoaderRoute: typeof AppWalletRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/market/': {
@@ -108,6 +882,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roaster/': {
+      id: '/roaster/'
+      path: '/roaster'
+      fullPath: '/roaster/'
+      preLoaderRoute: typeof RoasterIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roaster/$section': {
+      id: '/roaster/$section'
+      path: '/roaster/$section'
+      fullPath: '/roaster/$section'
+      preLoaderRoute: typeof RoasterSectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/roasters/': {
       id: '/roasters/'
       path: '/roasters'
@@ -122,15 +910,142 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoastersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/assets/': {
+      id: '/app/assets/'
+      path: '/app/assets'
+      fullPath: '/app/assets/'
+      preLoaderRoute: typeof AppAssetsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/assets/$id': {
+      id: '/app/assets/$id'
+      path: '/app/assets/$id'
+      fullPath: '/app/assets/$id'
+      preLoaderRoute: typeof AppAssetsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/governance/': {
+      id: '/app/governance/'
+      path: '/app/governance'
+      fullPath: '/app/governance/'
+      preLoaderRoute: typeof AppGovernanceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/perps/': {
+      id: '/app/perps/'
+      path: '/app/perps'
+      fullPath: '/app/perps/'
+      preLoaderRoute: typeof AppPerpsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/perps/$market': {
+      id: '/app/perps/$market'
+      path: '/app/perps/$market'
+      fullPath: '/app/perps/$market'
+      preLoaderRoute: typeof AppPerpsMarketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/vaults/': {
+      id: '/app/vaults/'
+      path: '/app/vaults'
+      fullPath: '/app/vaults/'
+      preLoaderRoute: typeof AppVaultsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/vaults/$id': {
+      id: '/app/vaults/$id'
+      path: '/app/vaults/$id'
+      fullPath: '/app/vaults/$id'
+      preLoaderRoute: typeof AppVaultsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/ventures/': {
+      id: '/app/ventures/'
+      path: '/app/ventures'
+      fullPath: '/app/ventures/'
+      preLoaderRoute: typeof AppVenturesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/ventures/$id': {
+      id: '/app/ventures/$id'
+      path: '/app/ventures/$id'
+      fullPath: '/app/ventures/$id'
+      preLoaderRoute: typeof AppVenturesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/ventures/apply': {
+      id: '/app/ventures/apply'
+      path: '/app/ventures/apply'
+      fullPath: '/app/ventures/apply'
+      preLoaderRoute: typeof AppVenturesApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/governance/proposals/': {
+      id: '/app/governance/proposals/'
+      path: '/app/governance/proposals'
+      fullPath: '/app/governance/proposals/'
+      preLoaderRoute: typeof AppGovernanceProposalsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/governance/proposals/$id': {
+      id: '/app/governance/proposals/$id'
+      path: '/app/governance/proposals/$id'
+      fullPath: '/app/governance/proposals/$id'
+      preLoaderRoute: typeof AppGovernanceProposalsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CartRoute: CartRoute,
+  CheckoutRoute: CheckoutRoute,
+  DiscoveryBoxesRoute: DiscoveryBoxesRoute,
+  OrdersRoute: OrdersRoute,
+  SubscriptionsRoute: SubscriptionsRoute,
+  WholesaleRoute: WholesaleRoute,
+  AdminSectionRoute: AdminSectionRoute,
+  AppActivityRoute: AppActivityRoute,
+  AppBorrowingRoute: AppBorrowingRoute,
+  AppCoffeePassportRoute: AppCoffeePassportRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppDocsRoute: AppDocsRoute,
+  AppFarmingRoute: AppFarmingRoute,
+  AppLendingRoute: AppLendingRoute,
+  AppMarketAnalyticsRoute: AppMarketAnalyticsRoute,
+  AppMarketsRoute: AppMarketsRoute,
+  AppMultichainRoute: AppMultichainRoute,
+  AppPortfolioRoute: AppPortfolioRoute,
+  AppPositionsRoute: AppPositionsRoute,
+  AppRedeemRoute: AppRedeemRoute,
+  AppRiskCenterRoute: AppRiskCenterRoute,
+  AppRoastRoute: AppRoastRoute,
+  AppStakingRoute: AppStakingRoute,
+  AppSwapRoute: AppSwapRoute,
+  AppTokenizationRoute: AppTokenizationRoute,
+  AppTreasuryRoute: AppTreasuryRoute,
+  AppWalletRoute: AppWalletRoute,
   MarketIdRoute: MarketIdRoute,
+  RoasterSectionRoute: RoasterSectionRoute,
   RoastersIdRoute: RoastersIdRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AppIndexRoute: AppIndexRoute,
   MarketIndexRoute: MarketIndexRoute,
+  RoasterIndexRoute: RoasterIndexRoute,
   RoastersIndexRoute: RoastersIndexRoute,
+  AppAssetsIdRoute: AppAssetsIdRoute,
+  AppPerpsMarketRoute: AppPerpsMarketRoute,
+  AppVaultsIdRoute: AppVaultsIdRoute,
+  AppVenturesIdRoute: AppVenturesIdRoute,
+  AppVenturesApplyRoute: AppVenturesApplyRoute,
+  AppAssetsIndexRoute: AppAssetsIndexRoute,
+  AppGovernanceIndexRoute: AppGovernanceIndexRoute,
+  AppPerpsIndexRoute: AppPerpsIndexRoute,
+  AppVaultsIndexRoute: AppVaultsIndexRoute,
+  AppVenturesIndexRoute: AppVenturesIndexRoute,
+  AppGovernanceProposalsIdRoute: AppGovernanceProposalsIdRoute,
+  AppGovernanceProposalsIndexRoute: AppGovernanceProposalsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
