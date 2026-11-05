@@ -1,0 +1,32 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import roastery from "@/assets/roastery.jpg";
+import { PublicShell, Section } from "@/components/shell";
+import { ProductCard } from "@/components/commerce";
+import { Empty, KV } from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import { useDemo } from "@/lib/demo/store";
+import { seo } from "@/lib/seo";
+
+export const Route = createFileRoute("/roasters/$id")({
+  head: () => seo("Roaster storefront", "Brand story, catalogue and shipping zones of an independent roaster."),
+  component: () => {
+    const { id } = Route.useParams();
+    const s = useDemo();
+    const r = s.roasters.find((x) => x.id === id);
+    if (!r) return <PublicShell><Section className="py-20"><Empty text="Roaster not found." action={<Button asChild variant="outline"><Link to="/roasters">All roasters</Link></Button>} /></Section></PublicShell>;
+    const items = s.products.filter((p) => p.roasterId === r.id && p.status === "Live");
+    return (
+      <PublicShell>
+        <div className="relative isolate">
+          <img src={roastery} alt={`${r.name} roastery`} width={1200} height={912} className="absolute inset-0 -z-10 h-full w-full object-cover" />
+          <div className="absolute inset-0 -z-10 bg-forest/80" />
+          <Section className="py-20 text-cream"><p className="text-xs uppercase tracking-widest text-brass">{r.city}, {r.country}</p><h1 className="mt-2 text-5xl">{r.name}</h1><p className="mt-4 max-w-xl text-cream/85">{r.story}</p></Section>
+        </div>
+        <Section className="grid gap-10 py-12 lg:grid-cols-[1fr_280px]">
+          <div><h2 className="text-3xl">Catalogue</h2>{items.length ? <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{items.map((p) => <ProductCard key={p.id} p={p} />)}</div> : <Empty text="No live products yet." />}</div>
+          <aside><KV rows={[["Founded", r.founded], ["Rating", `★ ${r.rating || "—"}`], ["Ships to", r.zones.join(", ")], ["Status", r.status]]} /></aside>
+        </Section>
+      </PublicShell>
+    );
+  },
+});
