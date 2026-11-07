@@ -115,7 +115,7 @@ function Home() {
           <p className="font-mono text-xs uppercase tracking-widest text-brass">For roasters</p>
           <h3 className="mt-2 text-3xl">Sell globally. Tokenize your lots.</h3>
           <p className="mt-3 text-sm text-cream/80">Storefront, inventory, payouts and lot tokenization in one portal.</p>
-          <Button asChild className="mt-6 bg-cream text-forest hover:bg-parchment"><Link to="/roaster/dashboard">Open roaster portal</Link></Button>
+          <Button asChild className="mt-6 bg-cream text-forest hover:bg-parchment"><Link to="/roaster/$section" params={{ section: "dashboard" }}>Open roaster portal</Link></Button>
         </div>
       </Section>
     </PublicShell>
