@@ -1,13 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, ROASTER_NAV, ADMIN_NAV } from "@/components/shell";
-import { ModulePage } from "@/components/module-page";
-import { seo } from "@/lib/seo";
+import { createFileRoute } from '@tanstack/react-router';
+import { AppShell } from '@/components/shell';
+import { LotDetail } from '@/components/coffee/lots';
+import { seo } from '@/lib/seo';
 
-export const Route = createFileRoute("/app/assets/$id")({
-  head: () => seo("Id", "ROASTAKE Id — simulated demo module."),
+export const Route = createFileRoute('/app/assets/$id')({
+  head: () => seo('Coffee Lot Details', 'Inspect coffee origin, custody records, token supply and physical kilograms.'),
   component: Page,
 });
-
-function Page() {
-  return <AppShell><ModulePage path="/app/assets/$id" /></AppShell>;
-}
+function Page() { return <AppShell><LotDetail id={Route.useParams().id}/></AppShell>; }
