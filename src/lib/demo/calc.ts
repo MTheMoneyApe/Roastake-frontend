@@ -1,4 +1,4 @@
-import type { DemoState, PerpPosition } from "./types";
+import type { CoffeeLot, DemoState, PerpPosition } from "./types";
 
 export const SPOT: Record<string, number> = { USDC: 1, USDT: 1, ETH: 3200, BTC: 68000, SOL: 150, HYPE: 28, COFFEE: 0.42 };
 export const MARGIN_ASSETS = ["USDC", "USDT", "ETH", "BTC", "HYPE", "SOL"];
@@ -76,12 +76,12 @@ export function lendLiqPrice(s: DemoState, marketId: string) {
 export function portfolio(s: DemoState) {
   const wallet = Object.entries(s.balances).reduce((a, [k, v]) => a + v * priceOf(s, k), 0);
   const vaults = s.vaultPositions.reduce((a, p) => {
-    const v = s.vaults.find((x) => x.id === p.vaultId)!;
-    return a + p.shares * priceOf(s, v.asset) + p.rewards * priceOf(s, v.asset);
+    const v = s.vaults.find((x) => x.id === p.vaultId);
+    return a + (v ? (p.shares + p.rewards) * priceOf(s, v.asset) : 0);
   }, 0);
   const staking = s.stakes.reduce((a, p) => a + (p.amount + p.rewards) * priceOf(s, p.asset), 0);
   const lp = s.lpPositions.reduce((a, p) => a + p.lp * 2 + p.rewards * SPOT.COFFEE, 0);
-  const collateral = s.loans.reduce((a, l) => a + l.collateral * priceOf(s, s.markets.find((m) => m.id === l.marketId)!.collateral), 0);
+  const collateral = s.loans.reduce((a, l) => { const m = s.markets.find((m) => m.id === l.marketId); return a + (m ? l.collateral * priceOf(s, m.collateral) : 0); }, 0);
   const debt = s.loans.reduce((a, l) => a + l.debt, 0);
   const perps = s.perpPositions.reduce((a, p) => a + p.margin + positionPnl(s, p), 0);
   const total = wallet + vaults + staking + lp + collateral - debt + perps;
@@ -100,3 +100,50 @@ export const fmt = (n: number, d = 2) => (Number.isFinite(n) ? n.toLocaleString(
 export const usd = (n: number, d = 2) => `$${fmt(n, d)}`;
 export const compact = (n: number) => Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(n);
 export const short = (id: string) => id.replace(/-25[A-C]$/, "");
+
+/** Physical categories are disjoint; supply is a claim, never additional mass. */
+export function lotAccounting(l: CoffeeLot) {
+  const available = Math.max(0, l.physicalKg - l.encumbered - l.reservedRedemption);
+  const unissued = Math.max(0, l.physicalKg - l.reservedRedemption - l.supply);
+  const shortfall = Math.max(0, l.supply + l.reservedRedemption - l.physicalKg);
+  return { available, unissued, shortfall, ratio: l.supply > 0 ? (l.physicalKg - l.reservedRedemption) / l.supply : 0 };
+}
+
+export function roastQuote(l: CoffeeLot, inputKg: number, feePct: number) {
+  const yieldRatio = l.roastYield;
+  if (l.kind !== "GCT" || yieldRatio == null || !Number.isFinite(yieldRatio) || yieldRatio <= 0 || yieldRatio > 1) return null;
+  const outputKg = +(inputKg * yieldRatio).toFixed(3);
+  const lossKg = +(inputKg - outputKg).toFixed(3);
+  const feeKg = +(outputKg * feePct / 100).toFixed(3);
+  return { inputKg, outputKg, lossKg, feeKg, netKg: +(outputKg - feeKg).toFixed(3), yieldRatio };
+}
+
+export function redemptionQuote(s: DemoState, qty: number) {
+  const processing = s.fees["Redemption processing (USDC)"] ?? 0;
+  const packing = 2.5 * qty;
+  const shipping = 6;
+  return { processing, packing, shipping, total: +(processing + packing + shipping).toFixed(2) };
+}
+
+export function coffeeOverview(s: DemoState) {
+  const held = (kind: "GCT" | "RCT") => s.lots.filter((l) => l.kind === kind).reduce((a, l) => a + (s.balances[l.id] ?? 0), 0);
+  const gct = held("GCT"), rct = held("RCT");
+  const depositedKg = s.vaultPositions.reduce((a, p) => { const v = s.vaults.find((v) => v.id === p.vaultId); return a + (v && s.lots.some((l) => l.id === v.asset) ? p.shares + p.rewards : 0); }, 0);
+  const collateralKg = s.loans.reduce((a, p) => { const m = s.markets.find((m) => m.id === p.marketId); return a + (m && s.lots.some((l) => l.id === m.collateral) ? p.collateral : 0); }, 0);
+  const totals = s.lots.reduce((a, l) => ({ supply: a.supply + l.supply, physical: a.physical + l.physicalKg, encumbered: a.encumbered + l.encumbered, reserved: a.reserved + l.reservedRedemption, available: a.available + lotAccounting(l).available }), { supply: 0, physical: 0, encumbered: 0, reserved: 0, available: 0 });
+  const fees = s.ledger.filter((l) => l.category === "Revenue" && /fee|commission|reserve factor|lending reserve/i.test(l.desc)).sort((a, b) => b.date.localeCompare(a.date));
+  return { gct, rct, walletKg: gct + rct, depositedKg, collateralKg, representedKg: gct + rct + depositedKg + collateralKg, ...totals, fees, recentFees: fees.slice(0, 5).reduce((a, l) => a + l.amount, 0) };
+}
+
+export interface CoffeeActivity { id: string; date: string; action: string; detail: string; quantity: string; status: string; category: string }
+export function coffeeActivity(s: DemoState): CoffeeActivity[] {
+  const rows: CoffeeActivity[] = [
+    ...s.events.map((e) => ({ id: e.id, date: e.date, action: e.type === "Audit" ? "Custody record" : e.type, detail: `${e.lotId} · ${e.note}`, quantity: e.qty ? `${fmt(e.qty, 3)} tokens` : "—", status: "Recorded", category: "Assets" })),
+    ...s.conversions.map((c) => ({ id: c.id, date: c.date, action: "Roasting conversion", detail: `${c.gctLot} → ${c.rctLot} · loss ${fmt(c.lossKg, 3)} kg · fee ${fmt(c.feeKg, 3)} kg`, quantity: `${fmt(c.inputKg, 3)} → ${fmt(c.netKg, 3)} kg net`, status: "Completed", category: "Roasting" })),
+    ...s.redemptions.map((r) => ({ id: r.id, date: r.date, action: "Coffee redemption", detail: `${r.lotId} · ${fmt(r.fees)} USDC service total`, quantity: `${fmt(r.qty, 3)} kg`, status: r.status, category: "Redemption" })),
+    ...s.orders.filter((o) => o.customer === s.account).map((o) => ({ id: o.id, date: o.date, action: "Marketplace purchase", detail: `${o.id} · ${o.method}`, quantity: `€${fmt(o.total)}`, status: o.status, category: "Marketplace" })),
+    ...coffeeOverview(s).fees.map((f) => ({ id: f.id, date: f.date, action: "Protocol fee", detail: f.desc, quantity: usd(f.amount), status: "Recorded", category: "Fees" })),
+    ...s.txs.filter((t) => !["Assets", "Roasting Lab", "Redemption", "Notifications", "Session", "Network"].includes(t.module) && !(t.module === "Marketplace" && /Order/.test(t.action))).map((t) => ({ id: t.id, date: t.date, action: t.action, detail: t.detail, quantity: "See details", status: "Completed", category: t.module })),
+  ];
+  return rows.sort((a, b) => b.date.localeCompare(a.date));
+}
