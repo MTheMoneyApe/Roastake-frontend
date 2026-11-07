@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { initNetworkBalances, seed } from "./seed";
 import type { DemoState, Role } from "./types";
-import { liqPrice, markPrice, positionPnl, priceOf, SPOT } from "./calc";
+import { liqPrice, lotAccounting, markPrice, positionPnl, priceOf, redemptionQuote, roastQuote, SPOT } from "./calc";
 
 const KEY = "roastake-demo-v1";
 const fresh = () => {
@@ -61,7 +61,7 @@ export function act(module: string, action: string, fn: (d: DemoState) => string
   const d: DemoState = structuredClone(state);
   try {
     const detail = fn(d) || "";
-    d.txs.unshift({ id: uid("TX"), date: today(), module, action, detail, actor: d.role });
+    d.txs.unshift({ id: uid("TX"), date: new Date().toISOString(), module, action, detail, actor: d.role });
     commit(d);
     if (!opts.silent) toast.success(`${action} · simulated`, { description: detail });
     return true;
@@ -219,18 +219,20 @@ export const demo = {
   mint: (lotId: string, qty: number) =>
     act("Assets", "Mint", (d) => {
       num(qty);
-      const l = d.lots.find((x) => x.id === lotId)!;
-      if (l.supply + qty > l.physicalKg) fail(`Cannot mint beyond verified physical reserve (${l.physicalKg - l.supply} kg headroom)`);
+      const l = d.lots.find((x) => x.id === lotId) ?? fail("Lot not found");
+      if (l.paused) fail("This lot is paused");
+      if (qty > lotAccounting(l).unissued) fail(`Cannot mint beyond recorded demo reserve (${lotAccounting(l).unissued} kg headroom)`);
       l.supply += qty;
       credit(d, lotId, qty);
-      d.events.unshift({ id: uid("EV"), lotId, type: "Mint", qty, date: today(), note: "Admin mint against verified reserve (simulated)" });
+      d.events.unshift({ id: uid("EV"), lotId, type: "Mint", qty, date: new Date().toISOString(), note: "Mint against recorded demo reserve; custody not verified" });
       return `${qty} ${lotId}`;
     }),
   burn: (lotId: string, qty: number) =>
     act("Assets", "Burn", (d) => {
       num(qty);
       debit(d, lotId, qty);
-      const l = d.lots.find((x) => x.id === lotId)!;
+      const l = d.lots.find((x) => x.id === lotId) ?? fail("Lot not found");
+      if (l.paused || qty > l.supply) fail("Lot paused or quantity exceeds supply");
       l.supply -= qty;
       d.events.unshift({ id: uid("EV"), lotId, type: "Burn", qty, date: today(), note: "Burn (simulated)" });
       return `${qty} ${lotId}`;
@@ -247,25 +249,25 @@ export const demo = {
   reconcile: (lotId: string) =>
     act("Custody", "Reserve reconciled", (d) => {
       const l = d.lots.find((x) => x.id === lotId)!;
-      const ok = l.supply <= l.physicalKg;
+      const ok = lotAccounting(l).shortfall === 0;
       d.events.unshift({ id: uid("EV"), lotId, type: "Reconcile", qty: 0, date: today(), note: `Physical ${l.physicalKg} kg vs supply ${l.supply} — ${ok ? "covered" : "SHORTFALL"} (demo)` });
-      return `${lotId}: ${ok ? "fully covered" : "shortfall"}`;
+      return `${lotId}: ${ok ? "no shortfall in demo records; custody not verified" : "shortfall in demo records"}`;
     }),
 
-  roast: (gctLot: string, kg: number, yieldPct: number) =>
+  roast: (gctLot: string, kg: number, _yieldPct?: number) =>
     act("Roasting Lab", "Conversion complete", (d) => {
       num(kg);
       const g = d.lots.find((x) => x.id === gctLot && x.kind === "GCT") ?? fail("Select a green lot");
       if (g.paused) fail("This lot is paused");
-      if (yieldPct < 0.7 || yieldPct > 0.9) fail("Roast yield must be between 70% and 90%");
       if (kg < 5) fail("Minimum batch is 5 kg");
+      if (kg > lotAccounting(g).available || kg > g.supply - g.encumbered) fail("Batch exceeds unencumbered coffee or token supply");
+      const quote = roastQuote(g, kg, d.roastFeePct) ?? fail("This lot has no valid recorded roast yield");
+      if (d.roastFeePct < 0 || d.roastFeePct > 100 || !Number.isFinite(d.roastFeePct)) fail("Invalid roasting fee");
       debit(d, gctLot, kg);
-      const output = +(kg * yieldPct).toFixed(3);
-      const loss = +(kg - output).toFixed(3);
-      const fee = +(output * (d.roastFeePct / 100)).toFixed(3);
-      const net = +(output - fee).toFixed(3);
-      g.supply -= kg; g.physicalKg -= kg;
+      const { outputKg: output, lossKg: loss, feeKg: fee, netKg: net } = quote;
+      g.supply = +(g.supply - kg).toFixed(3); g.physicalKg = +(g.physicalKg - kg).toFixed(3);
       let r = d.lots.find((x) => x.kind === "RCT" && x.parentLot === gctLot);
+      if (r?.paused) fail("The roasted output lot is paused");
       if (!r) {
         r = { ...g, id: gctLot.replace("GCT", "RCT"), kind: "RCT", name: g.name.replace("Green", "Roasted"), physicalKg: 0, supply: 0, encumbered: 0, reservedRedemption: 0, parentLot: gctLot, grade: "Roast batch", price: +(g.price * 1.95).toFixed(2), roastYield: undefined, certificates: ["Roast log (demo)"] };
         d.lots.push(r);
@@ -274,8 +276,8 @@ export const demo = {
       r.supply = +(r.supply + output).toFixed(3); // net to user + fee to treasury; never above roasted mass
       credit(d, r.id, net);
       const id = uid("CNV");
-      d.conversions.unshift({ id, date: today(), gctLot, rctLot: r.id, inputKg: kg, outputKg: output, lossKg: loss, feeKg: fee, netKg: net });
-      d.events.unshift({ id: uid("EV"), lotId: gctLot, type: "Burn", qty: kg, date: today(), note: `${id} roast input (simulated)` }, { id: uid("EV"), lotId: r.id, type: "Mint", qty: output, date: today(), note: `${id}: ${net} to user, ${fee} to treasury (simulated)` });
+      d.conversions.unshift({ id, date: new Date().toISOString(), gctLot, rctLot: r.id, inputKg: kg, outputKg: output, lossKg: loss, feeKg: fee, netKg: net });
+      d.events.unshift({ id: uid("EV"), lotId: gctLot, type: "Burn", qty: kg, date: new Date().toISOString(), note: `${id} roast input (simulated)` }, { id: uid("EV"), lotId: r.id, type: "Mint", qty: output, date: new Date().toISOString(), note: `${id}: ${net} to user, ${fee} allocated as protocol fee (simulated)` });
       ledger(d, "Revenue", `Roast fee ${id}: ${fee} kg ${r.id}`, fee * r.price);
       return `${kg} kg GCT → ${net} kg RCT (fee ${fee} kg, loss ${loss} kg)`;
     }),
@@ -286,16 +288,19 @@ export const demo = {
       if (qty < 1) fail("Minimum redemption is 1 kg");
       if (!address.trim()) fail("Enter a delivery address");
       const l = d.lots.find((x) => x.id === lotId && x.kind === "RCT") ?? fail("Select a roasted lot");
-      const avail = l.physicalKg - l.encumbered - l.reservedRedemption;
+      if (l.paused) fail("This lot is paused");
+      if (![250, 500, 1000].includes(pack) || Math.abs(qty * 1000 / pack - Math.round(qty * 1000 / pack)) > 1e-6) fail("Quantity must fill whole packs");
+      if (!country.trim()) fail("Select a delivery country");
+      const avail = Math.min(lotAccounting(l).available, l.supply - l.encumbered);
       if (qty > avail) fail(`Only ${avail.toFixed(1)} kg physically available for redemption`);
-      const fees = d.fees["Redemption processing (USDC)"] + 2.5 * qty + 6;
+      const fees = redemptionQuote(d, qty).total;
       debit(d, "USDC", fees);
       debit(d, lotId, qty);
       l.supply -= qty; l.reservedRedemption += qty;
       const id = uid("RDM");
-      d.redemptions.unshift({ id, date: today(), lotId, qty, pack, grind, country, address, fees, status: "Requested" });
-      d.events.unshift({ id: uid("EV"), lotId, type: "Burn", qty, date: today(), note: `${id} redemption burn (simulated)` });
-      ledger(d, "Revenue", `Redemption services ${id}`, d.fees["Redemption processing (USDC)"]);
+      d.redemptions.unshift({ id, date: new Date().toISOString(), lotId, qty, pack, grind, country, address, fees, status: "Requested" });
+      d.events.unshift({ id: uid("EV"), lotId, type: "Burn", qty, date: new Date().toISOString(), note: `${id} redemption burn (simulated)` });
+      ledger(d, "Revenue", `Redemption processing fee ${id}`, redemptionQuote(d, qty).processing);
       return `${qty} kg ${lotId} · fees ${fees.toFixed(2)} USDC`;
     }),
   advanceRedemption: (id: string) =>
@@ -390,12 +395,20 @@ export const demo = {
     act("Swap", "Swap executed", (d) => {
       num(amt);
       if (from === to) fail("Choose two different assets");
+      if (!Number.isFinite(slippage) || slippage < 0 || slippage > 100) fail("Invalid slippage tolerance");
+      if (priceOf(d, from) <= 0 || priceOf(d, to) <= 0) fail("Unknown asset");
+      const outputLot = d.lots.find((l) => l.id === to);
+      if (d.lots.some((l) => (l.id === from || l.id === to) && l.paused)) fail("This lot is paused");
       const q = swapQuote(d, from, to, amt);
       if (q.impact > slippage) fail(`Price impact ${q.impact.toFixed(2)}% exceeds slippage tolerance ${slippage}%`);
       if (q.out <= 0) fail("Unavailable liquidity for this route");
+      if (outputLot) {
+        const heldElsewhere = d.vaultPositions.reduce((a, p) => a + (d.vaults.find((v) => v.id === p.vaultId)?.asset === to ? p.shares + p.rewards : 0), 0) + d.loans.reduce((a, p) => a + (d.markets.find((m) => m.id === p.marketId)?.collateral === to ? p.collateral : 0), 0);
+        if (q.out > outputLot.supply - outputLot.encumbered - (d.balances[to] ?? 0) - heldElsewhere) fail("Insufficient unallocated demo token inventory");
+      }
       debit(d, from, amt); credit(d, to, q.out);
       ledger(d, "Revenue", `Swap fee ${from}→${to}`, q.feeUsd);
-      return `${amt} ${from} → ${q.out.toFixed(4)} ${to}`;
+      return `${amt} ${from} → ${q.out.toFixed(4)} ${to} · protocol fee ${q.feeUsd.toFixed(2)} USDC equivalent`;
     }),
 
   lend: (marketId: string, op: "supply" | "withdraw" | "borrow" | "repay", amt: number) =>

@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep coffee accounting and activity aggregation in shared demo utilities, so all MVP screens use the same quantity definitions.
+- All prototype actions mutate the existing browser-only demo store atomically; never add production infrastructure to simulation flows.
