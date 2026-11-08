@@ -28,7 +28,7 @@ function Home() {
         <div className="bg-hero-fade absolute inset-0 -z-10" />
         <Section className="flex min-h-[78vh] flex-col justify-end pb-16 pt-32 text-cream">
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-brass">Specialty Coffee × Decentralized Finance</p>
-          <h1 className="max-w-4xl text-5xl font-medium leading-[1.02] md:text-7xl">Roast. Stake.<br /><em className="text-brass">Repeat.</em></h1>
+          <h1 className="max-w-4xl text-5xl font-medium leading-[1.02] md:text-7xl">ROASTAKE</h1>
           <p className="mt-6 max-w-xl text-lg text-cream/85">A global marketplace for independent roasters, and a protocol where every kilo of traceable coffee can become an on-chain asset — shown here as a fully simulated prototype.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button size="lg" asChild className="bg-cream text-forest hover:bg-parchment"><Link to="/market">Explore Market <ArrowRight /></Link></Button>
@@ -57,7 +57,7 @@ function Home() {
           <div>
             <p className="font-mono text-xs uppercase tracking-widest text-copper">Origins</p>
             <h2 className="mt-2 text-4xl">Every lot has a name, a farm and a passport.</h2>
-            <p className="mt-4 text-muted-foreground">From Huila to Yirgacheffe, each coffee is traced to its producer. Tokenized lots carry a Coffee Passport with custody, grading and audit history.</p>
+            <p className="mt-4 text-muted-foreground">From Huila to Yirgacheffe, explore sample producer records. Coffee Passports show simulated custody and grading history, not verified traceability.</p>
             <div className="mt-6 grid grid-cols-2 gap-3">
               {["Colombia", "Ethiopia", "Kenya", "Brazil"].map((c) => <Link key={c} to="/market" search={{ country: c }} className="rounded-md border bg-card p-4 hover:border-forest"><p className="font-display text-lg">{c}</p><p className="text-xs text-muted-foreground">{s.products.filter((p) => p.country === c).length} coffees</p></Link>)}
             </div>
@@ -82,7 +82,7 @@ function Home() {
         <Section>
           <div className="flex flex-wrap items-center gap-3"><h2 className="text-4xl">How the protocol works</h2><DemoBadge>SIMULATED</DemoBadge></div>
           <div className="mt-10 grid gap-4 md:grid-cols-4">
-            {[[Layers, "Tokenize", "1 GCT = 1 kg of an identified green lot held by a custodian."], [Flame, "Roast", "Burn GCT, mint RCT from real roasted mass — loss and fee shown separately."], [Landmark, "Stake & lend", "Deposit into vaults for sGCT/sRCT receipts or borrow against isolated lots."], [Package, "Redeem", "Burn RCT for a physical bag delivered to your door."]].map(([I, t, d], i) => {
+            {[[Layers, "Discover", "1 GCT represents 1 recorded kg of an identified green lot. Custody is simulated, not verified."], [Flame, "Roast", "Simulate GCT-to-RCT conversion using recorded yield, with loss and fee shown separately."], [Landmark, "Future DeFi", "Vaults, staking and lending are planned modules, not functional services in this MVP."], [Package, "Redeem", "Simulate an RCT burn and coffee reservation. No real shipment is created."]].map(([I, t, d], i) => {
               const Icon = I as typeof Layers;
               return <div key={i} className="rounded-lg border bg-card p-5"><Icon className="size-5 text-brass" /><p className="mt-4 font-display text-xl">{t as string}</p><p className="mt-1 text-sm text-muted-foreground">{d as string}</p></div>;
             })}
@@ -114,7 +114,7 @@ function Home() {
           <div className="absolute inset-0 -z-10 bg-forest/80" />
           <p className="font-mono text-xs uppercase tracking-widest text-brass">For roasters</p>
           <h3 className="mt-2 text-3xl">Sell globally. Tokenize your lots.</h3>
-          <p className="mt-3 text-sm text-cream/80">Storefront, inventory, payouts and lot tokenization in one portal.</p>
+          <p className="mt-3 text-sm text-cream/80">Roaster tools are coming soon. No real storefront management, payouts or tokenization is available.</p>
           <Button asChild className="mt-6 bg-cream text-forest hover:bg-parchment"><Link to="/roaster/$section" params={{ section: "dashboard" }}>Open roaster portal</Link></Button>
         </div>
       </Section>

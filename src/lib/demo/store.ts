@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { initNetworkBalances, seed } from "./seed";
 import type { DemoState, Role } from "./types";
-import { liqPrice, lotAccounting, markPrice, positionPnl, priceOf, redemptionQuote, roastQuote, SPOT } from "./calc";
+import { liqPrice, lotAccounting, markPrice, positionPnl, priceOf, productLineTotal, redemptionQuote, roastQuote, SPOT } from "./calc";
 
 const KEY = "roastake-demo-v1";
 const fresh = () => {
@@ -34,7 +34,9 @@ export function hydrateDemo() {
 
 function commit(next: DemoState) {
   state = next;
-  if (typeof window !== "undefined") localStorage.setItem(KEY, JSON.stringify(state));
+  if (typeof window !== "undefined") {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* The demo remains usable when browser storage is unavailable. */ }
+  }
   listeners.forEach((l) => l());
 }
 
@@ -94,7 +96,7 @@ const credit = (d: DemoState, asset: string, amt: number) => {
 };
 const notify = (d: DemoState, text: string) => d.notifications.unshift({ id: uid("N"), text, date: today(), read: false });
 const ledger = (d: DemoState, category: string, desc: string, amount: number, bucket = "Operating") =>
-  d.ledger.unshift({ id: uid("L"), date: today(), category, desc, amount: +amount.toFixed(2), bucket });
+  d.ledger.unshift({ id: uid("L"), date: new Date().toISOString(), category, desc, amount: +amount.toFixed(2), bucket });
 
 export const demo = {
   reset() {
@@ -113,19 +115,33 @@ export const demo = {
       const p = d.products.find((x) => x.id === productId) ?? fail("Product not found");
       if (p.stock <= 0) fail("This coffee is sold out (demo inventory)");
       num(qty, "quantity");
+      if (!Number.isInteger(qty) || !p.sizes.includes(size) || p.status !== "Live") fail("Choose a valid size and whole number of packs");
+      if (d.cart.filter((c) => c.productId === productId).reduce((a, c) => a + c.qty, 0) + qty > p.stock) fail("Quantity exceeds demo stock");
       const ex = d.cart.find((c) => c.productId === productId && c.size === size && c.grind === grind);
       if (ex) ex.qty += qty; else d.cart.push({ productId, qty, size, grind });
       return `${qty} × ${p.name} ${size}g`;
     }),
-  setCartQty: (i: number, qty: number) => act("Marketplace", "Cart updated", (d) => { if (qty <= 0) d.cart.splice(i, 1); else d.cart[i].qty = qty; }, { silent: true }),
+  setCartQty: (i: number, qty: number) => act("Marketplace", "Cart updated", (d) => {
+    const c = d.cart[i] ?? fail("Cart item not found");
+    if (!Number.isInteger(qty) || qty < 0) fail("Enter a whole number of packs");
+    if (qty === 0) { d.cart.splice(i, 1); return; }
+    const p = d.products.find((p) => p.id === c.productId) ?? fail("Product not found");
+    const others = d.cart.filter((item, index) => index !== i && item.productId === c.productId).reduce((a, item) => a + item.qty, 0);
+    if (qty + others > p.stock) fail("Quantity exceeds demo stock");
+    c.qty = qty;
+  }, { silent: true }),
   checkout(method: string, discount: number, shipping: Record<string, string>) {
     return act("Marketplace", "Order placed", (d) => {
       if (!d.cart.length) fail("Your cart is empty");
       if (!shipping.name || !shipping.address) fail("Enter a name and shipping address");
+      if (!Number.isFinite(discount) || discount < 0 || discount > 1) fail("Invalid discount");
+      if (method !== "Card") fail("Only simulated card checkout is available; no currency conversion is connected");
       const groups: Record<string, typeof d.cart> = {};
       for (const c of d.cart) {
-        const p = d.products.find((x) => x.id === c.productId)!;
-        if (p.stock < c.qty) fail(`Not enough stock for ${p.name}`);
+        const p = d.products.find((x) => x.id === c.productId) ?? fail("Product not found");
+        if (!Number.isInteger(c.qty) || c.qty <= 0 || !p.sizes.includes(c.size) || p.status !== "Live") fail("Invalid cart item");
+        const requested = d.cart.filter((item) => item.productId === c.productId).reduce((a, item) => a + item.qty, 0);
+        if (p.stock < requested) fail(`Not enough stock for ${p.name}`);
         (groups[p.roasterId] ??= []).push(c);
       }
       let grand = 0;
@@ -136,14 +152,14 @@ export const demo = {
         grand += total;
         const id = uid("ORD");
         ids.push(id);
-        items.forEach((c) => (d.products.find((x) => x.id === c.productId)!.stock -= c.qty));
-        d.orders.unshift({ id, date: today(), items, roasterId, total, method: `${method} (simulated)`, status: "Paid", customer: shipping.name, tracking: `DEMO-TRK-${Math.floor(10000 + Math.random() * 89999)}` });
+        items.forEach((c) => { const p = d.products.find((p) => p.id === c.productId); if (p) p.stock -= c.qty; });
+        d.orders.unshift({ id, date: new Date().toISOString(), items, roasterId, total, method: `${method} (simulated)`, status: "Paid", customer: d.account, tracking: "Not shipped · demo" });
       }
-      if (method !== "Card") debit(d, method, grand / (SPOT[method] ?? 1));
-      ledger(d, "Revenue", `Marketplace commission ${ids.join(", ")}`, grand * (d.fees["Marketplace commission %"] / 100));
+      const merchandise = grand - ids.length * 6;
+      ledger(d, "Revenue", `Marketplace commission ${ids.join(", ")} (EUR; not converted to USDC)`, merchandise * (d.fees["Marketplace commission %"] / 100), "Marketplace EUR");
       d.cart = [];
       notify(d, `Order${ids.length > 1 ? "s" : ""} ${ids.join(", ")} confirmed (simulated)`);
-      return `${ids.length} shipment(s) · $${grand.toFixed(2)} via ${method}`;
+      return `${ids.length} shipment(s) · €${grand.toFixed(2)} via ${method} (simulated)`;
     });
   },
   advanceOrder: (id: string) =>
@@ -259,6 +275,8 @@ export const demo = {
       num(kg);
       const g = d.lots.find((x) => x.id === gctLot && x.kind === "GCT") ?? fail("Select a green lot");
       if (g.paused) fail("This lot is paused");
+      let r = d.lots.find((x) => x.kind === "RCT" && x.parentLot === gctLot);
+      if (r?.paused) fail("The roasted output lot is paused");
       if (kg < 5) fail("Minimum batch is 5 kg");
       if (kg > lotAccounting(g).available || kg > g.supply - g.encumbered) fail("Batch exceeds unencumbered coffee or token supply");
       const quote = roastQuote(g, kg, d.roastFeePct) ?? fail("This lot has no valid recorded roast yield");
@@ -266,8 +284,6 @@ export const demo = {
       debit(d, gctLot, kg);
       const { outputKg: output, lossKg: loss, feeKg: fee, netKg: net } = quote;
       g.supply = +(g.supply - kg).toFixed(3); g.physicalKg = +(g.physicalKg - kg).toFixed(3);
-      let r = d.lots.find((x) => x.kind === "RCT" && x.parentLot === gctLot);
-      if (r?.paused) fail("The roasted output lot is paused");
       if (!r) {
         r = { ...g, id: gctLot.replace("GCT", "RCT"), kind: "RCT", name: g.name.replace("Green", "Roasted"), physicalKg: 0, supply: 0, encumbered: 0, reservedRedemption: 0, parentLot: gctLot, grade: "Roast batch", price: +(g.price * 1.95).toFixed(2), roastYield: undefined, certificates: ["Roast log (demo)"] };
         d.lots.push(r);
@@ -294,6 +310,7 @@ export const demo = {
       const avail = Math.min(lotAccounting(l).available, l.supply - l.encumbered);
       if (qty > avail) fail(`Only ${avail.toFixed(1)} kg physically available for redemption`);
       const fees = redemptionQuote(d, qty).total;
+      if (!Number.isFinite(fees) || fees < 0 || redemptionQuote(d,qty).processing < 0) fail("Invalid redemption processing fee");
       debit(d, "USDC", fees);
       debit(d, lotId, qty);
       l.supply -= qty; l.reservedRedemption += qty;
@@ -305,12 +322,12 @@ export const demo = {
     }),
   advanceRedemption: (id: string) =>
     act("Redemption", "Redemption advanced", (d) => {
-      const r = d.redemptions.find((x) => x.id === id)!;
+      const r = d.redemptions.find((x) => x.id === id) ?? fail("Redemption not found");
       const flow = ["Requested", "Processing", "Prepared", "Shipped", "Delivered"] as const;
       const i = flow.indexOf(r.status);
-      if (i === 4) fail("Already delivered");
+      if (i < 0 || i === 4) fail("Already delivered or invalid status");
       r.status = flow[i + 1];
-      if (r.status === "Delivered") { const l = d.lots.find((x) => x.id === r.lotId)!; l.reservedRedemption -= r.qty; l.physicalKg -= r.qty; }
+      if (r.status === "Delivered") { const l = d.lots.find((x) => x.id === r.lotId) ?? fail("Lot not found"); if (l.reservedRedemption < r.qty || l.physicalKg < r.qty) fail("Insufficient recorded redemption reserve"); l.reservedRedemption = +(l.reservedRedemption-r.qty).toFixed(3); l.physicalKg = +(l.physicalKg-r.qty).toFixed(3); }
       return `${id} → ${r.status}`;
     }),
 
@@ -400,11 +417,13 @@ export const demo = {
       const outputLot = d.lots.find((l) => l.id === to);
       if (d.lots.some((l) => (l.id === from || l.id === to) && l.paused)) fail("This lot is paused");
       const q = swapQuote(d, from, to, amt);
+      if (!Number.isFinite(q.out) || !Number.isFinite(q.feeUsd) || q.feeUsd < 0) fail("Invalid swap fee or liquidity quote");
       if (q.impact > slippage) fail(`Price impact ${q.impact.toFixed(2)}% exceeds slippage tolerance ${slippage}%`);
       if (q.out <= 0) fail("Unavailable liquidity for this route");
       if (outputLot) {
         const heldElsewhere = d.vaultPositions.reduce((a, p) => a + (d.vaults.find((v) => v.id === p.vaultId)?.asset === to ? p.shares + p.rewards : 0), 0) + d.loans.reduce((a, p) => a + (d.markets.find((m) => m.id === p.marketId)?.collateral === to ? p.collateral : 0), 0);
-        if (q.out > outputLot.supply - outputLot.encumbered - (d.balances[to] ?? 0) - heldElsewhere) fail("Insufficient unallocated demo token inventory");
+        const protocolFees = d.conversions.filter((c) => c.rctLot === to).reduce((sum,c)=>sum+c.feeKg,0);
+        if (q.out > outputLot.supply - outputLot.encumbered - (d.balances[to] ?? 0) - heldElsewhere - protocolFees) fail("Insufficient unallocated demo token inventory");
       }
       debit(d, from, amt); credit(d, to, q.out);
       ledger(d, "Revenue", `Swap fee ${from}→${to}`, q.feeUsd);
@@ -599,12 +618,7 @@ export const demo = {
     }),
 };
 
-export function lineTotal(d: DemoState, c: { productId: string; qty: number; size: number }) {
-  const p = d.products.find((x) => x.id === c.productId);
-  if (!p) return 0;
-  const unit = p.format === "Capsules" ? p.price * (c.size / 10) : p.price * (c.size / 250) * (c.size >= 1000 ? 0.9 : 1);
-  return +(unit * c.qty).toFixed(2);
-}
+export const lineTotal = productLineTotal;
 export function votingPower(d: DemoState) {
   return Math.round((d.balances.COFFEE ?? 0) + d.stakes.reduce((a, s) => a + s.amount * (1 + s.lockDays / 365), 0));
 }

@@ -89,7 +89,7 @@ export function portfolio(s: DemoState) {
 }
 
 export function treasurySummary(s: DemoState) {
-  const revenue = s.ledger.filter((l) => l.category === "Revenue").reduce((a, l) => a + l.amount, 0);
+  const revenue = s.ledger.filter((l) => l.category === "Revenue" && l.bucket !== "Marketplace EUR").reduce((a, l) => a + l.amount, 0);
   const expenses = s.ledger.filter((l) => l.category === "Expense").reduce((a, l) => a + l.amount, 0);
   const transfers = s.ledger.filter((l) => l.category === "Transfer").reduce((a, l) => a + l.amount, 0);
   const gross = revenue / 0.82; // illustrative: 18% of gross fees paid to LPs / roasters
@@ -125,6 +125,24 @@ export function redemptionQuote(s: DemoState, qty: number) {
   return { processing, packing, shipping, total: +(processing + packing + shipping).toFixed(2) };
 }
 
+export function productLineTotal(s: DemoState, c: { productId: string; qty: number; size: number }) {
+  const p = s.products.find((p) => p.id === c.productId);
+  if (!p) return 0;
+  const unit = p.format === 'Capsules' ? p.price * c.size / 10 : p.price * c.size / 250 * (c.size >= 1000 ? 0.9 : 1);
+  return +(unit * c.qty).toFixed(2);
+}
+
+export function cartSummary(s: DemoState, discount = 0) {
+  const groups = [...new Set(s.cart.map((c) => s.products.find((p) => p.id === c.productId)?.roasterId).filter(Boolean))];
+  const subtotal = s.cart.reduce((sum, c) => sum + productLineTotal(s, c), 0);
+  const shipping = groups.length * 6;
+  const total = groups.reduce((sum, id) => {
+    const sub = s.cart.filter((c) => s.products.find((p) => p.id === c.productId)?.roasterId === id).reduce((a, c) => a + productLineTotal(s, c), 0);
+    return sum + +(sub * (1 - discount) + 6).toFixed(2);
+  }, 0);
+  return { subtotal: +subtotal.toFixed(2), shipping, shipments: groups.length, total: +total.toFixed(2) };
+}
+
 export function coffeeOverview(s: DemoState) {
   const held = (kind: "GCT" | "RCT") => s.lots.filter((l) => l.kind === kind).reduce((a, l) => a + (s.balances[l.id] ?? 0), 0);
   const gct = held("GCT"), rct = held("RCT");
@@ -132,7 +150,8 @@ export function coffeeOverview(s: DemoState) {
   const collateralKg = s.loans.reduce((a, p) => { const m = s.markets.find((m) => m.id === p.marketId); return a + (m && s.lots.some((l) => l.id === m.collateral) ? p.collateral : 0); }, 0);
   const totals = s.lots.reduce((a, l) => ({ supply: a.supply + l.supply, physical: a.physical + l.physicalKg, encumbered: a.encumbered + l.encumbered, reserved: a.reserved + l.reservedRedemption, available: a.available + lotAccounting(l).available }), { supply: 0, physical: 0, encumbered: 0, reserved: 0, available: 0 });
   const fees = s.ledger.filter((l) => l.category === "Revenue" && /fee|commission|reserve factor|lending reserve/i.test(l.desc)).sort((a, b) => b.date.localeCompare(a.date));
-  return { gct, rct, walletKg: gct + rct, depositedKg, collateralKg, representedKg: gct + rct + depositedKg + collateralKg, ...totals, fees, recentFees: fees.slice(0, 5).reduce((a, l) => a + l.amount, 0) };
+  const recentFees = fees.filter((f) => f.bucket !== 'Marketplace EUR').slice(0,5).reduce((a,f)=>a+f.amount,0);
+  return { gct, rct, walletKg: gct + rct, depositedKg, collateralKg, representedKg: gct + rct + depositedKg + collateralKg, ...totals, fees, recentFees };
 }
 
 export interface CoffeeActivity { id: string; date: string; action: string; detail: string; quantity: string; status: string; category: string }
@@ -142,7 +161,7 @@ export function coffeeActivity(s: DemoState): CoffeeActivity[] {
     ...s.conversions.map((c) => ({ id: c.id, date: c.date, action: "Roasting conversion", detail: `${c.gctLot} → ${c.rctLot} · loss ${fmt(c.lossKg, 3)} kg · fee ${fmt(c.feeKg, 3)} kg`, quantity: `${fmt(c.inputKg, 3)} → ${fmt(c.netKg, 3)} kg net`, status: "Completed", category: "Roasting" })),
     ...s.redemptions.map((r) => ({ id: r.id, date: r.date, action: "Coffee redemption", detail: `${r.lotId} · ${fmt(r.fees)} USDC service total`, quantity: `${fmt(r.qty, 3)} kg`, status: r.status, category: "Redemption" })),
     ...s.orders.filter((o) => o.customer === s.account).map((o) => ({ id: o.id, date: o.date, action: "Marketplace purchase", detail: `${o.id} · ${o.method}`, quantity: `€${fmt(o.total)}`, status: o.status, category: "Marketplace" })),
-    ...coffeeOverview(s).fees.map((f) => ({ id: f.id, date: f.date, action: "Protocol fee", detail: f.desc, quantity: usd(f.amount), status: "Recorded", category: "Fees" })),
+    ...coffeeOverview(s).fees.map((f) => ({ id: f.id, date: f.date, action: "Protocol fee", detail: f.desc, quantity: f.bucket === 'Marketplace EUR' ? `€${fmt(f.amount)}` : usd(f.amount), status: "Recorded", category: "Fees" })),
     ...s.txs.filter((t) => !["Assets", "Roasting Lab", "Redemption", "Notifications", "Session", "Network"].includes(t.module) && !(t.module === "Marketplace" && /Order/.test(t.action))).map((t) => ({ id: t.id, date: t.date, action: t.action, detail: t.detail, quantity: "See details", status: "Completed", category: t.module })),
   ];
   return rows.sort((a, b) => b.date.localeCompare(a.date));

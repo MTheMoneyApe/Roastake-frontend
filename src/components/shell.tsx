@@ -19,9 +19,9 @@ type Item = { to: string; label: string; icon: typeof Coffee };
 type Group = { label: string; items: Item[] };
 
 export const APP_NAV: Group[] = [
-  { label: "Overview", items: [{ to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard }, { to: "/app/portfolio", label: "Portfolio", icon: PieChart }, { to: "/app/activity", label: "Activity", icon: RefreshCw }] },
+  { label: "Overview", items: [{ to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard }, { to: "/app/activity", label: "Activity", icon: RefreshCw }] },
   { label: "Commerce", items: [{ to: "/market", label: "Marketplace", icon: ShoppingBag }, { to: "/orders", label: "Orders", icon: Truck }, { to: "/roaster/dashboard", label: "Roaster Portal", icon: Store }] },
-  { label: "Coffee Assets", items: [{ to: "/app/assets", label: "Asset Explorer", icon: Wheat }, { to: "/app/coffee-passport", label: "Coffee Passport", icon: BookOpen }, { to: "/app/tokenization", label: "Tokenization", icon: Layers }, { to: "/app/roast", label: "Roasting Lab", icon: Flame }, { to: "/app/redeem", label: "Redeem", icon: Package }, { to: "/app/swap", label: "Swap", icon: Repeat }] },
+  { label: "Coffee Assets", items: [{ to: "/app/assets", label: "Asset Explorer", icon: Wheat }, { to: "/app/coffee-passport", label: "Coffee Passport", icon: BookOpen }, { to: "/app/roast", label: "Roasting Lab", icon: Flame }, { to: "/app/redeem", label: "Redeem", icon: Package }, { to: "/app/swap", label: "Swap", icon: Repeat }] },
   { label: "DeFi", items: [{ to: "/app/vaults", label: "Vaults", icon: Landmark }, { to: "/app/staking", label: "Staking", icon: Coins }, { to: "/app/farming", label: "Farming", icon: Sprout }, { to: "/app/lending", label: "Lending", icon: Scale }, { to: "/app/borrowing", label: "Borrowing", icon: Wallet }] },
   { label: "Trading", items: [{ to: "/app/markets", label: "Spot Markets", icon: Gauge }, { to: "/app/perps", label: "Perpetuals", icon: ChartCandlestick }, { to: "/app/positions", label: "Positions", icon: Layers }, { to: "/app/market-analytics", label: "Analytics", icon: PieChart }] },
   { label: "Ecosystem", items: [{ to: "/app/governance", label: "Governance", icon: Vote }, { to: "/app/treasury", label: "Treasury", icon: Building2 }, { to: "/app/ventures", label: "Coffee Ventures", icon: Briefcase }] },
@@ -163,7 +163,7 @@ function NavList({ groups, onNav }: { groups: Group[]; onNav?: () => void }) {
 
 export function AppShell({ children, nav = APP_NAV, dark = true, home = "/app/dashboard" }: { children: ReactNode; nav?: Group[]; dark?: boolean; home?: string }) {
   const [open, setOpen] = useState(false);
-  const mobile: Item[] = [nav[0].items[0], ...(nav === APP_NAV ? [{ to: "/app/portfolio", label: "Portfolio", icon: PieChart }, { to: "/app/swap", label: "Swap", icon: Repeat }, { to: "/app/perps", label: "Perps", icon: ChartCandlestick }] : nav[0].items.slice(1, 4))];
+  const mobile: Item[] = [nav[0].items[0], ...(nav === APP_NAV ? [{ to: "/app/assets", label: "Coffee", icon: Wheat }, { to: "/app/swap", label: "Swap", icon: Repeat }, { to: "/app/redeem", label: "Redeem", icon: Package }] : nav[0].items.slice(1, 4))];
   return (
     <div className={cn(dark && "dark", "min-h-screen bg-background text-foreground")}>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
@@ -191,13 +191,13 @@ export function AppShell({ children, nav = APP_NAV, dark = true, home = "/app/da
       </div>
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-card lg:hidden">
         {mobile.map((i) => <Link key={i.to} to={i.to} className="flex flex-col items-center gap-0.5 py-2 text-[10px] text-muted-foreground" activeProps={{ className: "text-primary" }}><i.icon className="size-5" />{i.label}</Link>)}
-        <button onClick={() => setOpen(true)} className="flex flex-col items-center gap-0.5 py-2 text-[10px] text-muted-foreground"><Menu className="size-5" />More</button>
+        <Button variant="ghost" onClick={() => setOpen(true)} className="h-auto flex-col gap-0.5 rounded-none py-2 text-[10px] text-muted-foreground"><Menu className="size-5" />More</Button>
       </nav>
     </div>
   );
 }
 
-const PUBLIC_LINKS = [["/market", "Market"], ["/roasters", "Roasters"], ["/discovery-boxes", "Discovery"], ["/subscriptions", "Subscriptions"], ["/wholesale", "Wholesale"], ["/app/dashboard", "DeFi App"]] as const;
+const PUBLIC_LINKS = [["/market", "Market"], ["/roasters", "Roasters"], ["/app/assets", "Coffee Assets"], ["/app/coffee-passport", "Passport"], ["/app/dashboard", "Demo App"]] as const;
 export function PublicShell({ children }: { children: ReactNode }) {
   const cart = useDemo((s) => s.cart.reduce((a, c) => a + c.qty, 0));
   const h = useHydrated();
@@ -212,7 +212,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <nav className="hidden items-center gap-6 lg:flex">{PUBLIC_LINKS.map(([to, l]) => <Link key={to} to={to} className="text-sm text-muted-foreground hover:text-foreground" activeProps={{ className: "text-foreground font-medium" }}>{l}</Link>)}</nav>
           </div>
           <div className="flex items-center gap-1.5">
-            <Button variant="ghost" size="sm" asChild><Link to="/cart" className="gap-2"><ShoppingBag />{h && cart > 0 && <span className="num rounded-full bg-copper px-1.5 text-[11px] text-cream">{cart}</span>}</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link to="/cart" aria-label="Coffee cart" className="gap-2"><ShoppingBag />{h && cart > 0 && <span className="num rounded-full bg-copper px-1.5 text-[11px] text-cream">{cart}</span>}</Link></Button>
             <Notifications />
             <WalletButton />
             <Profile />
