@@ -1,5 +1,6 @@
-import { useParams } from "@tanstack/react-router";
-import { PageHeader, Panel, Empty } from "@/components/kit";
+import { Link, useParams } from "@tanstack/react-router";
+import { PageHeader, DemoBadge, Empty } from "@/components/kit";
+import { Button } from "@/components/ui/button";
 
 function titleize(s: string) {
   return s.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -16,10 +17,8 @@ export function ModulePage({ path }: { path: string }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={title} subtitle={`Simulated ${title.toLowerCase()} module.`} crumbs={crumbs} />
-      <Panel title={title}>
-        <Empty text="This module is part of the demo and will be expanded soon." />
-      </Panel>
+      <PageHeader title={title} subtitle="Coming soon · not implemented in this MVP." crumbs={crumbs} actions={<DemoBadge/>}/>
+      <Empty text="No actions, real services or transactions are available here." action={<div className="flex flex-wrap justify-center gap-3"><Button asChild><Link to="/app/assets">Explore coffee assets</Link></Button><Button asChild variant="outline"><Link to="/market">Coffee marketplace</Link></Button></div>}/>
     </div>
   );
 }

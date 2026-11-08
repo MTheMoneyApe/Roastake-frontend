@@ -21,8 +21,10 @@ function ProductPage() {
   const [size, setSize] = useState(p?.sizes[0] ?? 250);
   const [grind, setGrind] = useState("Whole bean");
   const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
   if (!p) return <PublicShell><Section className="py-20"><Empty text="This coffee doesn't exist or was removed." action={<Button asChild variant="outline"><Link to="/market">Back to market</Link></Button>} /></Section></PublicShell>;
-  const roaster = s.roasters.find((r) => r.id === p.roasterId)!;
+  const roaster = s.roasters.find((r) => r.id === p.roasterId);
+  if (!roaster) return <PublicShell><Section className="py-20"><Empty text="This demo roaster is unavailable."/></Section></PublicShell>;
   const price = lineTotal(s, { productId: p.id, qty: 1, size });
   return (
     <PublicShell>
@@ -41,9 +43,11 @@ function ProductPage() {
               {p.format !== "Capsules" && <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Grind</p><div className="flex flex-wrap gap-2">{GRINDS.map((g) => <Button key={g} size="sm" variant={g === grind ? "default" : "outline"} onClick={() => setGrind(g)}>{g}</Button>)}</div></div>}
               <div className="flex items-center gap-3">
                 <div className="flex items-center rounded-md border"><Button variant="ghost" size="sm" onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease">−</Button><span className="num w-8 text-center">{qty}</span><Button variant="ghost" size="sm" onClick={() => setQty(qty + 1)} aria-label="Increase">+</Button></div>
-                <Button size="lg" className="flex-1" disabled={p.stock === 0} onClick={() => demo.addToCart(p.id, qty, size, grind)}>{p.stock === 0 ? "Sold out" : "Add to cart"}</Button>
+                <Button size="lg" className="flex-1" disabled={p.stock === 0 || p.status !== 'Live'} onClick={() => {if(demo.addToCart(p.id, qty, size, grind))setAdded(true);}}>{p.stock === 0 ? "Sold out" : "Add to cart"}</Button>
               </div>
               <p className="text-xs text-muted-foreground">{p.stock} in stock (demo) · ships from {roaster.city} · <DemoBadge>No real charge</DemoBadge></p>
+              {added && <div role="status" className="flex flex-wrap items-center gap-3 border-t pt-4"><p className="text-sm">Coffee added to your demo cart.</p><Button asChild variant="outline"><Link to="/cart">View cart</Link></Button></div>}
+              {p.lotId && <Button asChild variant="outline"><Link to="/app/coffee-passport" search={{lot:p.lotId}}>Inspect Coffee Passport</Link></Button>}
             </div>
           </div>
         </div>
