@@ -96,7 +96,7 @@ const credit = (d: DemoState, asset: string, amt: number) => {
 };
 const notify = (d: DemoState, text: string) => d.notifications.unshift({ id: uid("N"), text, date: today(), read: false });
 const ledger = (d: DemoState, category: string, desc: string, amount: number, bucket = "Operating") =>
-  d.ledger.unshift({ id: uid("L"), date: today(), category, desc, amount: +amount.toFixed(2), bucket });
+  d.ledger.unshift({ id: uid("L"), date: new Date().toISOString(), category, desc, amount: +amount.toFixed(2), bucket });
 
 export const demo = {
   reset() {
@@ -275,6 +275,8 @@ export const demo = {
       num(kg);
       const g = d.lots.find((x) => x.id === gctLot && x.kind === "GCT") ?? fail("Select a green lot");
       if (g.paused) fail("This lot is paused");
+      let r = d.lots.find((x) => x.kind === "RCT" && x.parentLot === gctLot);
+      if (r?.paused) fail("The roasted output lot is paused");
       if (kg < 5) fail("Minimum batch is 5 kg");
       if (kg > lotAccounting(g).available || kg > g.supply - g.encumbered) fail("Batch exceeds unencumbered coffee or token supply");
       const quote = roastQuote(g, kg, d.roastFeePct) ?? fail("This lot has no valid recorded roast yield");
@@ -282,8 +284,6 @@ export const demo = {
       debit(d, gctLot, kg);
       const { outputKg: output, lossKg: loss, feeKg: fee, netKg: net } = quote;
       g.supply = +(g.supply - kg).toFixed(3); g.physicalKg = +(g.physicalKg - kg).toFixed(3);
-      let r = d.lots.find((x) => x.kind === "RCT" && x.parentLot === gctLot);
-      if (r?.paused) fail("The roasted output lot is paused");
       if (!r) {
         r = { ...g, id: gctLot.replace("GCT", "RCT"), kind: "RCT", name: g.name.replace("Green", "Roasted"), physicalKg: 0, supply: 0, encumbered: 0, reservedRedemption: 0, parentLot: gctLot, grade: "Roast batch", price: +(g.price * 1.95).toFixed(2), roastYield: undefined, certificates: ["Roast log (demo)"] };
         d.lots.push(r);
@@ -310,6 +310,7 @@ export const demo = {
       const avail = Math.min(lotAccounting(l).available, l.supply - l.encumbered);
       if (qty > avail) fail(`Only ${avail.toFixed(1)} kg physically available for redemption`);
       const fees = redemptionQuote(d, qty).total;
+      if (!Number.isFinite(fees) || fees < 0 || redemptionQuote(d,qty).processing < 0) fail("Invalid redemption processing fee");
       debit(d, "USDC", fees);
       debit(d, lotId, qty);
       l.supply -= qty; l.reservedRedemption += qty;
@@ -321,12 +322,12 @@ export const demo = {
     }),
   advanceRedemption: (id: string) =>
     act("Redemption", "Redemption advanced", (d) => {
-      const r = d.redemptions.find((x) => x.id === id)!;
+      const r = d.redemptions.find((x) => x.id === id) ?? fail("Redemption not found");
       const flow = ["Requested", "Processing", "Prepared", "Shipped", "Delivered"] as const;
       const i = flow.indexOf(r.status);
-      if (i === 4) fail("Already delivered");
+      if (i < 0 || i === 4) fail("Already delivered or invalid status");
       r.status = flow[i + 1];
-      if (r.status === "Delivered") { const l = d.lots.find((x) => x.id === r.lotId)!; l.reservedRedemption -= r.qty; l.physicalKg -= r.qty; }
+      if (r.status === "Delivered") { const l = d.lots.find((x) => x.id === r.lotId) ?? fail("Lot not found"); if (l.reservedRedemption < r.qty || l.physicalKg < r.qty) fail("Insufficient recorded redemption reserve"); l.reservedRedemption = +(l.reservedRedemption-r.qty).toFixed(3); l.physicalKg = +(l.physicalKg-r.qty).toFixed(3); }
       return `${id} → ${r.status}`;
     }),
 
@@ -416,11 +417,13 @@ export const demo = {
       const outputLot = d.lots.find((l) => l.id === to);
       if (d.lots.some((l) => (l.id === from || l.id === to) && l.paused)) fail("This lot is paused");
       const q = swapQuote(d, from, to, amt);
+      if (!Number.isFinite(q.out) || !Number.isFinite(q.feeUsd) || q.feeUsd < 0) fail("Invalid swap fee or liquidity quote");
       if (q.impact > slippage) fail(`Price impact ${q.impact.toFixed(2)}% exceeds slippage tolerance ${slippage}%`);
       if (q.out <= 0) fail("Unavailable liquidity for this route");
       if (outputLot) {
         const heldElsewhere = d.vaultPositions.reduce((a, p) => a + (d.vaults.find((v) => v.id === p.vaultId)?.asset === to ? p.shares + p.rewards : 0), 0) + d.loans.reduce((a, p) => a + (d.markets.find((m) => m.id === p.marketId)?.collateral === to ? p.collateral : 0), 0);
-        if (q.out > outputLot.supply - outputLot.encumbered - (d.balances[to] ?? 0) - heldElsewhere) fail("Insufficient unallocated demo token inventory");
+        const protocolFees = d.conversions.filter((c) => c.rctLot === to).reduce((sum,c)=>sum+c.feeKg,0);
+        if (q.out > outputLot.supply - outputLot.encumbered - (d.balances[to] ?? 0) - heldElsewhere - protocolFees) fail("Insufficient unallocated demo token inventory");
       }
       debit(d, from, amt); credit(d, to, q.out);
       ledger(d, "Revenue", `Swap fee ${from}→${to}`, q.feeUsd);
