@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { initNetworkBalances, seed } from "./seed";
 import type { DemoState, Role } from "./types";
-import { liqPrice, lotAccounting, markPrice, positionPnl, priceOf, redemptionQuote, roastQuote, SPOT } from "./calc";
+import { liqPrice, lotAccounting, markPrice, positionPnl, priceOf, productLineTotal, redemptionQuote, roastQuote, SPOT } from "./calc";
 
 const KEY = "roastake-demo-v1";
 const fresh = () => {
@@ -34,7 +34,9 @@ export function hydrateDemo() {
 
 function commit(next: DemoState) {
   state = next;
-  if (typeof window !== "undefined") localStorage.setItem(KEY, JSON.stringify(state));
+  if (typeof window !== "undefined") {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* The demo remains usable when browser storage is unavailable. */ }
+  }
   listeners.forEach((l) => l());
 }
 
@@ -113,19 +115,33 @@ export const demo = {
       const p = d.products.find((x) => x.id === productId) ?? fail("Product not found");
       if (p.stock <= 0) fail("This coffee is sold out (demo inventory)");
       num(qty, "quantity");
+      if (!Number.isInteger(qty) || !p.sizes.includes(size) || p.status !== "Live") fail("Choose a valid size and whole number of packs");
+      if (d.cart.filter((c) => c.productId === productId).reduce((a, c) => a + c.qty, 0) + qty > p.stock) fail("Quantity exceeds demo stock");
       const ex = d.cart.find((c) => c.productId === productId && c.size === size && c.grind === grind);
       if (ex) ex.qty += qty; else d.cart.push({ productId, qty, size, grind });
       return `${qty} × ${p.name} ${size}g`;
     }),
-  setCartQty: (i: number, qty: number) => act("Marketplace", "Cart updated", (d) => { if (qty <= 0) d.cart.splice(i, 1); else d.cart[i].qty = qty; }, { silent: true }),
+  setCartQty: (i: number, qty: number) => act("Marketplace", "Cart updated", (d) => {
+    const c = d.cart[i] ?? fail("Cart item not found");
+    if (!Number.isInteger(qty) || qty < 0) fail("Enter a whole number of packs");
+    if (qty === 0) { d.cart.splice(i, 1); return; }
+    const p = d.products.find((p) => p.id === c.productId) ?? fail("Product not found");
+    const others = d.cart.filter((item, index) => index !== i && item.productId === c.productId).reduce((a, item) => a + item.qty, 0);
+    if (qty + others > p.stock) fail("Quantity exceeds demo stock");
+    c.qty = qty;
+  }, { silent: true }),
   checkout(method: string, discount: number, shipping: Record<string, string>) {
     return act("Marketplace", "Order placed", (d) => {
       if (!d.cart.length) fail("Your cart is empty");
       if (!shipping.name || !shipping.address) fail("Enter a name and shipping address");
+      if (!Number.isFinite(discount) || discount < 0 || discount > 1) fail("Invalid discount");
+      if (method !== "Card") fail("Only simulated card checkout is available; no currency conversion is connected");
       const groups: Record<string, typeof d.cart> = {};
       for (const c of d.cart) {
-        const p = d.products.find((x) => x.id === c.productId)!;
-        if (p.stock < c.qty) fail(`Not enough stock for ${p.name}`);
+        const p = d.products.find((x) => x.id === c.productId) ?? fail("Product not found");
+        if (!Number.isInteger(c.qty) || c.qty <= 0 || !p.sizes.includes(c.size) || p.status !== "Live") fail("Invalid cart item");
+        const requested = d.cart.filter((item) => item.productId === c.productId).reduce((a, item) => a + item.qty, 0);
+        if (p.stock < requested) fail(`Not enough stock for ${p.name}`);
         (groups[p.roasterId] ??= []).push(c);
       }
       let grand = 0;
@@ -136,14 +152,14 @@ export const demo = {
         grand += total;
         const id = uid("ORD");
         ids.push(id);
-        items.forEach((c) => (d.products.find((x) => x.id === c.productId)!.stock -= c.qty));
-        d.orders.unshift({ id, date: today(), items, roasterId, total, method: `${method} (simulated)`, status: "Paid", customer: shipping.name, tracking: `DEMO-TRK-${Math.floor(10000 + Math.random() * 89999)}` });
+        items.forEach((c) => { const p = d.products.find((p) => p.id === c.productId); if (p) p.stock -= c.qty; });
+        d.orders.unshift({ id, date: new Date().toISOString(), items, roasterId, total, method: `${method} (simulated)`, status: "Paid", customer: d.account, tracking: "Not shipped · demo" });
       }
-      if (method !== "Card") debit(d, method, grand / (SPOT[method] ?? 1));
-      ledger(d, "Revenue", `Marketplace commission ${ids.join(", ")}`, grand * (d.fees["Marketplace commission %"] / 100));
+      const merchandise = grand - ids.length * 6;
+      ledger(d, "Revenue", `Marketplace commission ${ids.join(", ")} (EUR; not converted to USDC)`, merchandise * (d.fees["Marketplace commission %"] / 100), "Marketplace EUR");
       d.cart = [];
       notify(d, `Order${ids.length > 1 ? "s" : ""} ${ids.join(", ")} confirmed (simulated)`);
-      return `${ids.length} shipment(s) · $${grand.toFixed(2)} via ${method}`;
+      return `${ids.length} shipment(s) · €${grand.toFixed(2)} via ${method} (simulated)`;
     });
   },
   advanceOrder: (id: string) =>
@@ -599,12 +615,7 @@ export const demo = {
     }),
 };
 
-export function lineTotal(d: DemoState, c: { productId: string; qty: number; size: number }) {
-  const p = d.products.find((x) => x.id === c.productId);
-  if (!p) return 0;
-  const unit = p.format === "Capsules" ? p.price * (c.size / 10) : p.price * (c.size / 250) * (c.size >= 1000 ? 0.9 : 1);
-  return +(unit * c.qty).toFixed(2);
-}
+export const lineTotal = productLineTotal;
 export function votingPower(d: DemoState) {
   return Math.round((d.balances.COFFEE ?? 0) + d.stakes.reduce((a, s) => a + s.amount * (1 + s.lockDays / 365), 0));
 }

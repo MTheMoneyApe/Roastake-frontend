@@ -125,6 +125,24 @@ export function redemptionQuote(s: DemoState, qty: number) {
   return { processing, packing, shipping, total: +(processing + packing + shipping).toFixed(2) };
 }
 
+export function productLineTotal(s: DemoState, c: { productId: string; qty: number; size: number }) {
+  const p = s.products.find((p) => p.id === c.productId);
+  if (!p) return 0;
+  const unit = p.format === 'Capsules' ? p.price * c.size / 10 : p.price * c.size / 250 * (c.size >= 1000 ? 0.9 : 1);
+  return +(unit * c.qty).toFixed(2);
+}
+
+export function cartSummary(s: DemoState, discount = 0) {
+  const groups = [...new Set(s.cart.map((c) => s.products.find((p) => p.id === c.productId)?.roasterId).filter(Boolean))];
+  const subtotal = s.cart.reduce((sum, c) => sum + productLineTotal(s, c), 0);
+  const shipping = groups.length * 6;
+  const total = groups.reduce((sum, id) => {
+    const sub = s.cart.filter((c) => s.products.find((p) => p.id === c.productId)?.roasterId === id).reduce((a, c) => a + productLineTotal(s, c), 0);
+    return sum + +(sub * (1 - discount) + 6).toFixed(2);
+  }, 0);
+  return { subtotal: +subtotal.toFixed(2), shipping, shipments: groups.length, total: +total.toFixed(2) };
+}
+
 export function coffeeOverview(s: DemoState) {
   const held = (kind: "GCT" | "RCT") => s.lots.filter((l) => l.kind === kind).reduce((a, l) => a + (s.balances[l.id] ?? 0), 0);
   const gct = held("GCT"), rct = held("RCT");
