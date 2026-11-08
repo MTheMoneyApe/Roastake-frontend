@@ -4,7 +4,7 @@ import { ModulePage } from "@/components/module-page";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/roaster/$section")({
-  head: () => seo("Section", "ROASTAKE Section — simulated demo module."),
+  head: ({params}) => seo(`Roaster ${params.section.replace(/-/g,' ')}`, `ROASTAKE roaster ${params.section.replace(/-/g,' ')} tools are coming soon. No real services are available.`),
   component: Page,
 });
 
