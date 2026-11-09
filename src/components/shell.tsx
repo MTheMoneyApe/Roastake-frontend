@@ -206,14 +206,14 @@ export function PublicShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       <div className="demo-stripe border-b border-brass/30 py-1 text-center text-[11px] font-medium uppercase tracking-wider text-espresso">Demo prototype · all products, payments, tokens and yields are simulated</div>
       <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:gap-4 sm:px-4">
           <div className="flex items-center gap-8">
             <Logo />
             <nav className="hidden items-center gap-6 lg:flex">{PUBLIC_LINKS.map(([to, l]) => <Link key={to} to={to} className="text-sm text-muted-foreground hover:text-foreground" activeProps={{ className: "text-foreground font-medium" }}>{l}</Link>)}</nav>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
             <Button variant="ghost" size="sm" asChild><Link to="/cart" aria-label="Coffee cart" className="gap-2"><ShoppingBag />{h && cart > 0 && <span className="num rounded-full bg-copper px-1.5 text-[11px] text-cream">{cart}</span>}</Link></Button>
-            <Notifications />
+            <div className="hidden sm:block"><Notifications /></div>
             <WalletButton />
             <Profile />
             <Button size="icon" variant="ghost" className="lg:hidden" aria-label="Menu" onClick={() => setOpen(!open)}><Menu /></Button>

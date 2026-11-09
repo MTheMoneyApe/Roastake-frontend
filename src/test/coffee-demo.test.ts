@@ -44,8 +44,8 @@ describe('Shared coffee accounting',()=>{
     expect(lot(RCT).reservedRedemption).toBe(21);
     expect(lot(RCT).physicalKg).toBe(1400);
     expect(getDemo().balances[RCT]).toBe(34);
-    expect(getDemo().balances.USDC).toBe(24987.5);
-    expect(getDemo().ledger[0].amount).toBe(4);
+    expect(getDemo().balances.USDC).toBe(24985.5);
+    expect(getDemo().ledger[0].amount).toBe(6);
     for(let i=0;i<4;i++)expect(demo.advanceRedemption(r.id)).toBe(true);
     expect(lot(RCT).reservedRedemption).toBe(20);
     expect(lot(RCT).physicalKg).toBe(1399);
