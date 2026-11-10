@@ -5,6 +5,8 @@
 - [x] Marketplace journey, shell navigation and honest remaining modules.
 - [x] Route, accounting and desktop/mobile verification.
 # Full ecosystem mockup (HYBRID / ENTIRE) — pending
-- [ ] Replace 30 remaining "Coming soon" routes (DeFi, Trading, Ecosystem, Wallet/Multichain/Risk/Docs, Admin, Roaster Portal, wholesale/subscriptions/discovery boxes) with real demo pages.
-- [ ] Fix perps limit orders: store leverage/margin asset; refund the real margin on cancel; fill with stored leverage.
-- [ ] Tests for perps, vaults, lending, ventures, multichain.
+- [x] Trading pages: Perpetuals, perp market, Positions, Spot Markets, Analytics.
+- [ ] Replace 25 remaining "Coming soon" routes (DeFi, Ecosystem, Wallet/Multichain/Risk/Docs, Admin, Roaster Portal, wholesale/subscriptions/discovery boxes) with real demo pages.
+- [x] Fix perps limit orders: store leverage/margin asset; refund the real margin on cancel; fill with stored leverage.
+- [x] Tests for perps limit orders.
+- [ ] Tests for vaults, lending, ventures, multichain.
