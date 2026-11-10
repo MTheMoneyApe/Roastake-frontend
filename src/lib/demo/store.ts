@@ -483,7 +483,7 @@ export const demo = {
       debit(d, o.marginAsset, assetAmt);
       ledger(d, "Revenue", `Perps fee ${o.market}`, fee);
       const id = uid("PO");
-      if (o.type === "Limit") { d.perpOrders.unshift({ id, market: o.market, side: o.side, type: "Limit", size: o.size, price, status: "Open", date: today() }); return `${o.side} ${o.size} ${o.market} @ ${price}`; }
+      if (o.type === "Limit") { d.perpOrders.unshift({ id, market: o.market, side: o.side, type: "Limit", size: o.size, price, status: "Open", date: today(), leverage: o.leverage, marginAsset: o.marginAsset, marginAmt: +(marginUsd / (SPOT[o.marginAsset] ?? 1)).toFixed(8), mode: o.mode }); return `${o.side} ${o.size} ${o.market} @ ${price}`; }
       d.perpPositions.push({ id: uid("POS"), market: o.market, side: o.side, size: o.size, entry: price, leverage: o.leverage, margin: +marginUsd.toFixed(2), marginAsset: o.marginAsset, mode: o.mode, opened: today() });
       d.perpOrders.unshift({ id, market: o.market, side: o.side, type: "Market", size: o.size, price, status: "Filled", date: today() });
       m.oi += price * o.size;
@@ -494,8 +494,10 @@ export const demo = {
       const o = d.perpOrders.find((x) => x.id === id)!;
       if (o.status !== "Open") fail("Order not open");
       o.status = "Cancelled";
-      credit(d, "USDC", (o.price * o.size) / 5);
-      return id;
+      const asset = o.marginAsset ?? "USDC";
+      const amt = o.marginAmt ?? (o.price * o.size) / (o.leverage ?? 5) / (SPOT[asset] ?? 1);
+      credit(d, asset, amt);
+      return `${id} · ${amt.toFixed(4)} ${asset} margin returned (fee not refunded)`;
     }),
   closePosition: (id: string) =>
     act("Perps", "Position closed", (d) => {
@@ -539,7 +541,8 @@ export const demo = {
         const mk = markPrice(d, o.market);
         if ((o.side === "Long" && mk <= o.price) || (o.side === "Short" && mk >= o.price)) {
           o.status = "Filled";
-          d.perpPositions.push({ id: uid("POS"), market: o.market, side: o.side, size: o.size, entry: o.price, leverage: 5, margin: +((o.price * o.size) / 5).toFixed(2), marginAsset: "USDC", mode: "Isolated", opened: today() });
+          d.perpPositions.push({ id: uid("POS"), market: o.market, side: o.side, size: o.size, entry: o.price, leverage: o.leverage ?? 5, margin: +((o.price * o.size) / (o.leverage ?? 5)).toFixed(2), marginAsset: o.marginAsset ?? "USDC", mode: o.mode ?? "Isolated", opened: today() });
+          const pm = d.perpMarkets.find((x) => x.id === o.market); if (pm) pm.oi += o.price * o.size;
         }
       });
       if (liq.length) notify(d, `Positions liquidated in simulation: ${liq.join(", ")}`);
