@@ -99,7 +99,7 @@ export function PositionsTables({ filter }: { filter?: string }) {
           { key: "sz", label: "Size", align: "right", render: (p) => <span className="num">{fmt(p.size, 2)}</span> },
           { key: "e", label: "Entry / Mark", align: "right", render: (p) => <span className="num">{fmt(p.entry, 3)} / {fmt(markPrice(s, p.market), 3)}</span> },
           { key: "mg", label: "Margin", align: "right", render: (p) => <span className="num">{usd(p.margin)}</span> },
-          { key: "l", label: "Liq.", align: "right", render: (p) => <span className="num text-warn">{fmt(liqPrice(p), 3)}</span> },
+          { key: "l", label: "Liq.", align: "right", render: (p) => <span className="num text-copper">{fmt(liqPrice(p), 3)}</span> },
           { key: "pnl", label: "PnL", align: "right", render: (p) => { const v = positionPnl(s, p); return <span className={v >= 0 ? "num text-gain" : "num text-loss"}>{v >= 0 ? "+" : ""}{usd(v)}</span>; } },
           { key: "a", label: "", align: "right", render: (p) => <ConfirmButton size="sm" variant="outline" label="Close" title={`Close ${p.market} ${p.side}`} body={`Simulated close at mark. Estimated PnL ${usd(positionPnl(s, p))}, credited in USDC.`} onConfirm={() => demo.closePosition(p.id)} /> },
         ]} />
