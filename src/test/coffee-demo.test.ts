@@ -114,3 +114,19 @@ describe('Marketplace demo',()=>{
     expect(getDemo()).toEqual(before);
   });
 });
+describe('Perps limit orders', () => {
+  it('cancel refunds the locked margin in the chosen asset, keeping the fee', () => {
+    const before = getDemo().balances.USDT ?? 0;
+    demo.perpOrder({ market: 'COL-G', side: 'Long', type: 'Limit', size: 100, leverage: 10, marginAsset: 'USDT', mode: 'Isolated', limit: 5 });
+    const o = getDemo().perpOrders[0];
+    expect(o).toMatchObject({ status: 'Open', leverage: 10, marginAsset: 'USDT', marginAmt: 50 });
+    demo.cancelOrder(o.id);
+    expect(getDemo().balances.USDT).toBeCloseTo(before - 0.25, 6);
+  });
+  it('fills with the leverage chosen at placement', () => {
+    demo.perpOrder({ market: 'COL-G', side: 'Long', type: 'Limit', size: 10, leverage: 8, marginAsset: 'USDC', mode: 'Isolated', limit: 100 });
+    demo.tick(1);
+    const p = getDemo().perpPositions.at(-1)!;
+    expect(p).toMatchObject({ leverage: 8, margin: 125 });
+  });
+});

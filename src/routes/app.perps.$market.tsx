@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, ROASTER_NAV, ADMIN_NAV } from "@/components/shell";
-import { ModulePage } from "@/components/module-page";
+import { AppShell } from "@/components/shell";
+import { PerpMarketPage } from "@/components/trading";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/app/perps/$market")({
-  head: () => seo("Market", "ROASTAKE Market — simulated demo module."),
+  head: () => seo("Perpetual market", "Simulated order ticket, chart and positions for a coffee index perpetual."),
   component: Page,
 });
 
 function Page() {
-  return <AppShell><ModulePage path="/app/perps/$market" /></AppShell>;
+  const { market } = Route.useParams(); return <AppShell><PerpMarketPage id={market} /></AppShell>;
 }

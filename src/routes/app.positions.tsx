@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, ROASTER_NAV, ADMIN_NAV } from "@/components/shell";
-import { ModulePage } from "@/components/module-page";
+import { AppShell } from "@/components/shell";
+import { PositionsPage } from "@/components/trading";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/app/positions")({
-  head: () => seo("Positions", "ROASTAKE Positions — simulated demo module."),
+  head: () => seo("Positions", "Your simulated perpetual positions, margin and PnL on ROASTAKE."),
   component: Page,
 });
 
 function Page() {
-  return <AppShell><ModulePage path="/app/positions" /></AppShell>;
+  return <AppShell><PositionsPage /></AppShell>;
 }
