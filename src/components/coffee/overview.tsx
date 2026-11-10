@@ -6,6 +6,7 @@ import { DemoBadge, Empty, PageHeader, Pill, Stat, Stats } from '@/components/ki
 import { Button } from '@/components/ui/button';
 import farm from '@/assets/origin-farm.jpg';
 import { LotList } from './lots';
+import { OracleOverviewCard } from './oracle';
 
 export function BackDashboard() { return <Button asChild variant="ghost" size="sm"><Link to="/app/dashboard"><ArrowRight className="rotate-180"/>Dashboard</Link></Button>; }
 export function ActivityList({ limit, category = 'All' }: { limit?: number; category?: string }) {
@@ -26,6 +27,7 @@ export function Dashboard() {
   return <div className="space-y-9">
     <PageHeader title="Your coffee, at a glance" subtitle={`Welcome, ${s.account} · ${s.role} view · Not connected to a real wallet.`} actions={<DemoBadge>Demo Mode · No real transactions</DemoBadge>}/>
     <Stats><Stat label="Total portfolio value" value={usd(p.total)} sub="Simulated balance · all demo holdings"/><Stat label="GCT balance" value={fmt(c.gct, 2)} sub="Green coffee tokens · wallet"/><Stat label="RCT balance" value={fmt(c.rct, 2)} sub="Roasted coffee tokens · wallet"/><Stat label="Coffee represented" value={`${fmt(c.representedKg, 2)} kg`} sub={`${fmt(c.walletKg)} wallet + ${fmt(c.depositedKg + c.collateralKg)} deposited / collateral`}/></Stats>
+    <OracleOverviewCard />
     <section className="grid gap-6 border-y py-6 md:grid-cols-[1fr_240px]">
       <div><p className="font-mono text-xs uppercase text-copper">From origin to ownership</p><h2 className="mt-2 text-2xl">Start with the coffee.</h2><p className="mt-2 max-w-xl text-sm text-muted-foreground">Lot-specific tokens represent recorded kilograms, not verified custody. Green and roasted coffee remain separate; roast loss is accounted for.</p><div className="mt-5 flex flex-wrap gap-3"><Button asChild><Link to="/app/assets">Discover lots <ArrowRight/></Link></Button><Button asChild variant="outline"><Link to="/app/roast"><Flame/>Roasting Lab</Link></Button></div></div>
       <img src={farm} width={1200} height={912} alt="Coffee-growing landscape used in the ROASTAKE prototype" className="hidden aspect-[4/3] w-full rounded-md object-cover md:block"/>

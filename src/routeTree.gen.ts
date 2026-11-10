@@ -29,6 +29,7 @@ import { Route as AppLendingRouteImport } from './routes/app.lending'
 import { Route as AppMarketAnalyticsRouteImport } from './routes/app.market-analytics'
 import { Route as AppMarketsRouteImport } from './routes/app.markets'
 import { Route as AppMultichainRouteImport } from './routes/app.multichain'
+import { Route as AppOracleRouteImport } from './routes/app.oracle'
 import { Route as AppPortfolioRouteImport } from './routes/app.portfolio'
 import { Route as AppPositionsRouteImport } from './routes/app.positions'
 import { Route as AppRedeemRouteImport } from './routes/app.redeem'
@@ -156,6 +157,11 @@ const AppMarketsRoute = AppMarketsRouteImport.update({
 const AppMultichainRoute = AppMultichainRouteImport.update({
   id: '/app/multichain',
   path: '/app/multichain',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppOracleRoute = AppOracleRouteImport.update({
+  id: '/app/oracle',
+  path: '/app/oracle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppPortfolioRoute = AppPortfolioRouteImport.update({
@@ -320,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/app/market-analytics': typeof AppMarketAnalyticsRoute
   '/app/markets': typeof AppMarketsRoute
   '/app/multichain': typeof AppMultichainRoute
+  '/app/oracle': typeof AppOracleRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/positions': typeof AppPositionsRoute
   '/app/redeem': typeof AppRedeemRoute
@@ -370,6 +377,7 @@ export interface FileRoutesByTo {
   '/app/market-analytics': typeof AppMarketAnalyticsRoute
   '/app/markets': typeof AppMarketsRoute
   '/app/multichain': typeof AppMultichainRoute
+  '/app/oracle': typeof AppOracleRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/positions': typeof AppPositionsRoute
   '/app/redeem': typeof AppRedeemRoute
@@ -421,6 +429,7 @@ export interface FileRoutesById {
   '/app/market-analytics': typeof AppMarketAnalyticsRoute
   '/app/markets': typeof AppMarketsRoute
   '/app/multichain': typeof AppMultichainRoute
+  '/app/oracle': typeof AppOracleRoute
   '/app/portfolio': typeof AppPortfolioRoute
   '/app/positions': typeof AppPositionsRoute
   '/app/redeem': typeof AppRedeemRoute
@@ -473,6 +482,7 @@ export interface FileRouteTypes {
     | '/app/market-analytics'
     | '/app/markets'
     | '/app/multichain'
+    | '/app/oracle'
     | '/app/portfolio'
     | '/app/positions'
     | '/app/redeem'
@@ -523,6 +533,7 @@ export interface FileRouteTypes {
     | '/app/market-analytics'
     | '/app/markets'
     | '/app/multichain'
+    | '/app/oracle'
     | '/app/portfolio'
     | '/app/positions'
     | '/app/redeem'
@@ -573,6 +584,7 @@ export interface FileRouteTypes {
     | '/app/market-analytics'
     | '/app/markets'
     | '/app/multichain'
+    | '/app/oracle'
     | '/app/portfolio'
     | '/app/positions'
     | '/app/redeem'
@@ -624,6 +636,7 @@ export interface RootRouteChildren {
   AppMarketAnalyticsRoute: typeof AppMarketAnalyticsRoute
   AppMarketsRoute: typeof AppMarketsRoute
   AppMultichainRoute: typeof AppMultichainRoute
+  AppOracleRoute: typeof AppOracleRoute
   AppPortfolioRoute: typeof AppPortfolioRoute
   AppPositionsRoute: typeof AppPositionsRoute
   AppRedeemRoute: typeof AppRedeemRoute
@@ -796,6 +809,13 @@ declare module '@tanstack/react-router' {
       path: '/app/multichain'
       fullPath: '/app/multichain'
       preLoaderRoute: typeof AppMultichainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/oracle': {
+      id: '/app/oracle'
+      path: '/app/oracle'
+      fullPath: '/app/oracle'
+      preLoaderRoute: typeof AppOracleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/portfolio': {
@@ -1016,6 +1036,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppMarketAnalyticsRoute: AppMarketAnalyticsRoute,
   AppMarketsRoute: AppMarketsRoute,
   AppMultichainRoute: AppMultichainRoute,
+  AppOracleRoute: AppOracleRoute,
   AppPortfolioRoute: AppPortfolioRoute,
   AppPositionsRoute: AppPositionsRoute,
   AppRedeemRoute: AppRedeemRoute,

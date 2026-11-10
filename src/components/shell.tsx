@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  Bell, BookOpen, Briefcase, Building2, ChartCandlestick, Coffee, Coins, Flame, Gauge, Globe, Landmark, Layers, LayoutDashboard, Menu, Package,
+  Activity, Bell, BookOpen, Briefcase, Building2, ChartCandlestick, Coffee, Coins, Flame, Gauge, Globe, Landmark, Layers, LayoutDashboard, Menu, Package,
   PieChart, RefreshCw, Repeat, Scale, Settings, ShieldAlert, ShoppingBag, Sprout, Store, Truck, Users, Vote, Wallet, Wheat, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ export const APP_NAV: Group[] = [
   { label: "DeFi", items: [{ to: "/app/vaults", label: "Vaults", icon: Landmark }, { to: "/app/staking", label: "Staking", icon: Coins }, { to: "/app/farming", label: "Farming", icon: Sprout }, { to: "/app/lending", label: "Lending", icon: Scale }, { to: "/app/borrowing", label: "Borrowing", icon: Wallet }] },
   { label: "Trading", items: [{ to: "/app/markets", label: "Spot Markets", icon: Gauge }, { to: "/app/perps", label: "Perpetuals", icon: ChartCandlestick }, { to: "/app/positions", label: "Positions", icon: Layers }, { to: "/app/market-analytics", label: "Analytics", icon: PieChart }] },
   { label: "Ecosystem", items: [{ to: "/app/governance", label: "Governance", icon: Vote }, { to: "/app/treasury", label: "Treasury", icon: Building2 }, { to: "/app/ventures", label: "Coffee Ventures", icon: Briefcase }] },
-  { label: "Tools", items: [{ to: "/app/multichain", label: "Multi-chain", icon: Globe }, { to: "/app/wallet", label: "Wallet", icon: Wallet }, { to: "/app/risk-center", label: "Risk Center", icon: ShieldAlert }, { to: "/app/docs", label: "Docs", icon: BookOpen }, { to: "/admin", label: "Admin Console", icon: Settings }] },
+  { label: "Tools", items: [{ to: "/app/oracle", label: "Coffee Oracle", icon: Activity }, { to: "/app/multichain", label: "Multi-chain", icon: Globe }, { to: "/app/wallet", label: "Wallet", icon: Wallet }, { to: "/app/risk-center", label: "Risk Center", icon: ShieldAlert }, { to: "/app/docs", label: "Docs", icon: BookOpen }, { to: "/admin", label: "Admin Console", icon: Settings }] },
 ];
 
 export const ROASTER_NAV: Group[] = [{ label: "Roaster Portal", items: [

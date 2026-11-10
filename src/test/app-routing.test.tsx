@@ -14,4 +14,12 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it("matches /app/oracle route for the live NEAR Testnet oracle view", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const matches = router.matchRoutes("/app/oracle");
+
+    expect(matches.at(-1)?.routeId).toBe("/app/oracle");
+  });
 });
