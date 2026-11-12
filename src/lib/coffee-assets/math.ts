@@ -127,6 +127,7 @@ export interface SwapGateInput {
   readonly walletConnected: boolean;
   readonly networkId: string;
   readonly poolExists: boolean;
+  readonly poolLoading: boolean;
   readonly reserveIn: bigint;
   readonly reserveOut: bigint;
   readonly amountIn: bigint | null;
@@ -158,9 +159,11 @@ export function evaluateSwapGate(input: SwapGateInput): SwapGateReason[] {
   if (!input.routeSupported) reasons.push("route_unsupported");
   if (!input.walletConnected) reasons.push("wallet_disconnected");
   if (input.networkId !== "testnet") reasons.push("network_not_testnet");
-  if (!input.poolExists) reasons.push("pool_missing");
-  if (input.poolExists && (input.reserveIn <= 0n || input.reserveOut <= 0n))
-    reasons.push("pool_empty");
+  // Do not report a missing/empty pool while its first on-chain snapshot is still loading.
+  if (!input.poolLoading) {
+    if (!input.poolExists) reasons.push("pool_missing");
+    else if (input.reserveIn <= 0n || input.reserveOut <= 0n) reasons.push("pool_empty");
+  }
   if (input.amountIn === null || input.amountIn <= 0n) reasons.push("amount_invalid");
   if (input.amountIn !== null && input.amountIn > input.balanceIn)
     reasons.push("amount_exceeds_balance");

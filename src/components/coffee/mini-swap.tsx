@@ -240,7 +240,8 @@ export function CoffeeMiniSwap() {
   const gateReasons = evaluateSwapGate({
     walletConnected: Boolean(accountId),
     networkId: near.networkId,
-    poolExists: Boolean(pool?.exists) || poolLoading,
+    poolExists: Boolean(pool?.exists),
+    poolLoading,
     reserveIn: liveReserves.reserveIn,
     reserveOut: liveReserves.reserveOut,
     amountIn: parsedAmount,
