@@ -26,7 +26,7 @@ function Home() {
         <Section className="flex min-h-[78vh] flex-col justify-end pb-16 pt-32 text-cream">
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-brass">Specialty Coffee × Decentralized Finance</p>
           <h1 className="max-w-4xl text-5xl font-medium leading-[1.02] md:text-7xl">ROASTAKE</h1>
-          <p className="mt-6 max-w-xl text-lg text-cream/85">A global marketplace for independent roasters, and a protocol where every kilo of traceable coffee can become an on-chain asset — shown here as a fully simulated prototype.</p>
+          <p className="mt-6 max-w-xl text-lg text-cream/85">A specialty-coffee marketplace prototype alongside NEAR Testnet finance integrations. Product listings, inventory and provenance are illustrative; Perpetuals and RHEA swaps use non-monetary Testnet tokens.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button size="lg" asChild className="bg-cream text-forest hover:bg-parchment"><Link to="/market">Explore Market <ArrowRight /></Link></Button>
             <Button size="lg" variant="outline" asChild className="border-cream/50 bg-transparent text-cream hover:bg-cream/10 hover:text-cream"><Link to="/app/dashboard">Explore DeFi</Link></Button>

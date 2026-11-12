@@ -142,12 +142,6 @@ export const APP_NAV: Group[] = [
         icon: ShieldAlert,
         badge: { label: "PREVIEW", variant: "preview" },
       },
-      {
-        to: "/app/docs",
-        label: "Docs",
-        icon: BookOpen,
-        badge: { label: "PREVIEW", variant: "preview" },
-      },
     ],
   },
   {
@@ -164,6 +158,7 @@ export const APP_NAV: Group[] = [
         },
       },
       { to: "/app/multichain", label: "Multi-chain", icon: Globe },
+      { to: "/app/docs", label: "Documentation", icon: BookOpen },
     ],
   },
 ];
@@ -749,8 +744,8 @@ export function PublicShell({ children }: { children: ReactNode }) {
               [
                 ["/app/docs", "Documentation"],
                 ["/app/risk-center", "Risk disclosures"],
-                ["/roaster/dashboard", "Roaster portal"],
-                ["/admin", "Admin console"],
+                ["/roaster/dashboard", "Roaster portal (preview)"],
+                ["/admin", "Admin console (preview)"],
               ],
             ],
           ].map(([t, ls]) => (
