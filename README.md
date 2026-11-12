@@ -1,6 +1,6 @@
 # ROASTAKE Frontend — NEAR Testnet Coffee Perpetuals Terminal
 
-This repository (`MTheMoneyApe/pixel-perfect-replica`) is the **companion web frontend** for **ROASTAKE**, a commodity-finance platform built on **NEAR Protocol** starting with coffee perpetuals on NEAR Testnet.
+This repository (`MTheMoneyApe/Roastake-frontend`) is the **companion web frontend** for **ROASTAKE**, a commodity-finance platform built on **NEAR Protocol** starting with coffee perpetuals on NEAR Testnet.
 
 > [!IMPORTANT]
 > **Hackathon MVP Scope & Transparency (`Testnet Only`)**
@@ -30,7 +30,7 @@ This repository (`MTheMoneyApe/pixel-perfect-replica`) is the **companion web fr
 - **Optional `.env`:** Copy `.env.example` if configuring `VITE_WALLETCONNECT_PROJECT_ID` or overriding public local indexer URL `VITE_PERPS_HISTORY_API_URL=http://127.0.0.1:8787`. **Never put `FASTNEAR_API_KEY`, private keys, or secrets in any `VITE_*` variable; none are required to inspect or run NEAR Testnet Perps.**
 
 ```bash
-git clone https://github.com/MTheMoneyApe/pixel-perfect-replica.git Roastake-Frontend
+git clone https://github.com/MTheMoneyApe/Roastake-frontend.git Roastake-Frontend
 cd Roastake-Frontend
 git checkout hackathon-submission
 npm install
