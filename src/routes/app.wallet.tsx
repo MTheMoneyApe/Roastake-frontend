@@ -1,13 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, ROASTER_NAV, ADMIN_NAV } from "@/components/shell";
-import { ModulePage } from "@/components/module-page";
+import { AppShell } from "@/components/shell";
+import { WalletOverviewPage } from "@/components/wallet/wallet-pages";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/app/wallet")({
-  head: () => seo("Wallet", "ROASTAKE Wallet — simulated demo module."),
+  head: () =>
+    seo(
+      "Multichain Wallet",
+      "NEAR-first multichain wallet connections for NEAR Testnet, EVM testnets, Solana Devnet, and Hyperliquid Testnet Core.",
+    ),
   component: Page,
 });
 
 function Page() {
-  return <AppShell><ModulePage path="/app/wallet" /></AppShell>;
+  return (
+    <AppShell>
+      <WalletOverviewPage />
+    </AppShell>
+  );
 }
