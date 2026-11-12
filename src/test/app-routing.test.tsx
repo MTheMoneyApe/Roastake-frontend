@@ -1,25 +1,76 @@
-import { QueryClient } from "@tanstack/react-query";
-import { createRouter, rootRouteId } from "@tanstack/react-router";
+import { createMemoryHistory } from "@tanstack/react-router";
 import { describe, expect, it } from "vitest";
+import { ADMIN_NAV, APP_NAV, ROASTER_NAV } from "@/components/shell";
+import { getRouter } from "@/router";
 
-import { routeTree } from "@/routeTree.gen";
+function collectRoutes(groups: typeof APP_NAV) {
+  return groups.flatMap((group) => group.items.map((item) => item.to));
+}
 
-// Match routes without running loaders or rendering: loaders may need a server or
-// network the test run lacks, and jsdom never loads the stylesheets React waits on.
-describe("App routing", () => {
-  it("matches a page for / instead of falling back to not found", () => {
-    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+describe("M04.6 navigation and application routing", () => {
+  it("preserves the exact NEAR-first APP_NAV group hierarchy and ordering", () => {
+    expect(APP_NAV.map((group) => group.label)).toEqual([
+      "Overview",
+      "Trade",
+      "Portfolio",
+      "Coffee",
+      "Labs & Preview",
+      "Protocol",
+    ]);
 
-    const matches = router.matchRoutes("/");
+    const flatPaths = collectRoutes(APP_NAV);
+    expect(flatPaths.indexOf("/app/perps")).toBeLessThan(flatPaths.indexOf("/app/wallet"));
+    expect(flatPaths.indexOf("/app/wallet")).toBeLessThan(flatPaths.indexOf("/market"));
+    expect(flatPaths.indexOf("/app/assets")).toBeLessThan(flatPaths.indexOf("/app/vaults"));
+    expect(flatPaths.indexOf("/app/vaults")).toBeLessThan(flatPaths.indexOf("/app/governance"));
+    expect(flatPaths.indexOf("/app/governance")).toBeLessThan(flatPaths.indexOf("/app/oracle"));
 
-    expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
+    // Secondary operational portals are removed from main APP_NAV sidebar.
+    expect(flatPaths).not.toContain("/admin");
+    expect(flatPaths).not.toContain("/roaster/dashboard");
   });
 
-  it("matches /app/oracle route for the live NEAR Testnet oracle view", () => {
-    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+  it("resolves every navigation route across main nav, portals, and core app/coffee routes", () => {
+    const router = getRouter();
+    const expectedPaths = Array.from(
+      new Set([
+        ...collectRoutes(APP_NAV),
+        ...collectRoutes(ROASTER_NAV),
+        ...collectRoutes(ADMIN_NAV),
+        "/app",
+        "/roaster",
+        "/roaster/dashboard",
+        "/admin",
+        "/market",
+        "/orders",
+        "/app/perps/COL-G",
+        "/app/multichain",
+      ]),
+    );
 
-    const matches = router.matchRoutes("/app/oracle");
+    for (const path of expectedPaths) {
+      const matched = router.matchRoutes(path, {});
+      const leaf = matched.at(-1);
+      expect(leaf, `Expected route match for ${path}`).toBeDefined();
+      expect(leaf?.id, `Expected non-root route for ${path}`).not.toBe("__root__");
+    }
+  });
 
-    expect(matches.at(-1)?.routeId).toBe("/app/oracle");
+  it("redirects /app to /app/dashboard and /roaster to /roaster/dashboard", async () => {
+    const appRouter = getRouter();
+    appRouter.update({
+      ...appRouter.options,
+      history: createMemoryHistory({ initialEntries: ["/app"] }),
+    });
+    await appRouter.load();
+    expect(appRouter.state.location.pathname).toBe("/app/dashboard");
+
+    const roasterRouter = getRouter();
+    roasterRouter.update({
+      ...roasterRouter.options,
+      history: createMemoryHistory({ initialEntries: ["/roaster"] }),
+    });
+    await roasterRouter.load();
+    expect(roasterRouter.state.location.pathname).toBe("/roaster/dashboard");
   });
 });
