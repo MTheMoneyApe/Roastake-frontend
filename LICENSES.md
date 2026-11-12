@@ -20,7 +20,7 @@
 | **NEAR Testnet Oracle Read Client & UI (`9` files)** | `src/lib/oracle/{config,format,queries,rpc,types}.ts`, `src/components/coffee/oracle.tsx`, `src/routes/app.oracle.tsx`, `src/test/{oracle.test.ts,oracle-ui.test.tsx}` | Authored in commit `e14cc9b` (`MTheMoneyApe`) + local M04.8 work; never present in `4c3b15c` template or `gpt-engineer-app[bot]` commits. |
 | **NEAR Perpetuals Terminal, Market History & Chart UI (`18` files)** | `src/lib/perps/{config,market-history,market-history-api,market-history-rpc,market-history-types,math,queries,rpc,tx,types}.ts`, `src/components/perps/{judges-walkthrough,live-perps,margin-panel,market-chart,market-chart-toolbar,operator-controls,positions-panel,tx-status-panel}.tsx` | Newly created untracked M04.6–M04.15 modules integrating `perps-v1.roastake-dev-mta.testnet`, Circle Testnet USDC, three active coffee markets (`Arabica`, `Robusta`, `Gesha`), and verified indexer/RPC charting. |
 | **NEAR-First Wallet Infrastructure & Hub (`11` files)** | `src/lib/wallet/{config,context,hyperliquid,near,provider,solana,types,wagmi}.ts`, `src/components/wallet/{copy-address-button,wallet-hub,wallet-pages}.tsx` | Newly created untracked M04.6/M04.8 wallet selector (`@hot-labs/near-connect` + Testnet identity guards). |
-| **Original Integration & Guard Tests (`9` files)** | `src/test/{m046-ux.test.tsx,market-chart.test.ts,market-chart-api.test.ts,market-chart-ui.test.tsx,perps.test.ts,perps-ui.test.tsx,wallet.test.ts,wallet-ssr.test.tsx,wallet-ui.test.tsx}` | Newly created untracked M04.6–M04.15 test suites (`96` total tests across `13` Vitest files including tracker suites). |
+| **Original Integration & Guard Tests (`9` files)** | `src/test/{m046-ux.test.tsx,market-chart.test.ts,market-chart-api.test.ts,market-chart-ui.test.tsx,perps.test.ts,perps-ui.test.tsx,wallet.test.ts,wallet-ssr.test.tsx,wallet-ui.test.tsx}` | Newly created untracked M04.6–M04.15 test suites (`114` total tests across `15` Vitest files in the latest recorded release verification, including tracker suites). |
 | **Repository Documentation & Config Example** | `README.md`, `LICENSE`, `LICENSES.md`, `THIRD_PARTY_NOTICES.md`, `.env.example` *(non-code env template)* | Authored by/for `@MTheMoneyApe` to document M04.9/M04.10 scope cleanly. |
 
 ---
@@ -38,6 +38,8 @@
 ## 3. Mixed-Provenance Files (Shared Baseline + Original M04.6/M04.8 Edits)
 
 These files originated in `4c3b15c` (`Lovable`) or `gpt-engineer-app[bot]` commits and subsequently received original `@MTheMoneyApe` NEAR/Perps/Oracle integrations (`e14cc9b` or local M04.6/M04.8 changes). **No proprietary header is stamped on these shared files:** `@MTheMoneyApe`'s rights are limited strictly to its original incremental modifications, while the pre-existing template/bot layers remain excluded / `UNRESOLVED`:
+
+The M04.35 release-integration commit (`d450192`) also modified five files in this mixed-provenance group: `src/components/kit.tsx`, `src/components/module-page.tsx`, `src/components/trading.tsx`, `src/lib/demo/store.ts`, and `src/routes/__root.tsx`. Those files remain governed by this Section 3 classification: the release edits do not create a claim of ownership over the entire shared files or their earlier template/bot layers.
 
 - `package.json`
 - `src/routes/__root.tsx`, `src/routes/app.activity.tsx`, `src/routes/app.multichain.tsx`, `src/routes/app.perps.$market.tsx`, `src/routes/app.perps.index.tsx`, `src/routes/app.positions.tsx`, `src/routes/app.wallet.tsx`
