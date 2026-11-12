@@ -222,7 +222,7 @@ export function PerpsIndex() {
 
 export function PerpMarketPage({ id }: { id: string }) {
   const threeMarket = resolveThreeMarketEntry(id);
-  if (threeMarket?.status === "live_testnet") {
+  if (threeMarket?.status === "configured_testnet") {
     return (
       <div className="space-y-6">
         <PerpsNearExecutionBanner />

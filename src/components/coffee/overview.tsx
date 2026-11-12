@@ -145,13 +145,13 @@ export function Dashboard() {
         <PageHeader
           title="ROASTAKE Protocol"
           demo={false}
-          subtitle="Live NEAR Testnet Perpetuals across Arabica, Robusta & Gesha; separate read-only Oracle telemetry via OutLayer; and a simulated coffee marketplace and provenance prototype."
+          subtitle="NEAR Testnet Perpetuals explorer, separate read-only Oracle telemetry via OutLayer, and a simulated coffee marketplace and provenance prototype."
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <Button asChild className="gap-1.5">
                 <Link to="/app/perps/$market" params={{ market: MARKET_ARABICA_URL_SLUG }}>
                   <ChartCandlestick className="size-4" aria-hidden="true" />
-                  <span>Trade Arabica / USD (Testnet)</span>
+                  <span>View Arabica / USD Market (Testnet)</span>
                 </Link>
               </Button>
               <Button asChild variant="outline" className="gap-1.5">
@@ -178,7 +178,7 @@ export function Dashboard() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gain/40 bg-forest/20 px-4 py-3 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            <MaturityBadge variant="testnet">NEAR TESTNET · PERPS LIVE</MaturityBadge>
+            <MaturityBadge variant="testnet">NEAR TESTNET · PERPS CONTRACT</MaturityBadge>
             <MaturityBadge variant="testnet">ORACLE · READ-ONLY</MaturityBadge>
             <MaturityBadge variant="demo">COFFEE DEFI · DEMO PROTOTYPE</MaturityBadge>
           </div>
@@ -191,7 +191,7 @@ export function Dashboard() {
         </div>
       </section>
 
-      {/* B. Trading Overview (Live NEAR Testnet Perpetuals) */}
+      {/* B. Trading Overview (NEAR Testnet Perpetuals; registry read from chain) */}
       <section
         aria-labelledby="trading-overview-heading"
         className="rounded-lg border border-gain/40 bg-card p-5 shadow-soft"
@@ -205,20 +205,22 @@ export function Dashboard() {
               <h2 id="trading-overview-heading" className="font-display text-xl font-semibold">
                 ROASTAKE Perpetuals
               </h2>
-              <Pill tone="gain">Live NEAR Testnet: {PERPS_CONTRACT_ID}</Pill>
+              <Pill tone="muted">NEAR Testnet Contract: {PERPS_CONTRACT_ID}</Pill>
               <MaturityBadge variant="testnet">CIRCLE TESTNET USDC</MaturityBadge>
             </div>
             <p className="max-w-2xl text-xs text-muted-foreground">
-              COFFEE-ARABICA-TESTNET/USD runs live on{" "}
-              <span className="font-mono">{PERPS_CONTRACT_ID}</span> using 6-decimal Circle Native
-              Testnet USDC (non-monetary) and synthetic TESTNET_SANDBOX_FEED pricing, alongside
-              Arabica, Robusta and Gesha are registered on this NEAR Testnet contract and use Circle Native Testnet USDC (non-monetary) plus independent operator-controlled TESTNET_SANDBOX_FEED prices. These are synthetic test values, not commercial coffee prices. The separate read-only OutLayer Oracle exposes an IMF monthly benchmark and a Gesha fixture; it does not power Perps. Simulated demo coffee balances remain isolated.
+              Market registration and current oracle state are read from finalized NEAR Testnet RPC
+              responses. The contract is configured for 6-decimal Circle Native Testnet USDC
+              (non-monetary) and operator-controlled TESTNET_SANDBOX_FEED prices. Any displayed
+              Testnet price is synthetic, not a commercial coffee quote. The separate read-only
+              OutLayer Oracle exposes an IMF monthly benchmark and a Gesha fixture; it does not
+              power Perps. Marketplace inventory, provenance and demo balances remain simulated.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button asChild size="sm" className="gap-1.5">
               <Link to="/app/perps/$market" params={{ market: MARKET_ARABICA_URL_SLUG }}>
-                <span>Trade Arabica / USD</span>
+                <span>Open Arabica / USD Market</span>
                 <ArrowRight className="size-3.5" aria-hidden="true" />
               </Link>
             </Button>

@@ -92,6 +92,9 @@ export function CoffeeMiniSwap() {
   const [slippage, setSlippage] = useState("1");
   const [pool, setPool] = useState<PoolSnapshot | null>(null);
   const [poolLoading, setPoolLoading] = useState(true);
+  const [poolReadError, setPoolReadError] = useState<string | null>(null);
+  const [walletReadLoading, setWalletReadLoading] = useState(false);
+  const [walletReadError, setWalletReadError] = useState<string | null>(null);
   const [quote, setQuote] = useState<QuoteState | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [balanceIn, setBalanceIn] = useState<bigint>(0n);
@@ -105,13 +108,21 @@ export function CoffeeMiniSwap() {
   const route = useMemo(() => buildSwapRoute(asset, direction), [asset, direction]);
   const accountId = near.accountId;
 
-  // Pool reserves (live).
+  // Pool reserves (live). A failed RPC read is unknown, never an empty-pool verdict.
   useEffect(() => {
     let cancelled = false;
     setPoolLoading(true);
+    setPool(null);
+    setPoolReadError(null);
     fetchPoolSnapshot(asset.poolId)
       .then((snapshot) => {
         if (!cancelled) setPool(snapshot);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setPool(null);
+          setPoolReadError(error instanceof Error ? error.message : "Could not read the RHEA pool from Testnet.");
+        }
       })
       .finally(() => {
         if (!cancelled) setPoolLoading(false);
@@ -121,25 +132,41 @@ export function CoffeeMiniSwap() {
     };
   }, [asset.poolId, refreshKey]);
 
-  // Wallet balances + output-token registration (live).
+  // Wallet reads fail closed. A failed read is not a zero balance or missing registration.
   useEffect(() => {
     let cancelled = false;
     if (!accountId) {
       setBalanceIn(0n);
       setBalanceOut(0n);
       setOutputRegistered(null);
+      setWalletReadLoading(false);
+      setWalletReadError(null);
       return;
     }
+    setWalletReadLoading(true);
+    setWalletReadError(null);
+    setOutputRegistered(null);
     Promise.all([
       fetchFtBalance({ tokenId: route.tokenIn, accountId }),
       fetchFtBalance({ tokenId: route.tokenOut, accountId }),
       fetchStorageBalance({ tokenId: route.tokenOut, accountId }),
-    ]).then(([input, output, storage]) => {
-      if (cancelled) return;
-      setBalanceIn(input);
-      setBalanceOut(output);
-      setOutputRegistered(storage !== null);
-    });
+    ])
+      .then(([input, output, storage]) => {
+        if (cancelled) return;
+        setBalanceIn(input);
+        setBalanceOut(output);
+        setOutputRegistered(storage !== null);
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setBalanceIn(0n);
+        setBalanceOut(0n);
+        setOutputRegistered(null);
+        setWalletReadError(error instanceof Error ? error.message : "Could not read wallet token state from Testnet.");
+      })
+      .finally(() => {
+        if (!cancelled) setWalletReadLoading(false);
+      });
     return () => {
       cancelled = true;
     };
@@ -156,7 +183,7 @@ export function CoffeeMiniSwap() {
     setQuote(null);
     setQuoteError(null);
     setReviewing(false);
-    if (parsedAmount === null) return;
+    if (parsedAmount === null || poolLoading || poolReadError || !pool?.exists) return;
 
     const reserves = pool && pool.exists ? pool.amounts : [];
     const indexIn = pool ? pool.tokenIds.indexOf(route.tokenIn) : -1;
@@ -197,7 +224,7 @@ export function CoffeeMiniSwap() {
     }, QUOTE_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [parsedAmount, pool, route.poolId, route.tokenIn, route.tokenOut, slippage]);
+  }, [parsedAmount, pool, poolLoading, poolReadError, route.poolId, route.tokenIn, route.tokenOut, slippage]);
 
   // A quote becomes stale on its own; re-render so the gate closes.
   const [, forceTick] = useState(0);
@@ -241,11 +268,11 @@ export function CoffeeMiniSwap() {
     walletConnected: Boolean(accountId),
     networkId: near.networkId,
     poolExists: Boolean(pool?.exists),
-    poolLoading,
+    poolLoading: poolLoading || Boolean(poolReadError),
     reserveIn: liveReserves.reserveIn,
     reserveOut: liveReserves.reserveOut,
     amountIn: parsedAmount,
-    balanceIn,
+    balanceIn: walletReadLoading || walletReadError ? (parsedAmount ?? 0n) : balanceIn,
     slippagePct: Number.isFinite(slippagePct) ? slippagePct : -1,
     quoteAgeMs,
     quoteAvailable: quote !== null,
@@ -253,8 +280,14 @@ export function CoffeeMiniSwap() {
     routeSupported: Boolean(asset),
   });
 
-  const blocked = gateReasons.length > 0;
-  const needsRegistration = accountId !== null && outputRegistered === false;
+  const blocked =
+    gateReasons.length > 0 ||
+    poolLoading ||
+    Boolean(poolReadError) ||
+    walletReadLoading ||
+    Boolean(walletReadError);
+  const needsRegistration =
+    accountId !== null && !walletReadLoading && !walletReadError && outputRegistered === false;
 
   const refresh = useCallback(() => {
     setQuote(null);
@@ -487,6 +520,23 @@ export function CoffeeMiniSwap() {
             </p>
           )}
 
+          {poolReadError && (
+            <p role="alert" className="text-xs text-loss">
+              RHEA pool state could not be verified from NEAR Testnet RPC. Swaps are disabled; refresh
+              to retry. This is not evidence that the pool is empty or missing.
+            </p>
+          )}
+          {walletReadLoading && (
+            <p className="text-xs text-muted-foreground">
+              Verifying Testnet token balances and storage registration…
+            </p>
+          )}
+          {walletReadError && (
+            <p role="alert" className="text-xs text-loss">
+              Wallet token state could not be verified from NEAR Testnet RPC. Swaps are disabled;
+              no zero balance or missing registration is assumed.
+            </p>
+          )}
           {quoteError && <p className="text-xs text-loss">{quoteError}</p>}
 
           {!blocked && !reviewing && (
@@ -595,7 +645,9 @@ export function CoffeeMiniSwap() {
                     ? `${formatTokenAmount(poolReserves.coffee, 8, 8)} ${asset.symbol} / ${formatUsdc(poolReserves.usdc)} USDC`
                     : poolLoading
                       ? "Loading…"
-                      : "Unavailable"
+                      : poolReadError
+                        ? "Unverified (RPC error)"
+                        : "Unavailable"
                 }
               />
               <Row label="Pool fee" value={`${RHEA_POOL_FEE_PCT.toFixed(2)}%`} />

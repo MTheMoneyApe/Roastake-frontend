@@ -373,7 +373,20 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     expect(screen.getAllByText(/\$10\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/\$5\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/\$25\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/REGISTERED ON-CHAIN/i)).toHaveLength(3);
     expect(screen.queryByRole("button", { name: /Deposit LP/i })).toBeNull();
+  });
+
+  it("does not promote catalog entries to live markets when the on-chain registry is empty", async () => {
+    vi.spyOn(perpsRpc, "fetchPerpsProtocolSnapshot").mockResolvedValue(
+      makeProtocol({ markets: [], arabicaMarket: null, robustaMarket: null, geshaMarket: null, marketStates: {} }),
+    );
+
+    renderPerpsUi(<ThreeMarketPerpsIndex />);
+
+    expect(await screen.findByText(/Three-Market Coffee Hub \(0\/3 Registered On-chain\)/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/NOT REGISTERED/i).length).toBeGreaterThanOrEqual(3);
+    expect(screen.queryByText(/LIVE TESTNET/i)).toBeNull();
   });
 
   it("surfaces explicit RPC error panel when NEAR Testnet RPC fails and never fabricates on-chain risk defaults", async () => {
@@ -387,7 +400,8 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
       await screen.findByText(/NEAR Testnet RPC Unavailable/i, {}, { timeout: 4000 }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Retry RPC/i })).toBeInTheDocument();
-    expect(screen.getAllByText(/Unavailable \(RPC required\)/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText(/Registry unverified — RPC unavailable/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByText(/LIVE TESTNET/i)).toBeNull();
     expect(screen.queryByText(/4x · 25\.00% · 12\.50%/i)).toBeNull();
 
     // Verify M04.6-G proof tab exposes all 8 Explorer-linked transactions

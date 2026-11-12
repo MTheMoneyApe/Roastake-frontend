@@ -67,8 +67,8 @@ export interface ThreeMarketCatalogEntry {
   displayName: string;
   variety: string;
   unit: string;
-  status: "live_testnet" | "preview";
-  badges: readonly ("LIVE TESTNET" | "SYNTHETIC ORACLE" | "PREVIEW" | "ROADMAP")[];
+  status: "configured_testnet" | "preview";
+  badges: readonly ("SYNTHETIC ORACLE" | "PREVIEW" | "ROADMAP")[];
   description: string;
   oracleNote: string;
   settlementTokenSymbol: "USDC";
@@ -82,12 +82,12 @@ export const THREE_MARKET_CATALOG: readonly ThreeMarketCatalogEntry[] = [
     displayName: "Arabica / USD",
     variety: "Coffea arabica",
     unit: "USD/kg",
-    status: "live_testnet",
-    badges: ["LIVE TESTNET", "SYNTHETIC ORACLE"],
+    status: "configured_testnet",
+    badges: ["SYNTHETIC ORACLE"],
     description:
-      "Primary coffee index perpetual market deployed on NEAR Testnet (perps-v1.roastake-dev-mta.testnet) using Circle Native Testnet USDC as isolated margin collateral.",
+      "Configured as the primary coffee perpetual market for NEAR Testnet. Registration is confirmed only when the contract registry returns COFFEE-ARABICA-TESTNET/USD.",
     oracleNote:
-      "Priced by TESTNET_SANDBOX_FEED (operator-controlled synthetic Testnet price, not a decentralized spot index or independent exchange feed).",
+      "Uses TESTNET_SANDBOX_FEED when registered and configured: an operator-controlled synthetic Testnet price, not a decentralized spot index or independent exchange feed.",
     settlementTokenSymbol: "USDC",
   },
   {
@@ -97,12 +97,12 @@ export const THREE_MARKET_CATALOG: readonly ThreeMarketCatalogEntry[] = [
     displayName: "Robusta / USD",
     variety: "Coffea canephora",
     unit: "USD/kg",
-    status: "live_testnet",
-    badges: ["LIVE TESTNET", "SYNTHETIC ORACLE"],
+    status: "configured_testnet",
+    badges: ["SYNTHETIC ORACLE"],
     description:
-      "Second independent coffee perpetual market registered on NEAR Testnet under COFFEE-ROBUSTA-TESTNET/USD (logical ID COFFEE-ROBUSTA), settling in Circle Native Testnet USDC.",
+      "Configured as an independent Robusta perpetual market for NEAR Testnet. Registration is confirmed only by the contract registry.",
     oracleNote:
-      "Priced by TESTNET_SANDBOX_FEED on an independent Robusta oracle sequence (explicitly synthetic Testnet demonstration values, not real-world commercial Robusta quotes).",
+      "Intended to use an independent TESTNET_SANDBOX_FEED sequence: synthetic Testnet demonstration values, not real-world commercial Robusta quotes.",
     settlementTokenSymbol: "USDC",
   },
   {
@@ -112,12 +112,12 @@ export const THREE_MARKET_CATALOG: readonly ThreeMarketCatalogEntry[] = [
     displayName: "Gesha / USD",
     variety: "Specialty Gesha",
     unit: "USD/kg",
-    status: "live_testnet",
-    badges: ["LIVE TESTNET", "SYNTHETIC ORACLE"],
+    status: "configured_testnet",
+    badges: ["SYNTHETIC ORACLE"],
     description:
-      "Third independent coffee perpetual market registered on NEAR Testnet under COFFEE-GESHA-TESTNET/USD (logical ID COFFEE-GESHA), settling in Circle Native Testnet USDC.",
+      "Configured as an independent Gesha perpetual market for NEAR Testnet. Registration is confirmed only by the contract registry.",
     oracleNote:
-      "Priced by TESTNET_SANDBOX_FEED on an independent Gesha oracle sequence (explicitly synthetic Testnet demonstration values, NOT real-world commercial Gesha auction prices or benchmarks).",
+      "Intended to use an independent TESTNET_SANDBOX_FEED sequence: synthetic Testnet demonstration values, not real-world commercial Gesha auction prices or benchmarks.",
     settlementTokenSymbol: "USDC",
   },
 ] as const;

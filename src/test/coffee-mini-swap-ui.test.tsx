@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LicenseRef-ROSTAKE-Evaluation-Only
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
 // Copyright © 2026 @MTheMoneyApe. All rights reserved.
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CoffeeMiniSwap } from "@/components/coffee/mini-swap";
 import type { NearAdapterPort } from "@/lib/wallet/near";
 import { WalletInfrastructureProvider } from "@/lib/wallet/provider";
+import { fetchPoolSnapshot } from "@/lib/coffee-assets/rpc";
 
 const ARABICA_TOKEN = "arabica.roastake-dev-mta.testnet";
 const USDC_TOKEN = "3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af";
@@ -109,6 +110,15 @@ describe("M04.18 Coffee Mini Swap UI", () => {
     expect(screen.getByText(/ft_transfer_call → ref-finance-101\.testnet/)).toBeInTheDocument();
     expect(screen.getByText(/1 yoctoNEAR/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Sign & send swap/i })).toBeInTheDocument();
+  });
+
+  it("fails closed when the pool RPC read fails instead of presenting an empty or missing pool", async () => {
+    vi.mocked(fetchPoolSnapshot).mockRejectedValueOnce(new Error("All configured NEAR Testnet RPC endpoints failed."));
+    renderMiniSwap("roastake-dev-mta.testnet");
+
+    expect(await screen.findByText(/RHEA pool state could not be verified from NEAR Testnet RPC/i)).toBeInTheDocument();
+    expect(screen.queryByText(/The RHEA pool has no liquidity/i)).toBeNull();
+    expect(screen.queryByRole("button", { name: /Review transaction/i })).toBeNull();
   });
 
   it("blocks swaps larger than the wallet balance", async () => {

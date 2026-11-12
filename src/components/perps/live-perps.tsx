@@ -540,34 +540,43 @@ export function ThreeMarketPerpsIndex() {
   const refreshAll = useRefreshPerpsQueries(near.accountId);
   const [latestTx, setLatestTx] = useState<NearUserTxRecord | null>(null);
 
+
+  const getRegisteredMarket = (marketId: string) =>
+    protocol?.markets.includes(marketId) ? getMarketFromProtocolSnapshot(protocol, marketId) : null;
+
   const arabicaOracleStatus = evaluatePerpsOracleStatus(
-    getMarketFromProtocolSnapshot(protocol, MARKET_ARABICA_PERPS_ID),
+    getRegisteredMarket(MARKET_ARABICA_PERPS_ID),
     protocol?.blockTimestampSec ?? null,
   );
   const robustaOracleStatus = evaluatePerpsOracleStatus(
-    getMarketFromProtocolSnapshot(protocol, MARKET_ROBUSTA_PERPS_ID),
+    getRegisteredMarket(MARKET_ROBUSTA_PERPS_ID),
     protocol?.blockTimestampSec ?? null,
   );
   const geshaOracleStatus = evaluatePerpsOracleStatus(
-    getMarketFromProtocolSnapshot(protocol, MARKET_GESHA_PERPS_ID),
+    getRegisteredMarket(MARKET_GESHA_PERPS_ID),
     protocol?.blockTimestampSec ?? null,
   );
 
   const marketCatalogStates = THREE_MARKET_CATALOG.map((entry) => {
-    const m = getMarketFromProtocolSnapshot(protocol, entry.marketId);
-    const isRegistered =
-      entry.status === "live_testnet" &&
-      Boolean(m) &&
-      (!protocol?.markets.length || protocol.markets.includes(entry.marketId));
+    const m = getRegisteredMarket(entry.marketId);
+    // The finalized registry is authoritative; the static catalog is configuration only.
+    const isRegistered = Boolean(protocol && m);
     return {
       entry,
       market: m,
       oracleStatus: evaluatePerpsOracleStatus(m, protocol?.blockTimestampSec ?? null),
-      isLive: protocol ? isRegistered : entry.status === "live_testnet",
+      isRegistered,
+      registryLabel: isRegistered
+        ? "REGISTERED ON-CHAIN"
+        : protocol
+          ? "NOT REGISTERED"
+          : error
+            ? "UNVERIFIED"
+            : "CHECKING RPC",
+      registryVariant: isRegistered ? "real" as const : protocol ? "preview" as const : error ? "demo" as const : "testnet" as const,
     };
   });
-  const liveMarketCount = marketCatalogStates.filter((s) => s.isLive).length;
-  const previewMarketCount = marketCatalogStates.length - liveMarketCount;
+  const registeredMarketCount = marketCatalogStates.filter((state) => state.isRegistered).length;
 
   const arabicaLongOi = parseUnsignedBigInt(protocol?.arabicaMarket?.long_oi_e8 ?? "0") ?? 0n;
   const arabicaShortOi = parseUnsignedBigInt(protocol?.arabicaMarket?.short_oi_e8 ?? "0") ?? 0n;
@@ -582,10 +591,12 @@ export function ThreeMarketPerpsIndex() {
       <PageHeader
         demo={false}
         title="Coffee Index Perpetuals"
-        subtitle={`Live NEAR Testnet execution engine operating independent Arabica, Robusta & Gesha markets on Circle Testnet USDC & independent TESTNET_SANDBOX_FEED channels.`}
+        subtitle="NEAR Testnet Perpetuals contract explorer. Market registration and oracle state are read from finalized chain data; all sandbox prices are operator-controlled synthetic Testnet values."
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <MaturityBadge variant="testnet">NEAR TESTNET LIVE</MaturityBadge>
+                        <MaturityBadge variant={protocol ? "testnet" : error ? "demo" : "preview"}>
+              {protocol ? `${registeredMarketCount}/3 REGISTERED` : error ? "RPC UNAVAILABLE" : "CHECKING RPC"}
+            </MaturityBadge>
             <Button type="button" size="sm" variant="outline" onClick={() => void refreshAll()}>
               <RefreshCw className="mr-1.5 size-3.5" aria-hidden="true" />
               Refresh RPC
@@ -677,9 +688,11 @@ export function ThreeMarketPerpsIndex() {
       <section aria-labelledby="three-markets-heading" className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 id="three-markets-heading" className="text-sm font-semibold">
-            {previewMarketCount === 0
-              ? `Three-Market Coffee Hub (${liveMarketCount} Live Testnet Markets)`
-              : `Three-Market Coffee Hub (${liveMarketCount} Live Testnet + ${previewMarketCount} Preview Roadmap)`}
+            {protocol
+              ? `Three-Market Coffee Hub (${registeredMarketCount}/3 Registered On-chain)`
+              : isLoading
+                ? "Three-Market Coffee Hub (Checking Testnet registry)"
+                : "Three-Market Coffee Hub (Registry unverified)"}
           </h2>
           {protocol && (
             <span className="font-mono text-[11px] text-muted-foreground">
@@ -691,11 +704,11 @@ export function ThreeMarketPerpsIndex() {
 
         <div className="grid gap-4 lg:grid-cols-3">
           {marketCatalogStates.map(
-            ({ entry, market: m, oracleStatus: entryOracleStatus, isLive }) => {
+            ({ entry, market: m, oracleStatus: entryOracleStatus, isRegistered, registryLabel, registryVariant }) => {
               return (
                 <Panel
                   key={entry.urlSlug}
-                  className={isLive ? "border-primary/40" : undefined}
+                  className={isRegistered ? "border-primary/40" : undefined}
                   title={
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
@@ -705,18 +718,13 @@ export function ThreeMarketPerpsIndex() {
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {entry.badges.map((b) => (
+                        <MaturityBadge variant={registryVariant}>{registryLabel}</MaturityBadge>
+                        {entry.badges.map((badge) => (
                           <MaturityBadge
-                            key={b}
-                            variant={
-                              b === "LIVE TESTNET"
-                                ? "real"
-                                : b === "SYNTHETIC ORACLE"
-                                  ? "testnet"
-                                  : "preview"
-                            }
+                            key={badge}
+                            variant={badge === "SYNTHETIC ORACLE" ? "testnet" : "preview"}
                           >
-                            {b}
+                            {badge}
                           </MaturityBadge>
                         ))}
                       </div>
@@ -726,7 +734,7 @@ export function ThreeMarketPerpsIndex() {
                   <div className="flex h-full flex-col justify-between space-y-4">
                     <div className="space-y-3">
                       <p className="text-xs text-muted-foreground">{entry.description}</p>
-                      {isLive ? (
+                      {isRegistered ? (
                         <KV
                           rows={[
                             [
@@ -772,16 +780,20 @@ export function ThreeMarketPerpsIndex() {
                       ) : (
                         <KV
                           rows={[
-                            ["Reference Index", "— (No on-chain feed yet)"],
+                            ["Reference Index", "— (Not verified)"],
                             [
                               "Status",
-                              <Pill key="st" tone="muted">
-                                Preview · Not Registered
+                              <Pill key="st" tone={protocol ? "muted" : "warn"}>
+                                {protocol
+                                  ? "Not registered on-chain"
+                                  : isLoading
+                                    ? "Awaiting finalized RPC"
+                                    : "Registry unverified — RPC unavailable"}
                               </Pill>,
                             ],
-                            ["Open Interest / Funding", "— (No fabricated quotes)"],
-                            ["Target Collateral", "Circle Native USDC"],
-                            ["Oracle Roadmap", "Multi-source Gate 4 index"],
+                            ["Open Interest / Funding", "— (No verified market state)"],
+                            ["Target Collateral", "Circle Native Testnet USDC"],
+                            ["Price Source", "Synthetic Testnet feed; not verified"],
                           ]}
                         />
                       )}
@@ -792,15 +804,17 @@ export function ThreeMarketPerpsIndex() {
                       to="/app/perps/$market"
                       params={{ market: entry.urlSlug }}
                       className={`inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md px-3 text-xs font-medium transition ${
-                        isLive
+                        isRegistered
                           ? "bg-primary text-primary-foreground hover:bg-primary/90"
                           : "border bg-background hover:bg-muted"
                       }`}
                     >
                       <span>
-                        {isLive
-                          ? `Trade ${entry.displayName} (Testnet)`
-                          : `Inspect ${entry.displayName} Preview`}
+                        {isRegistered
+                          ? `Open ${entry.displayName} (Testnet)`
+                          : protocol
+                            ? `Inspect ${entry.displayName} (Not Registered)`
+                            : `Inspect ${entry.displayName} (Unverified)`}
                       </span>
                       <ArrowRight className="size-3.5" aria-hidden="true" />
                     </Link>
@@ -891,7 +905,19 @@ export function PerpsLiveMarketView({
   const refreshAll = useRefreshPerpsQueries(near.accountId);
   const [latestTx, setLatestTx] = useState<NearUserTxRecord | null>(null);
 
-  const market = getMarketFromProtocolSnapshot(protocol, marketEntry.marketId);
+  const marketSnapshot = protocol?.markets.includes(marketEntry.marketId)
+    ? getMarketFromProtocolSnapshot(protocol, marketEntry.marketId)
+    : null;
+  const isRegistered = Boolean(protocol && marketSnapshot);
+  const market = isRegistered ? marketSnapshot : null;
+  const registryLabel = isRegistered
+    ? "REGISTERED ON-CHAIN"
+    : protocol
+      ? "NOT REGISTERED"
+      : protocolError
+        ? "UNVERIFIED"
+        : "CHECKING RPC";
+  const registryVariant = isRegistered ? "real" as const : protocol ? "preview" as const : protocolError ? "demo" as const : "testnet" as const;
   const oracleStatus = evaluatePerpsOracleStatus(market, protocol?.blockTimestampSec ?? null);
 
   return (
@@ -904,10 +930,10 @@ export function PerpsLiveMarketView({
           marketEntry.logicalId !== marketEntry.marketId
             ? ` (logical ID ${marketEntry.logicalId})`
             : ""
-        } � Live NEAR Testnet Perpetual Terminal`}
+        } · NEAR Testnet Perpetuals Terminal`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <MaturityBadge variant="real">LIVE TESTNET</MaturityBadge>
+            <MaturityBadge variant={registryVariant}>{registryLabel}</MaturityBadge>
             <MaturityBadge variant="testnet">SYNTHETIC ORACLE</MaturityBadge>
             <Button type="button" size="sm" variant="outline" onClick={() => void refreshAll()}>
               <RefreshCw className="mr-1.5 size-3.5" aria-hidden="true" />

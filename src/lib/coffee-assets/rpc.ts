@@ -141,33 +141,23 @@ export async function fetchPoolSnapshot(
   poolId: number,
   opts: { endpoints?: readonly string[]; fetchFn?: FetchLike } = {},
 ): Promise<PoolSnapshot> {
-  try {
-    const pool = await callView({
-      contractId: RHEA_EXCHANGE_ID,
-      methodName: "get_pool",
-      args: { pool_id: poolId },
-      schema: PoolSchema,
-      endpoints: opts.endpoints,
-      fetchFn: opts.fetchFn,
-    });
-    return {
-      poolId,
-      exists: true,
-      tokenIds: pool.token_account_ids,
-      amounts: pool.amounts.map((amount) => BigInt(amount)),
-      totalFeeUnits: pool.total_fee,
-      sharesTotalSupply: BigInt(pool.shares_total_supply),
-    };
-  } catch {
-    return {
-      poolId,
-      exists: false,
-      tokenIds: [],
-      amounts: [],
-      totalFeeUnits: 0,
-      sharesTotalSupply: 0n,
-    };
-  }
+  // RPC failures must propagate: an unavailable read is not proof that a pool is absent.
+  const pool = await callView({
+    contractId: RHEA_EXCHANGE_ID,
+    methodName: "get_pool",
+    args: { pool_id: poolId },
+    schema: PoolSchema,
+    endpoints: opts.endpoints,
+    fetchFn: opts.fetchFn,
+  });
+  return {
+    poolId,
+    exists: true,
+    tokenIds: pool.token_account_ids,
+    amounts: pool.amounts.map((amount) => BigInt(amount)),
+    totalFeeUnits: pool.total_fee,
+    sharesTotalSupply: BigInt(pool.shares_total_supply),
+  };
 }
 
 /** On-chain AMM quote straight from the exchange (`get_return`). */
@@ -205,19 +195,15 @@ export async function fetchFtBalance(opts: {
   endpoints?: readonly string[];
   fetchFn?: FetchLike;
 }): Promise<bigint> {
-  try {
-    const value = await callView({
-      contractId: opts.tokenId,
-      methodName: "ft_balance_of",
-      args: { account_id: opts.accountId },
-      schema: U128StringSchema,
-      endpoints: opts.endpoints,
-      fetchFn: opts.fetchFn,
-    });
-    return BigInt(value);
-  } catch {
-    return 0n;
-  }
+  const value = await callView({
+    contractId: opts.tokenId,
+    methodName: "ft_balance_of",
+    args: { account_id: opts.accountId },
+    schema: U128StringSchema,
+    endpoints: opts.endpoints,
+    fetchFn: opts.fetchFn,
+  });
+  return BigInt(value);
 }
 
 export interface FtMetadata {
@@ -255,19 +241,16 @@ export async function fetchStorageBalance(opts: {
   endpoints?: readonly string[];
   fetchFn?: FetchLike;
 }): Promise<bigint | null> {
-  try {
-    const balance = await callView({
-      contractId: opts.tokenId,
-      methodName: "storage_balance_of",
-      args: { account_id: opts.accountId },
-      schema: StorageBalanceSchema,
-      endpoints: opts.endpoints,
-      fetchFn: opts.fetchFn,
-    });
-    return balance ? BigInt(balance.total) : null;
-  } catch {
-    return null;
-  }
+  const balance = await callView({
+    contractId: opts.tokenId,
+    methodName: "storage_balance_of",
+    args: { account_id: opts.accountId },
+    schema: StorageBalanceSchema,
+    endpoints: opts.endpoints,
+    fetchFn: opts.fetchFn,
+  });
+  // null means the chain explicitly returned no NEP-145 registration record.
+  return balance ? BigInt(balance.total) : null;
 }
 
 /** Exchange-internal deposit for an account, used to show where funds sit. */
