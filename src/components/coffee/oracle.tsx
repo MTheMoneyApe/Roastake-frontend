@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
+// Copyright © 2026 @MTheMoneyApe. All rights reserved.
+
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
@@ -40,6 +43,9 @@ import {
   toIsoUtc,
 } from "@/lib/oracle/format";
 import { useOracleSnapshot } from "@/lib/oracle/queries";
+import { MARKET_ARABICA_PERPS_ID, MARKET_ARABICA_URL_SLUG, PERPS_CONTRACT_ID } from "@/lib/perps/config";
+import { evaluatePerpsOracleStatus, formatUsdE8 } from "@/lib/perps/math";
+import { usePerpsProtocolSnapshot } from "@/lib/perps/queries";
 import type {
   AccountingSnapshot,
   MarketConfig,
@@ -633,6 +639,7 @@ function ProtocolHealthPanel({
 
 export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: string }) {
   const query = useOracleSnapshot(contractId);
+  const perpsQuery = usePerpsProtocolSnapshot();
   const snapshot = query.data;
   const nowSec = useClientEpochSec(snapshot?.fetchedAtMs);
   const [selectedMarket, setSelectedMarket] = useState<string>(MARKET_IMF_ARABICA);
@@ -967,6 +974,66 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
           </div>
 
           <ProtocolHealthPanel snapshot={snapshot} accounting={snapshot.accounting} />
+
+          <Panel
+            title={
+              <span className="flex flex-wrap items-center gap-2">
+                <span>Perpetuals Execution Feed ({PERPS_CONTRACT_ID})</span>
+                <Pill tone="warn">TESTNET_SANDBOX_FEED · SYNTHETIC ORACLE</Pill>
+              </span>
+            }
+            actions={
+              <Link
+                to="/app/perps/$market"
+                params={{ market: MARKET_ARABICA_URL_SLUG }}
+                className="text-xs font-medium text-primary hover:underline"
+              >
+                Open Arabica Terminal →
+              </Link>
+            }
+          >
+            {(() => {
+              const p = perpsQuery.data;
+              const status = evaluatePerpsOracleStatus(
+                p?.arabicaMarket,
+                p?.blockTimestampSec ?? null,
+              );
+              return (
+                <div className="space-y-3 text-xs">
+                  <p className="text-muted-foreground">
+                    Live coffee Perpetuals execution on <code className="font-mono">{PERPS_CONTRACT_ID}</code>{" "}
+                    (<code className="font-mono">{MARKET_ARABICA_PERPS_ID}</code>) is decoupled from
+                    the monthly IMF public benchmark above and runs on{" "}
+                    <strong className="text-foreground">TESTNET_SANDBOX_FEED</strong> with a{" "}
+                    {status.maxAgeSec}s maximum age policy.
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded border p-3">
+                      <div className="text-[11px] text-muted-foreground">Synthetic Reference Price</div>
+                      <div className="num mt-1 text-base font-semibold">
+                        {status.priceE8 ? `${formatUsdE8(status.priceE8)}/kg` : "Unavailable"}
+                      </div>
+                    </div>
+                    <div className="rounded border p-3">
+                      <div className="text-[11px] text-muted-foreground">Policy Status (Max {status.maxAgeSec}s)</div>
+                      <div className="mt-1 flex items-center gap-1.5 font-semibold">
+                        <Pill tone={status.isValidForOpen ? "gain" : status.status === "STALE" ? "warn" : "loss"}>
+                          {status.status}
+                        </Pill>
+                        {status.ageSec !== null && <span className="num text-muted-foreground">({status.ageSec}s old)</span>}
+                      </div>
+                    </div>
+                    <div className="rounded border p-3">
+                      <div className="text-[11px] text-muted-foreground">Feed Sequence</div>
+                      <div className="num mt-1 text-base font-semibold">
+                        {status.sequence !== null ? `#${status.sequence}` : "—"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </Panel>
 
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Execution proof panel */}

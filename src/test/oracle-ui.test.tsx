@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
+// Copyright © 2026 @MTheMoneyApe. All rights reserved.
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";

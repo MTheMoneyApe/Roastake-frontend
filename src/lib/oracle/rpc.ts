@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
+// Copyright © 2026 @MTheMoneyApe. All rights reserved.
+
 import { z } from "zod";
 import {
   assertTestnetAccountId,
@@ -125,14 +128,14 @@ const RpcEnvelopeSchema = z.object({
   result: z.unknown().optional(),
 });
 
-const FinalizedBlockResultSchema = z.object({
+export const FinalizedBlockResultSchema = z.object({
   header: z.object({
     hash: z.string().min(1),
     height: z.number().int().nonnegative().optional(),
   }),
 });
 
-const CallFunctionResultSchema = z.object({
+export const CallFunctionResultSchema = z.object({
   result: z.unknown().optional(),
   error: z.string().optional(),
   block_hash: z.string().optional(),
@@ -152,7 +155,7 @@ function validateContractIdOrThrowPolicy(rawContractId: string): string {
   }
 }
 
-function validateEndpointList(endpoints: readonly string[]): string[] {
+export function validateEndpointList(endpoints: readonly string[]): string[] {
   if (!endpoints.length) {
     throw new OracleRpcError("No NEAR Testnet RPC endpoints configured.", "POLICY_ERROR");
   }
@@ -170,7 +173,7 @@ function validateEndpointList(endpoints: readonly string[]): string[] {
   });
 }
 
-async function postJsonRpc<S extends z.ZodTypeAny>(opts: {
+export async function postJsonRpc<S extends z.ZodTypeAny>(opts: {
   endpoint: string;
   method: string;
   params: unknown;
@@ -178,6 +181,7 @@ async function postJsonRpc<S extends z.ZodTypeAny>(opts: {
   fetchFn: FetchLike;
   timeoutMs: number;
   label: string;
+  requestId?: string;
 }): Promise<z.output<S>> {
   const endpoint = assertTestnetRpcUrl(opts.endpoint);
   const controller = new AbortController();
@@ -193,7 +197,7 @@ async function postJsonRpc<S extends z.ZodTypeAny>(opts: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jsonrpc: "2.0",
-        id: "roastake-oracle-readonly",
+        id: opts.requestId ?? "roastake-oracle-readonly",
         method: opts.method,
         params: opts.params,
       }),

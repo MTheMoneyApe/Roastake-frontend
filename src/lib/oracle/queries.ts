@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
+// Copyright © 2026 @MTheMoneyApe. All rights reserved.
+
 import { useQuery } from "@tanstack/react-query";
 import { ORACLE_CONTRACT_ID, ORACLE_POLL_INTERVAL_MS } from "./config";
 import { fetchOracleSnapshot } from "./rpc";

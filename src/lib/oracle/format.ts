@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
+// Copyright © 2026 @MTheMoneyApe. All rights reserved.
+
 import type { MarketConfig, PriceObservation } from "./types";
 
 const DIGITS_ONLY = /^\d+$/;

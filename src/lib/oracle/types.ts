@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
+// Copyright © 2026 @MTheMoneyApe. All rights reserved.
+
 import { z } from "zod";
 
 /** Strict decimal string schema matching NEAR `near_sdk::json_types::U128` serialization. */

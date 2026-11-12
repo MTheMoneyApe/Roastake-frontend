@@ -1,11 +1,14 @@
+// SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
+// Copyright © 2026 @MTheMoneyApe. All rights reserved.
+
 export const NEAR_TESTNET_NETWORK_ID = "testnet" as const;
 
-export const PRIMARY_TESTNET_RPC_URL = "https://rpc.testnet.near.org";
-export const FALLBACK_TESTNET_RPC_URL = "https://rpc.testnet.fastnear.com";
+export const PRIMARY_TESTNET_RPC_URL = "https://rpc.testnet.fastnear.com";
+export const FALLBACK_TESTNET_RPC_URL = "https://rpc.testnet.near.org";
 
 export const APPROVED_TESTNET_RPC_HOSTS = new Set<string>([
-  "rpc.testnet.near.org",
   "rpc.testnet.fastnear.com",
+  "rpc.testnet.near.org",
 ]);
 
 export const TESTNET_RPC_ENDPOINTS = [PRIMARY_TESTNET_RPC_URL, FALLBACK_TESTNET_RPC_URL] as const;
