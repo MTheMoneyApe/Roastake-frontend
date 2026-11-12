@@ -257,13 +257,13 @@ describe("ROASTAKE Perpetuals math, policy & RPC lifecycle (M04.6)", () => {
 
   it("maps Three-Market slugs bidirectionally and enforces NEAR Testnet contract allowlist", () => {
     expect(resolveThreeMarketEntry(MARKET_ARABICA_URL_SLUG)?.marketId).toBe(MARKET_ARABICA_PERPS_ID);
-    expect(resolveThreeMarketEntry(encodeURIComponent(MARKET_ARABICA_PERPS_ID))?.status).toBe("live_testnet");
+    expect(resolveThreeMarketEntry(encodeURIComponent(MARKET_ARABICA_PERPS_ID))?.status).toBe("configured_testnet");
     expect(resolveThreeMarketEntry(MARKET_ROBUSTA_LOGICAL_ID)?.marketId).toBe(MARKET_ROBUSTA_PERPS_ID);
-    expect(resolveThreeMarketEntry(MARKET_ROBUSTA_LOGICAL_ID)?.status).toBe("live_testnet");
-    expect(resolveThreeMarketEntry(encodeURIComponent(MARKET_ROBUSTA_PERPS_ID))?.status).toBe("live_testnet");
+    expect(resolveThreeMarketEntry(MARKET_ROBUSTA_LOGICAL_ID)?.status).toBe("configured_testnet");
+    expect(resolveThreeMarketEntry(encodeURIComponent(MARKET_ROBUSTA_PERPS_ID))?.status).toBe("configured_testnet");
     expect(resolveThreeMarketEntry(MARKET_GESHA_LOGICAL_ID)?.marketId).toBe(MARKET_GESHA_PERPS_ID);
-    expect(resolveThreeMarketEntry(MARKET_GESHA_LOGICAL_ID)?.status).toBe("live_testnet");
-    expect(resolveThreeMarketEntry(encodeURIComponent(MARKET_GESHA_PERPS_ID))?.status).toBe("live_testnet");
+    expect(resolveThreeMarketEntry(MARKET_GESHA_LOGICAL_ID)?.status).toBe("configured_testnet");
+    expect(resolveThreeMarketEntry(encodeURIComponent(MARKET_GESHA_PERPS_ID))?.status).toBe("configured_testnet");
     expect(resolveThreeMarketEntry("NON_EXISTENT")).toBeNull();
 
     expect(validatePerpsTargetContractId(PERPS_CONTRACT_ID)).toBe(PERPS_CONTRACT_ID);
