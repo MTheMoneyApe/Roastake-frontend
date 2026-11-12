@@ -1,0 +1,61 @@
+ROASTAKE visual consistency: final local warning log extract
+
+Commands passed: bun x tsc --noEmit; bun run test (107 tests, 15 files); bun run build.
+
+Build warnings/advisories (no suppression; 30 browser externalization messages):
+(node:261) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+The plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the resolve.tsconfigPaths option. You can remove the plugin and set resolve.tsconfigPaths: true in your Vite config instead.
+transforming...[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/ethereum-provider/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/universal-provider/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/jsonrpc-http-connection/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/jsonrpc-provider/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/sign-client/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@safe-global/safe-apps-provider/dist/provider.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/types/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:buffer" has been externalized for browser compatibility, imported by "<checkout>/node_modules/bn.js/lib/bn.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/core/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/heartbeat/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@walletconnect/jsonrpc-ws-connection/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:buffer" has been externalized for browser compatibility, imported by "<checkout>/node_modules/safe-buffer/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit/node_modules/@walletconnect/universal-provider/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@metamask/safe-event-emitter/dist/index.cjs". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit/node_modules/@walletconnect/universal-provider/node_modules/@walletconnect/sign-client/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit/node_modules/@walletconnect/types/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit-controllers/node_modules/@walletconnect/universal-provider/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/json-rpc-engine/node_modules/@metamask/safe-event-emitter/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit/node_modules/@walletconnect/universal-provider/node_modules/@walletconnect/sign-client/node_modules/@walletconnect/core/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit-controllers/node_modules/@walletconnect/universal-provider/node_modules/@walletconnect/sign-client/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit-controllers/node_modules/@walletconnect/universal-provider/node_modules/@walletconnect/types/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/@reown/appkit-controllers/node_modules/@walletconnect/universal-provider/node_modules/@walletconnect/sign-client/node_modules/@walletconnect/core/dist/index.es.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:util" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/_stream_readable.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:string_decoder" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/_stream_readable.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/_stream_readable.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:buffer" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/_stream_readable.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:buffer" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/_stream_writable.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:events" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/internal/streams/stream-browser.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:util" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/internal/streams/buffer_list.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin rolldown:vite-resolve] Module "node:buffer" has been externalized for browser compatibility, imported by "<checkout>/node_modules/readable-stream/lib/internal/streams/buffer_list.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+ WARN  inlineDynamicImports option is ignored because the codeSplitting option is specified.
+
+Test warnings (one act warning; proxy notice repeated per worker):
+(node:74) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+An update to WalletHubInner inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+Scoped ESLint: 0 errors, 5 existing react-refresh/only-export-components warnings in shell.tsx (exports APP_NAV, ROASTER_NAV, ADMIN_SECTIONS, ADMIN_NAV, useHydrated).
+Baseline-only scoped source lint: 150 Prettier errors and 3 hook-rule errors in inspected compact route/component files; left unchanged rather than wholesale formatting/refactor. Repository-wide lint was not asserted clean.
+
+Browser: Arabica historical receipt verification showed a NEAR Testnet RPC timeout at 10000 ms; no verified observations/candles available. Error panel and no-data state rendered. No fabricated fallback prices/candles.
+Runner substitution: bunx was unavailable (exit 127); all equivalent commands used bun x. No dependencies or lockfile changed.
