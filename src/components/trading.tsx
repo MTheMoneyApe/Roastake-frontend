@@ -384,6 +384,9 @@ export function PositionsPage() {
         }
       />
 
+      <div role="note" className="rounded-lg border border-gain/30 bg-forest/10 px-4 py-3 text-xs text-muted-foreground">
+        <strong className="text-foreground">On-chain Testnet positions.</strong> This panel reads the connected NEAR Testnet account and the deployed Perpetuals contract. It is separate from the local demo positions below; Testnet USDC has no monetary value.
+      </div>
       <LivePositionsPanel
         protocol={protocol}
         trader={trader}
@@ -393,7 +396,7 @@ export function PositionsPage() {
       <Panel
         title={
           <span className="flex flex-wrap items-center gap-2">
-            <span>Simulated Local Perpetual Positions</span>
+            <span>Local demo positions (not on-chain)</span>
             <DemoBadge>DEMO ONLY · ISOLATED FROM TESTNET USDC</DemoBadge>
           </span>
         }

@@ -188,6 +188,7 @@ describe("M04.18 swap gating", () => {
     walletConnected: true,
     networkId: "testnet",
     poolExists: true,
+    poolLoading: false,
     reserveIn: 1_000_000n,
     reserveOut: 10_000_000n,
     amountIn: 50_000n,
