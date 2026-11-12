@@ -108,7 +108,7 @@ function Home() {
                 <li><strong className="text-foreground">Coffee lots, Passport and Redeem:</strong> illustrative records and simulated actions; no verified physical custody or shipment.</li>
                 <li><strong className="text-foreground">Vaults, staking, lending, governance, Admin and Roaster Portal:</strong> roadmap or UI previews, not deployed protocol services.</li>
               </ul>
-              <div className="mt-5 flex flex-wrap gap-4 text-sm"><Link to="/app/docs" className="underline-offset-4 hover:underline">Implementation status</Link><Link to="/app/risk-center" className="underline-offset-4 hover:underline">Risk disclosures</Link></div>
+              <div className="mt-5 flex flex-wrap gap-4 text-sm"><Link to="/app/docs" className="underline-offset-4 hover:underline">Implementation status</Link><Link to="/app/risk-center" className="underline-offset-4 hover:underline">Risk Center preview</Link></div>
             </article>
           </div>
         </Section>
