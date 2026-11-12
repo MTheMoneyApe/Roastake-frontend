@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ROASTAKE">
+  <rect width="64" height="64" rx="12" fill="#3a2416" />
+  <circle cx="32" cy="32" r="18" fill="#c9a227" />
+  <path d="M24 32c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8" fill="none" stroke="#3a2416" stroke-width="3" stroke-linecap="round" />
+</svg>

@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import bag from "@/assets/coffee-bag.jpg";
 import type { Product } from "@/lib/demo/types";
 import { useDemo } from "@/lib/demo/store";
 import { cn } from "@/lib/utils";
@@ -9,7 +8,7 @@ const tint: Record<string, string> = { Colombia: "bg-copper/25", Ethiopia: "bg-b
 export function ProductImage({ p, className }: { p: Product; className?: string }) {
   return (
     <div className={cn("relative overflow-hidden rounded-md bg-parchment", className)}>
-      <img src={bag} alt={`${p.name} coffee bag`} loading="lazy" width={912} height={912} className="h-full w-full object-cover mix-blend-multiply" />
+      <div className="h-full w-full bg-muted" aria-hidden="true" />
       <div className={cn("absolute inset-0 mix-blend-multiply", tint[p.country])} />
       <span className="absolute bottom-[34%] left-1/2 w-[38%] -translate-x-1/2 text-center font-display text-[11px] leading-tight text-cream">{p.origin}</span>
     </div>

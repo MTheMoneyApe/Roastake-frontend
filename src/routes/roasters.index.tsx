@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import roastery from "@/assets/roastery.jpg";
 import { PublicShell, Section } from "@/components/shell";
 import { useDemo } from "@/lib/demo/store";
 import { seo } from "@/lib/seo";
@@ -16,7 +15,7 @@ export const Route = createFileRoute("/roasters/")({
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {s.roasters.filter((r) => r.status === "Approved").map((r) => (
               <Link key={r.id} to="/roasters/$id" params={{ id: r.id }} className="group overflow-hidden rounded-lg border bg-card">
-                <img src={roastery} alt="" loading="lazy" width={1200} height={912} className="aspect-[16/9] w-full object-cover" />
+                <div className="aspect-[16/9] w-full bg-muted" aria-hidden="true" />
                 <div className="p-5">
                   <p className="text-xs uppercase tracking-wider text-copper">{r.city}, {r.country} · est. {r.founded}</p>
                   <p className="mt-1 font-display text-2xl">{r.name}</p>

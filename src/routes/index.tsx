@@ -1,8 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Flame, Landmark, Layers, Package } from "lucide-react";
-import hero from "@/assets/hero-coffee.jpg";
-import farm from "@/assets/origin-farm.jpg";
-import roastery from "@/assets/roastery.jpg";
 import { Button } from "@/components/ui/button";
 import { PublicShell, Section } from "@/components/shell";
 import { DemoBadge, Illustrative } from "@/components/kit";
@@ -24,7 +21,7 @@ function Home() {
   return (
     <PublicShell>
       <section className="relative isolate overflow-hidden">
-        <img src={hero} alt="Roasted and green coffee beans with sage leaves" width={1600} height={1008} className="absolute inset-0 -z-10 h-full w-full object-cover" />
+        <div className="absolute inset-0 -z-10 h-full w-full bg-muted" aria-hidden="true" />
         <div className="bg-hero-fade absolute inset-0 -z-10" />
         <Section className="flex min-h-[78vh] flex-col justify-end pb-16 pt-32 text-cream">
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-brass">Specialty Coffee × Decentralized Finance</p>
@@ -53,7 +50,7 @@ function Home() {
 
       <section className="bg-secondary/60 py-20">
         <Section className="grid items-center gap-12 md:grid-cols-2">
-          <img src={farm} alt="Coffee farm in the Colombian highlands" loading="lazy" width={1200} height={912} className="aspect-[4/3] w-full rounded-lg object-cover" />
+          <div className="aspect-[4/3] w-full rounded-lg bg-muted" aria-hidden="true" />
           <div>
             <p className="font-mono text-xs uppercase tracking-widest text-copper">Origins</p>
             <h2 className="mt-2 text-4xl">Every lot has a name, a farm and a passport.</h2>
@@ -110,7 +107,7 @@ function Home() {
           <Button asChild className="mt-6 bg-brass text-charcoal hover:bg-brass/90"><Link to="/app/ventures">Browse ventures</Link></Button>
         </div>
         <div className="relative overflow-hidden rounded-lg p-8 text-cream">
-          <img src={roastery} alt="" loading="lazy" width={1200} height={912} className="absolute inset-0 -z-10 h-full w-full object-cover" />
+          <div className="absolute inset-0 -z-10 h-full w-full bg-muted" aria-hidden="true" />
           <div className="absolute inset-0 -z-10 bg-forest/80" />
           <p className="font-mono text-xs uppercase tracking-widest text-brass">For roasters</p>
           <h3 className="mt-2 text-3xl">Sell globally. Tokenize your lots.</h3>

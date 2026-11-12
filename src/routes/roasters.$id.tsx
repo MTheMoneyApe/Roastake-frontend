@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import roastery from "@/assets/roastery.jpg";
 import { PublicShell, Section } from "@/components/shell";
 import { ProductCard } from "@/components/commerce";
 import { Empty, KV } from "@/components/kit";
@@ -18,7 +17,7 @@ export const Route = createFileRoute("/roasters/$id")({
     return (
       <PublicShell>
         <div className="relative isolate">
-          <img src={roastery} alt={`${r.name} roastery`} width={1200} height={912} className="absolute inset-0 -z-10 h-full w-full object-cover" />
+          <div className="absolute inset-0 -z-10 h-full w-full bg-muted" aria-hidden="true" />
           <div className="absolute inset-0 -z-10 bg-forest/80" />
           <Section className="py-20 text-cream"><p className="text-xs uppercase tracking-widest text-brass">{r.city}, {r.country}</p><h1 className="mt-2 text-5xl">{r.name}</h1><p className="mt-4 max-w-xl text-cream/85">{r.story}</p></Section>
         </div>
