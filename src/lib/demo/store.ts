@@ -100,7 +100,13 @@ const ledger = (d: DemoState, category: string, desc: string, amount: number, bu
 
 export const demo = {
   reset() {
-    localStorage.removeItem(KEY);
+    if (typeof window !== "undefined" && typeof localStorage?.removeItem === "function") {
+      try {
+        localStorage.removeItem(KEY);
+      } catch {
+        // Ignore storage errors in restricted or experimental test runtimes
+      }
+    }
     commit(fresh());
     toast.success("Demo data reset", { description: "All simulated balances and history restored to seed." });
   },

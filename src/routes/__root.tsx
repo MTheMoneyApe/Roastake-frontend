@@ -13,8 +13,11 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { hydrateDemo } from "@/lib/demo/store";
+import { hydratePerpsTxHistory } from "@/lib/perps/tx";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { WalletHubDialog } from "@/components/wallet/wallet-hub";
+import { WalletInfrastructureProvider } from "@/lib/wallet/provider";
 
 function NotFoundComponent() {
   return (
@@ -81,8 +84,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ROASTAKE — Specialty Coffee × Decentralized Finance" },
-      { name: "description", content: "Interactive prototype of a specialty-coffee marketplace and simulated RWA/DeFi ecosystem." },
+      { title: "ROASTAKE — NEAR Testnet Coffee Perpetuals Prototype" },
+      { name: "description", content: "NEAR Testnet coffee perpetuals settled in Circle Testnet USDC on Arabica, Robusta & Gesha independent synthetic sandbox pricing alongside simulated demos (Testnet only, no Mainnet)." },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -92,7 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
     ],
   }),
   shellComponent: RootShell,
@@ -117,15 +120,21 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  useEffect(() => hydrateDemo(), []);
+  useEffect(() => {
+    hydrateDemo();
+    hydratePerpsTxHistory();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider delayDuration={150}>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <Toaster position="bottom-right" richColors />
-      </TooltipProvider>
+      <WalletInfrastructureProvider>
+        <TooltipProvider delayDuration={150}>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <WalletHubDialog />
+          <Toaster position="bottom-right" richColors />
+        </TooltipProvider>
+      </WalletInfrastructureProvider>
     </QueryClientProvider>
   );
 }

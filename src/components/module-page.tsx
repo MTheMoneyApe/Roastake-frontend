@@ -1,5 +1,5 @@
 import { Link, useParams } from "@tanstack/react-router";
-import { PageHeader, DemoBadge, Empty } from "@/components/kit";
+import { PageHeader, MaturityBadge, Empty } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 
 function titleize(s: string) {
@@ -17,8 +17,32 @@ export function ModulePage({ path }: { path: string }) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={title} subtitle="Coming soon · not implemented in this MVP." crumbs={crumbs} actions={<DemoBadge/>}/>
-      <Empty text="No actions, real services or transactions are available here." action={<div className="flex flex-wrap justify-center gap-3"><Button asChild><Link to="/app/assets">Explore coffee assets</Link></Button><Button asChild variant="outline"><Link to="/market">Coffee marketplace</Link></Button></div>}/>
+      <PageHeader
+        title={title}
+        demo={false}
+        subtitle="Planned module preview · not deployed yet. No live smart contracts, yields, or real transactions run here."
+        crumbs={crumbs}
+        actions={<MaturityBadge variant="preview">PREVIEW · PLANNED</MaturityBadge>}
+      />
+      <Empty
+        text="This module is part of the planned ROASTAKE ecosystem roadmap and is not yet operational on NEAR Testnet."
+        action={
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button asChild>
+              <Link to="/app/perps">Perpetuals (Demo UI)</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/app/oracle">Coffee Oracle (Testnet)</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/app/wallet">Wallet Hub</Link>
+            </Button>
+            <Button asChild variant="ghost">
+              <Link to="/app/assets">Coffee assets</Link>
+            </Button>
+          </div>
+        }
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useState, type ComponentPropsWithoutRef, type ReactNode } from "react";
 import { Area, AreaChart, Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from "recharts";
 import { HelpCircle, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,40 @@ import { fmt } from "@/lib/demo/calc";
 
 export function DemoBadge({ children = "DEMO", className }: { children?: ReactNode; className?: string }) {
   return <span className={cn("inline-flex items-center gap-1 rounded-sm border border-brass/60 bg-brass/15 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brass", className)}>● {children}</span>;
+}
+
+export type MaturityVariant = "real" | "testnet" | "demo" | "preview";
+
+const MATURITY_STYLES: Record<MaturityVariant, string> = {
+  real: "border-gain/50 bg-gain/15 text-gain",
+  testnet: "border-sage/50 bg-forest/35 text-mint",
+  demo: "border-brass/60 bg-brass/15 text-brass",
+  preview: "border-dashed border-muted-foreground/45 bg-muted/40 text-muted-foreground",
+};
+
+/** Discrete module maturity pill distinguishing real/testnet features, local demos, and planned previews. */
+export function MaturityBadge({
+  variant,
+  children,
+  className,
+  ...rest
+}: {
+  variant: MaturityVariant;
+  children: ReactNode;
+  className?: string;
+} & Omit<ComponentPropsWithoutRef<"span">, "children" | "className">) {
+  return (
+    <span
+      {...rest}
+      className={cn(
+        "inline-flex shrink-0 items-center rounded-sm border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider leading-none",
+        MATURITY_STYLES[variant],
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
 }
 export function Illustrative({ className }: { className?: string }) {
   return <p className={cn("text-[11px] uppercase tracking-wider text-muted-foreground", className)}>Illustrative demo data · simulated · not financial advice</p>;
@@ -97,7 +131,7 @@ export function DataTable<T>({ cols, rows, empty = "Nothing here yet.", rowKey }
       <table className="w-full min-w-[560px] text-sm">
         <thead>
           <tr className="border-b text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-            {cols.map((c) => <th key={c.key} className={cn("px-4 py-2 font-medium", c.align === "right" && "text-right")}>{c.label}</th>)}
+            {cols.map((c) => <th key={c.key} scope="col" className={cn("px-4 py-2 font-medium", c.align === "right" && "text-right")}>{c.label}</th>)}
           </tr>
         </thead>
         <tbody>
