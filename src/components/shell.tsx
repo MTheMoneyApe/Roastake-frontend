@@ -93,9 +93,9 @@ export const APP_NAV: Group[] = [
         label: "Wallet",
         icon: Wallet,
         badge: {
-          label: "REAL",
-          variant: "real",
-          title: "Real wallet connections (Testnet / Devnet)",
+          label: "TESTNET",
+          variant: "testnet",
+          title: "Genuine wallet connections restricted to NEAR Testnet, EVM testnets, Solana Devnet and Hyperliquid Testnet; no Mainnet execution.",
         },
       },
       { to: "/app/activity", label: "Activity", icon: RefreshCw },
@@ -166,6 +166,11 @@ export const APP_NAV: Group[] = [
 export const ROASTER_NAV: Group[] = [
   {
     label: "Roaster Portal",
+    groupBadge: {
+      label: "PREVIEW",
+      variant: "preview",
+      title: "Preview screens only; no real roaster onboarding, inventory, storefront or payments are connected.",
+    },
     items: [
       ["dashboard", "Overview", LayoutDashboard],
       ["products", "Products", Coffee],
@@ -208,6 +213,11 @@ export const ADMIN_SECTIONS: [string, string][] = [
 export const ADMIN_NAV: Group[] = [
   {
     label: "Admin",
+    groupBadge: {
+      label: "DEMO",
+      variant: "demo",
+      title: "Local demonstration UI only; no production admin authorization or operational controls are connected.",
+    },
     items: [
       { to: "/admin", label: "Overview", icon: LayoutDashboard },
       ...ADMIN_SECTIONS.map(([k, l]) => ({ to: `/admin/${k}`, label: l, icon: Settings })),
