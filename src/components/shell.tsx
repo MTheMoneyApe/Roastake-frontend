@@ -77,7 +77,7 @@ export const APP_NAV: Group[] = [
           label: "TESTNET",
           variant: "testnet",
           title:
-            "Live NEAR Testnet Perpetuals (perps-v1.roastake-dev-mta.testnet) & coffee roadmap markets",
+            "Three registered NEAR Testnet markets (Arabica, Robusta & Gesha) on perps-v1.roastake-dev-mta.testnet; operator-controlled synthetic prices.",
         },
       },
       { to: "/app/markets", label: "Spot Markets", icon: Gauge },
@@ -354,7 +354,7 @@ function Controls() {
       <Link
         to="/app/multichain"
         className="hidden items-center gap-1.5 rounded-full border border-gain/40 bg-forest/25 px-2.5 py-1 text-[11px] font-medium text-gain transition-colors hover:bg-forest/40 xl:inline-flex"
-        title="NEAR Testnet is ROASTAKE's primary execution network. Perpetuals execution contracts are in development."
+        title="NEAR Testnet is ROASTAKE's primary execution network. Perpetuals, Oracle and RHEA Testnet swap integrations are deployed; prices and coffee inventory remain synthetic or simulated."
       >
         <Sparkles className="size-3" aria-hidden="true" />
         <span>NEAR Testnet · Primary Network</span>
@@ -647,7 +647,8 @@ const PUBLIC_LINKS = [
   ["/roasters", "Roasters"],
   ["/app/assets", "Coffee Assets"],
   ["/app/coffee-passport", "Passport"],
-  ["/app/dashboard", "Demo App"],
+  ["/app/perps", "Perpetuals · Testnet"],
+  ["/app/dashboard", "Protocol App"],
 ] as const;
 export function PublicShell({ children }: { children: ReactNode }) {
   const cart = useDemo((s) => s.cart.reduce((a, c) => a + c.qty, 0));
@@ -656,7 +657,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <div className="demo-stripe border-b border-brass/30 py-1 text-center text-[11px] font-medium uppercase tracking-wider text-espresso">
-        Demo prototype · all products, payments, tokens and yields are simulated
+        ROASTAKE Testnet prototype · marketplace, coffee inventory, demo balances & yields are simulated; Perps and RHEA swaps use NEAR Testnet transactions.
       </div>
       <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:gap-4 sm:px-4">
@@ -719,8 +720,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
             <p className="font-display text-2xl text-cream">ROASTAKE</p>
             <p className="mt-2 text-sm opacity-80">Roast. Stake. Repeat.</p>
             <p className="mt-4 text-xs opacity-60">
-              Interactive prototype. No real funds, tokens, coffee inventory, yields, contracts or
-              shipments.
+              A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions using non-monetary test tokens. Marketplace orders, inventory, coffee custody, demo balances and yields are simulated; no verified physical backing, real shipments or Mainnet deployment.
             </p>
           </div>
           {[

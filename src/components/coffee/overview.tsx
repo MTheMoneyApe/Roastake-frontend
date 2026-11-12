@@ -145,7 +145,7 @@ export function Dashboard() {
         <PageHeader
           title="ROASTAKE Protocol"
           demo={false}
-          subtitle="Specialty Coffee DeFi, live NEAR Testnet Perpetuals, verifiable OutLayer price telemetry, and tokenized coffee provenance."
+          subtitle="Live NEAR Testnet Perpetuals across Arabica, Robusta & Gesha; separate read-only Oracle telemetry via OutLayer; and a simulated coffee marketplace and provenance prototype."
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <Button asChild className="gap-1.5">
@@ -212,8 +212,7 @@ export function Dashboard() {
               COFFEE-ARABICA-TESTNET/USD runs live on{" "}
               <span className="font-mono">{PERPS_CONTRACT_ID}</span> using 6-decimal Circle Native
               Testnet USDC (non-monetary) and synthetic TESTNET_SANDBOX_FEED pricing, alongside
-              Robusta &amp; Gesha preview roadmap markets. Simulated demo coffee balances remain
-              isolated.
+              Arabica, Robusta and Gesha are registered on this NEAR Testnet contract and use Circle Native Testnet USDC (non-monetary) plus independent operator-controlled TESTNET_SANDBOX_FEED prices. These are synthetic test values, not commercial coffee prices. The separate read-only OutLayer Oracle exposes an IMF monthly benchmark and a Gesha fixture; it does not power Perps. Simulated demo coffee balances remain isolated.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -235,7 +234,7 @@ export function Dashboard() {
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-md border bg-background/40 p-3.5">
             <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-              Arabica Live Reference
+              Arabica Testnet Feed
             </p>
             <p className="mt-1 font-medium text-sm text-gain num">
               {perpsOracleStatus.priceE8

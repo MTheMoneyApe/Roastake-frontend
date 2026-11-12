@@ -29,7 +29,7 @@ export function ModulePage({ path }: { path: string }) {
         action={
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild>
-              <Link to="/app/perps">Perpetuals (Demo UI)</Link>
+              <Link to="/app/perps">Perpetuals (NEAR Testnet)</Link>
             </Button>
             <Button asChild variant="outline">
               <Link to="/app/oracle">Coffee Oracle (Testnet)</Link>

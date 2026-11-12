@@ -349,7 +349,7 @@ export function PositionsTables({ filter }: { filter?: string }) {
         actions={<MaturityBadge variant="testnet">ON-CHAIN PENDING</MaturityBadge>}
       >
         <Empty
-          text="No on-chain NEAR Testnet transactions yet — Perpetuals smart contracts are pending M04.5 implementation. Simulated fills above remain strictly local to your browser."
+          text="This legacy demo market has no on-chain transactions. Live NEAR Testnet Perpetuals are available separately in the three-market hub using perps-v1.roastake-dev-mta.testnet. Simulated fills above remain local to this browser."
           action={
             <Button size="sm" variant="outline" asChild>
               <Link to="/app/wallet">Inspect Wallet Hub</Link>

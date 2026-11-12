@@ -14,7 +14,7 @@ export const NEAR_TESTNET_INFO: WalletNetworkInfo = {
   explorerUrl: "https://explorer.testnet.near.org",
   isPrimaryProtocolNetwork: true,
   isExternalVenue: false,
-  deployedContractsNote: `Live Testnet contracts: perps-v1.roastake-dev-mta.testnet (Perpetuals · Arabica Synthetic + Circle USDC) & ${ORACLE_CONTRACT_ID} (IMF/Gesha Oracle).`,
+  deployedContractsNote: `Live Testnet contracts: perps-v1.roastake-dev-mta.testnet (Arabica, Robusta & Gesha synthetic Perpetuals · Circle Native Testnet USDC margin) & ${ORACLE_CONTRACT_ID} (read-only IMF monthly benchmark + Gesha synthetic fixture). The separate RHEA Testnet pools power real swaps with non-monetary test tokens.`,
   roastakeStatus: "primary_execution_deployed_oracle",
 };
 
