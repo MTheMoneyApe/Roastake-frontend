@@ -60,8 +60,8 @@ function resolveChartTheme(container: HTMLElement) {
     border: resolveColor("--border"),
     gain: resolveColor("--gain"),
     loss: resolveColor("--loss"),
-    line: resolveColor("--chart-1"),
-    close: resolveColor("--brass"),
+    line: resolveColor("--gain"),
+    close: resolveColor("--warning-foreground"),
   };
 }
 

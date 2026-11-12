@@ -123,7 +123,7 @@
   --ring: var(--forest);
   --highlight: var(--copper);
   --highlight-foreground: var(--cream);
-  --chart-1: var(--sage);
+  --chart-1: var(--forest);
   --chart-2: var(--copper);
   --chart-3: var(--brass);
   --chart-4: var(--deep-sage);
@@ -144,6 +144,7 @@
 .dark {
   color-scheme: dark;
   --copper: oklch(0.76 0.08 55);
+  --chart-1: var(--sage);
   --warning: oklch(0.3 0.035 80);
   --warning-foreground: oklch(0.82 0.08 80);
   --background: oklch(0.205 0.014 160);

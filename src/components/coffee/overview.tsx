@@ -141,7 +141,7 @@ export function Dashboard() {
   return (
     <div className="space-y-9">
       {/* A. Product Overview */}
-      <section aria-labelledby="product-overview-heading" className="space-y-4">
+      <section aria-label="Protocol overview" className="space-y-4">
         <PageHeader
           title="ROASTAKE Protocol"
           demo={false}
@@ -277,7 +277,7 @@ export function Dashboard() {
             </p>
             <p className="mt-1 font-medium text-sm">
               {nearConnected && near.accountId ? (
-                <span className="font-mono text-gain">{near.accountId}</span>
+                <span className="min-w-0 font-mono text-gain [overflow-wrap:anywhere]">{near.accountId}</span>
               ) : (
                 "Connect NEAR Wallet"
               )}

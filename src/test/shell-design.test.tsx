@@ -63,6 +63,9 @@ describe("Shared brand shells", () => {
       "href",
       "#main-content",
     );
+    for (const logo of screen.getAllByRole("link", { name: "ROASTAKE home" })) {
+      expect(logo).toHaveAttribute("href", "/app/dashboard");
+    }
     expect(screen.getByRole("button", { name: "Notifications" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Connect Wallet" })).toBeInTheDocument();
     expect(
@@ -91,7 +94,7 @@ describe("Shared brand shells", () => {
       const workspace = screen.getByRole("navigation", { name: "Current workspace" });
       expect(within(workspace).getByRole("link", { name: label })).toHaveAttribute("href", home);
       for (const logo of screen.getAllByRole("link", { name: "ROASTAKE home" })) {
-        expect(logo).toHaveAttribute("href", "/");
+        expect(logo).toHaveAttribute("href", home);
       }
     },
   );
@@ -136,6 +139,10 @@ describe("Shared brand shells", () => {
     expect(drawer).toHaveAccessibleDescription(
       "Navigate the protocol, coffee marketplace and preview portals.",
     );
+    expect(within(drawer).getByRole("link", { name: "ROASTAKE home" })).toHaveAttribute(
+      "href",
+      "/app/dashboard",
+    );
     expect(within(drawer).getByRole("link", { name: "Asset Explorer" })).toHaveAttribute(
       "aria-current",
       "page",
@@ -154,6 +161,9 @@ describe("Shared brand shells", () => {
     );
     expect(container.querySelector("header")).toHaveClass("brand-header");
     expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
+    for (const logo of screen.getAllByRole("link", { name: "ROASTAKE home" })) {
+      expect(logo).toHaveAttribute("href", "/");
+    }
     const desktopNav = screen.getByRole("navigation", { name: "Main navigation" });
     expect(desktopNav).toHaveClass("xl:flex");
     const expectedLinks = within(desktopNav)

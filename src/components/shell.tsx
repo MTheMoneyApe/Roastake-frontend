@@ -244,10 +244,18 @@ export function useHydrated() {
   return h;
 }
 
-function Logo({ compact = false, onNav }: { compact?: boolean; onNav?: () => void }) {
+function Logo({
+  to = "/",
+  compact = false,
+  onNav,
+}: {
+  to?: string;
+  compact?: boolean;
+  onNav?: () => void;
+}) {
   return (
     <Link
-      to="/"
+      to={to}
       onClick={onNav}
       aria-label="ROASTAKE home"
       className="inline-flex shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -624,7 +632,7 @@ export function AppShell({
         </a>
         <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar [--ring:var(--sidebar-ring)] lg:flex">
           <div className="flex min-h-16 items-center border-b border-sidebar-border px-5 text-sidebar-foreground">
-            <Logo />
+            <Logo to={home} />
           </div>
           <div className="flex-1 overflow-y-auto px-2 pb-6">
             <NavList groups={nav} />
@@ -646,7 +654,7 @@ export function AppShell({
             Navigate the protocol, coffee marketplace and preview portals.
           </SheetDescription>
           <div className="mb-5 flex min-h-10 items-center pr-8">
-            <Logo onNav={() => setOpen(false)} />
+            <Logo to={home} onNav={() => setOpen(false)} />
           </div>
           <NavList groups={nav} showPortals={isMainAppNav} onNav={() => setOpen(false)} />
         </SheetContent>
@@ -668,7 +676,7 @@ export function AppShell({
                   </Button>
                 </SheetTrigger>
                 <span className="lg:hidden">
-                  <Logo compact />
+                  <Logo to={home} compact />
                 </span>
                 <nav
                   aria-label="Current workspace"
@@ -727,7 +735,7 @@ export function AppShell({
               )}
             >
               <i.icon className="size-5" aria-hidden="true" />
-              <span className="truncate">{i.label}</span>
+              <span className="max-w-full truncate">{i.label}</span>
             </Link>
           ))}
           <SheetTrigger asChild>

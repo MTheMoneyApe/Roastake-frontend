@@ -17,7 +17,7 @@ function Home() {
   return (
     <PublicShell>
       <section className="relative isolate overflow-hidden">
-        <div className="absolute inset-0 -z-10 h-full w-full bg-muted" aria-hidden="true" />
+        <div className="absolute inset-0 -z-10 h-full w-full bg-forest" aria-hidden="true" />
         <div className="bg-hero-fade absolute inset-0 -z-10" />
         <Section className="flex min-h-[min(78dvh,52rem)] flex-col justify-end pb-12 pt-20 text-cream sm:pb-16 sm:pt-32">
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-brass">Specialty Coffee × Decentralized Finance</p>

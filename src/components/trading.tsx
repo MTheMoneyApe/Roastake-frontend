@@ -299,8 +299,8 @@ function LegacySimulatedPerpMarketPage({ id }: { id: string }) {
             <div><Label htmlFor="sz">Size (index units)</Label><Input id="sz" className="num" inputMode="decimal" value={size} onChange={(e) => setSize(e.target.value)} /></div>
             {type === "Limit" && <div><Label htmlFor="lp">Limit price</Label><Input id="lp" className="num" inputMode="decimal" placeholder={fmt(mark, 3)} value={limit} onChange={(e) => setLimit(e.target.value)} /></div>}
             <div><Label>Leverage: {lev}×</Label><Slider className="mt-2" min={1} max={20} step={1} value={[lev]} onValueChange={(v) => setLev(v[0])} aria-label="Leverage" /></div>
-            <div><Label>Margin asset (demo balance)</Label>
-              <Select value={asset} onValueChange={setAsset}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{MARGIN_ASSETS.map((a) => <SelectItem key={a} value={a}>{a} · bal {fmt(s.balances[a] ?? 0, 2)}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label htmlFor="margin-asset">Margin asset (demo balance)</Label>
+              <Select value={asset} onValueChange={setAsset}><SelectTrigger id="margin-asset"><SelectValue /></SelectTrigger><SelectContent>{MARGIN_ASSETS.map((a) => <SelectItem key={a} value={a}>{a} · bal {fmt(s.balances[a] ?? 0, 2)}</SelectItem>)}</SelectContent></Select></div>
             <KV rows={[
               ["Notional (Demo)", usd(price * n)],
               ["Margin required", `${usd(marginUsd)} ≈ ${fmt(marginUsd / (SPOT[asset] ?? 1), 4)} ${asset}`],

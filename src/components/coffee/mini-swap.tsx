@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Wallet,
 } from "lucide-react";
+import { PageHeader } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -386,19 +387,15 @@ export function CoffeeMiniSwap() {
 
   return (
     <section className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-2xl">Live Mini Swap · RHEA Testnet</h2>
-          <p className="text-sm text-muted-foreground">
-            Real NEP-141 swaps on RHEA pools (NEAR Testnet). Prices, reserves, fees and finality
-            read from chain.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Live Mini Swap · RHEA Testnet"
+        subtitle="Real NEP-141 swaps on RHEA pools (NEAR Testnet). Prices, reserves, fees and finality read from chain."
+        demo={false}
+      />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,460px)_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)]">
         <form
-          className="space-y-4 rounded-lg border bg-card p-5"
+          className="brand-surface space-y-4 p-5"
           onSubmit={(event) => {
             event.preventDefault();
             setReviewing(true);

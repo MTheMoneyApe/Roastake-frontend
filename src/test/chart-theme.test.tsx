@@ -99,7 +99,8 @@ describe("market chart shared theme", () => {
       "--gain": ["oklch(0.5 0.12 155)", [20, 115, 65, 255]],
       "--loss": ["oklch(0.5 0.16 30)", [166, 46, 33, 255]],
       "--chart-1": ["oklch(0.55 0.08 145)", [90, 125, 83, 255]],
-      "--brass": ["oklch(0.5 0.08 80)", [120, 95, 42, 255]],
+      "--brass": ["oklch(0.73 0.08 80)", [191, 164, 111, 255]],
+      "--warning-foreground": ["oklch(0.43 0.08 65)", [111, 68, 23, 255]],
     } as const;
     const colors = Object.values(theme);
     const context = {
@@ -154,7 +155,7 @@ describe("market chart shared theme", () => {
     );
     expect(chartMocks.addSeries).toHaveBeenCalledWith(
       "Line",
-      expect.objectContaining({ color: "rgba(90, 125, 83, 1)" }),
+      expect.objectContaining({ color: "rgba(20, 115, 65, 1)" }),
     );
     expect(chartMocks.setData).toHaveBeenCalledWith([{ time: observation.timestampSec, value: 5 }]);
     expect(chartMocks.createSeriesMarkers).toHaveBeenCalledWith(
@@ -176,7 +177,7 @@ describe("market chart shared theme", () => {
           time: observation.timestampSec,
           shape: "circle",
           text: "CLOSE #3",
-          color: "rgba(120, 95, 42, 1)",
+          color: "rgba(111, 68, 23, 1)",
         }),
       ],
       { autoScale: true },

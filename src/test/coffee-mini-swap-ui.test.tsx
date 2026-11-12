@@ -80,7 +80,9 @@ describe("M04.18 Coffee Mini Swap UI", () => {
   it("renders the live RHEA pool and refuses to swap without a wallet", async () => {
     renderMiniSwap();
 
-    expect(screen.getByRole("heading", { name: /Live Mini Swap/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Live Mini Swap/i, level: 1 })).toHaveClass(
+      "brand-page-title",
+    );
     expect(screen.getAllByText(/SIMULATED_TESTNET_INVENTORY/).length).toBeGreaterThan(0);
     expect(screen.getByText(/Pool id/)).toBeInTheDocument();
     expect(await screen.findByText("2947")).toBeInTheDocument();
@@ -113,10 +115,14 @@ describe("M04.18 Coffee Mini Swap UI", () => {
   });
 
   it("fails closed when the pool RPC read fails instead of presenting an empty or missing pool", async () => {
-    vi.mocked(fetchPoolSnapshot).mockRejectedValueOnce(new Error("All configured NEAR Testnet RPC endpoints failed."));
+    vi.mocked(fetchPoolSnapshot).mockRejectedValueOnce(
+      new Error("All configured NEAR Testnet RPC endpoints failed."),
+    );
     renderMiniSwap("roastake-dev-mta.testnet");
 
-    expect(await screen.findByText(/RHEA pool state could not be verified from NEAR Testnet RPC/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/RHEA pool state could not be verified from NEAR Testnet RPC/i),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/The RHEA pool has no liquidity/i)).toBeNull();
     expect(screen.queryByRole("button", { name: /Review transaction/i })).toBeNull();
   });

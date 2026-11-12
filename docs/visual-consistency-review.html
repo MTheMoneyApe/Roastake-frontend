@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ROASTAKE visual consistency review</title>
+    <style>
+      :root {
+        font-family: var(--font-sans, system-ui);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      body {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: 30px;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
+      }
+      h2 {
+        font-size: 21px;
+        line-height: 1.25;
+        margin-bottom: 12px;
+      }
+      h3 {
+        font-size: 15px;
+        margin-bottom: 8px;
+      }
+      a {
+        color: var(--foreground);
+        text-underline-offset: 3px;
+      }
+      a:hover {
+        color: var(--chart-1);
+      }
+      section {
+        padding-block: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      header p,
+      .muted {
+        color: var(--muted-foreground);
+      }
+      header {
+        padding-block: 16px 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      header .eyebrow {
+        font-family: var(--font-mono, monospace);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 12px;
+      }
+      header .intro {
+        margin-top: 16px;
+        max-width: 78ch;
+      }
+      .pill {
+        display: inline-block;
+        border: 1px solid var(--border);
+        padding: 3px 9px;
+        border-radius: 99px;
+        font-size: 11px;
+        margin: 12px 6px 0 0;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .metric {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        background: var(--card);
+      }
+      .metric strong {
+        font-size: 28px;
+        display: block;
+        line-height: 1.2;
+      }
+      .metric span {
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      button,
+      select {
+        font: inherit;
+        color: inherit;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      button[aria-pressed="true"] {
+        background: var(--foreground);
+        color: var(--background);
+      }
+      :is(a, button, select, summary):focus-visible {
+        outline: 2px solid var(--chart-1);
+        outline-offset: 3px;
+      }
+      label {
+        font-weight: 500;
+      }
+      .comparison {
+        display: grid;
+        grid-template-columns: minmax(0, 3.2fr) minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+      .comparison.one {
+        grid-template-columns: 1fr;
+      }
+      figure {
+        margin: 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--card);
+      }
+      figure img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      figcaption {
+        padding: 8px 12px;
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+      .notice {
+        border-left: 3px solid var(--chart-2);
+        padding: 12px 16px;
+        background: var(--muted);
+        margin-block: 16px;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      ul,
+      ol {
+        margin: 8px 0;
+        padding-left: 20px;
+      }
+      li {
+        margin: 5px 0;
+      }
+      code {
+        font-family: var(--font-mono, monospace);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 500;
+        padding: 8px 0;
+      }
+      details {
+        border-bottom: 1px solid var(--border);
+        padding-block: 4px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        font-weight: 500;
+        color: var(--muted-foreground);
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+      footer {
+        padding-block: 24px;
+        color: var(--muted-foreground);
+        font-size: 12px;
+      }
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 25px;
+        }
+        .cols {
+          grid-template-columns: 1fr;
+        }
+        .metric strong {
+          font-size: 23px;
+        }
+        .metrics {
+          gap: 8px;
+        }
+        .metric {
+          padding: 8px;
+        }
+        .comparison {
+          grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="eyebrow">ROASTAKE / frontend implementation review</p>
+      <h1>One brand, two useful workspaces.</h1>
+      <p class="intro">
+        Public commerce and the DeFi app now share cream and forest surfaces, Fraunces headings, DM
+        Sans body text and IBM Plex Mono numbers. Public storytelling, asset inventory and dense
+        Perps composition remain distinct.
+      </p>
+      <span class="pill">Draft PR · do not merge</span><span class="pill">No production deploy</span
+      ><span class="pill">Testnet / demo disclosures preserved</span>
+      <p style="margin-top: 12px">
+        <a href="https://github.com/MTheMoneyApe/Roastake-frontend/pull/2"
+          >Review draft pull request #2</a
+        >
+        · targets <code>hackathon-submission</code> at <code>0303dbd</code>
+      </p>
+      <div class="metrics">
+        <div class="metric"><strong>107 / 107</strong><span>Tests passing · 15 files</span></div>
+        <div class="metric">
+          <strong>24 / 24</strong><span>Core route/viewport render checks</span>
+        </div>
+        <div class="metric"><strong>49</strong><span>Leaf route source files inspected</span></div>
+      </div>
+    </header>
+    <section>
+      <h2>Desktop and mobile evidence</h2>
+      <p class="muted">
+        Actual Chrome captures from the cloud Vite preview. Desktop 1440 × 1000; mobile 390 × 844.
+        Each core route had visible content, a page heading and no root error or page-level
+        horizontal overflow. These are viewport checks, not exhaustive end-to-end journeys.
+      </p>
+      <div class="toolbar" style="margin-top: 16px">
+        <label for="route">Route</label
+        ><select id="route">
+          <option value="/">/</option>
+          <option value="/market">/market</option>
+          <option value="/app/dashboard">/app/dashboard</option>
+          <option value="/app/assets" selected>/app/assets</option>
+          <option value="/app/perps">/app/perps</option>
+          <option value="/app/swap">/app/swap</option>
+          <option value="/app/wallet">/app/wallet</option>
+          <option value="/app/positions">/app/positions</option>
+          <option value="/app/coffee-passport">/app/coffee-passport</option>
+          <option value="/app/redeem">/app/redeem</option>
+          <option value="/roaster/dashboard">/roaster/dashboard</option>
+          <option value="/admin">/admin</option></select
+        ><button id="pair" aria-pressed="true">Compare</button
+        ><button id="desktop" aria-pressed="false">1440px</button
+        ><button id="mobile" aria-pressed="false">390px</button>
+      </div>
+      <div id="shots" class="comparison"></div>
+      <div class="notice">
+        <strong>Perps history limitation:</strong> The Arabica trading screen rendered, including
+        trading controls and live contract telemetry. Historical receipt verification alternated
+        between no verified observations and an explicit NEAR Testnet RPC timeout. No candles or
+        prices were fabricated; actual plotted canvas rendering remains unverified.
+      </div>
+      <details>
+        <summary>Additional rendered states</summary>
+        <div class="cols">
+          <figure>
+            <a
+              href="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/96c4d7d7e8263751e5533b829850c11c/4cca4009-b7d7-479d-9b51-58c05184af67.png"
+              ><img
+                loading="lazy"
+                src="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/96c4d7d7e8263751e5533b829850c11c/4cca4009-b7d7-479d-9b51-58c05184af67.png"
+                alt="trading-desktop"
+            /></a>
+            <figcaption>trading-desktop · 1440px</figcaption>
+          </figure>
+          <figure>
+            <a
+              href="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/355c574c1263f75b853f85235091aa53/9252310b-af8a-4cc0-83f9-da3ba71bbe7b.png"
+              ><img
+                loading="lazy"
+                src="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/355c574c1263f75b853f85235091aa53/9252310b-af8a-4cc0-83f9-da3ba71bbe7b.png"
+                alt="trading-mobile"
+            /></a>
+            <figcaption>trading-mobile · 390px</figcaption>
+          </figure>
+          <figure>
+            <a
+              href="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/75f27a0e701f857a0e4983c697fd2409/84d47e6a-ff0d-4b41-a78f-af14196c9345.png"
+              ><img
+                loading="lazy"
+                src="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/75f27a0e701f857a0e4983c697fd2409/84d47e6a-ff0d-4b41-a78f-af14196c9345.png"
+                alt="public-drawer"
+            /></a>
+            <figcaption>public-drawer · 390px</figcaption>
+          </figure>
+          <figure>
+            <a
+              href="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/2444474722db3b340236c32dc320af23/1217b5e0-875d-4318-af09-0ec676846e4f.png"
+              ><img
+                loading="lazy"
+                src="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/2444474722db3b340236c32dc320af23/1217b5e0-875d-4318-af09-0ec676846e4f.png"
+                alt="wallet-dialog"
+            /></a>
+            <figcaption>wallet-dialog · 390px</figcaption>
+          </figure>
+        </div>
+        <p>
+          Public drawer: Escape dismissed it, restored focus to “Open navigation menu”, and reset
+          aria-expanded to false. Wallet hub: opened in the shared light theme; no wallet connected
+          or transaction signed.
+        </p>
+      </details>
+    </section>
+    <section>
+      <h2>Design decisions and preserved semantics</h2>
+      <details>
+        <summary>Assets filter / empty-state interaction</summary>
+        <figure>
+          <a
+            href="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/65bcce70a718369fd28c217c812b52cf/ed0094be-f494-4d24-b43b-8fee02353f43.png"
+            ><img
+              loading="lazy"
+              src="https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/65bcce70a718369fd28c217c812b52cf/ed0094be-f494-4d24-b43b-8fee02353f43.png"
+              alt="Coffee assets filtered empty state at 1440 pixels"
+          /></a>
+          <figcaption>
+            Search “no-such-origin” rendered zero cards and the shared empty panel. Clearing it
+            restored all six seeded lot cards without navigation.
+          </figcaption>
+        </figure>
+      </details>
+      <div class="cols">
+        <div>
+          <h3>Reusable foundation</h3>
+          <ul>
+            <li>
+              Shared 80rem container, responsive gutters, 4rem header and fluid page/section
+              headings.
+            </li>
+            <li>
+              Shared surfaces, border/radius/shadow, form controls, tabs, badges, empty panels and
+              focus outlines.
+            </li>
+            <li>
+              Semantic warning, gain/loss and chart colors support readable light surfaces; the
+              forest sidebar retains local contrast tokens.
+            </li>
+            <li>
+              Fixed the border-token inheritance bug: base borders now resolve the current surface’s
+              <code>--border</code>, not a root-captured theme alias.
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3>No product redesign</h3>
+          <ul>
+            <li>Public navigation and app grouped sidebar remain separate; links bridge them.</li>
+            <li>Workspace logos retain their original home destinations.</li>
+            <li>
+              Perps remains dense; Assets retains lot quantities, accounting and inspection/Passport
+              paths.
+            </li>
+            <li>
+              Swap, Wallet, Positions, Passport, Redeem, Roaster and Admin retain their actual
+              capabilities.
+            </li>
+            <li>
+              Every Testnet/demo/preview/illustrative meaning remains. No verified physical backing,
+              Mainnet or live Oracle pricing claim added.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>Verification</h2>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Check</th>
+              <th>Result</th>
+              <th>Decisive observation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>bun install --frozen-lockfile</code></td>
+              <td>Passed</td>
+              <td>894 packages; lockfile unchanged.</td>
+            </tr>
+            <tr>
+              <td><code>bun x tsc --noEmit</code></td>
+              <td>Passed</td>
+              <td>
+                No diagnostics. <code>bunx</code> is absent; equivalent <code>bun x</code> used.
+              </td>
+            </tr>
+            <tr>
+              <td><code>bun run test</code></td>
+              <td>Passed</td>
+              <td>
+                107 tests / 15 files; baseline 87 / 11. 20 new tests plus stronger Swap heading
+                assertion.
+              </td>
+            </tr>
+            <tr>
+              <td><code>bun run build</code></td>
+              <td>Passed</td>
+              <td>Client, SSR and Nitro production output generated. No deployment command run.</td>
+            </tr>
+            <tr>
+              <td><code>git diff --check</code></td>
+              <td>Passed</td>
+              <td>No whitespace errors.</td>
+            </tr>
+            <tr>
+              <td>Rendered core route checks</td>
+              <td>Passed</td>
+              <td>12 routes × 2 widths; actual app content/headings, not HTTP-only checks.</td>
+            </tr>
+            <tr>
+              <td>Lint</td>
+              <td>Partial</td>
+              <td>
+                New tests and targeted chart/shell lint passed with zero errors and five existing
+                react-refresh export warnings. Existing formatting/hooks issues remain; not a
+                repo-wide clean-lint claim.
+              </td>
+            </tr>
+            <tr>
+              <td>Production, signed-in flows, real devices</td>
+              <td>Not run</td>
+              <td>
+                No production deployment, wallet authentication/signing or physical mobile device
+                testing.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="margin-top: 12px">
+        Regression proof: 4 coffee-presentation tests failed before and passed after; 4 chart-theme
+        tests failed before and passed after. Workspace-logo regression assertions also failed
+        before restoration and passed after. Unit coverage includes labels, semantic quantities,
+        selected navigation, disclosure, disabled controls, scrollable tables and drawer focus
+        restoration.
+      </p>
+    </section>
+    <section>
+      <h2>Warnings and unresolved limits</h2>
+      <ul>
+        <li>
+          Tests: experimental <code>EnvHttpProxyAgent</code> notices and one pre-existing React
+          <code>act(...)</code> warning in <code>perps-ui.test.tsx</code>.
+        </li>
+        <li>
+          Build: <code>vite-tsconfig-paths</code> native-resolution advisory; 30 wallet dependency
+          browser-externalization notices for <code>node:events</code>, <code>node:buffer</code>,
+          <code>node:util</code>, <code>node:string_decoder</code>; chunks over 500kB; Nitro
+          <code>inlineDynamicImports</code>/<code>codeSplitting</code> warning. No warnings
+          suppressed or gates weakened.
+        </li>
+        <li>
+          Existing lint debt in the inspected compact public files: delivery-base source had 150
+          Prettier errors plus 3 hook-rule errors in anonymous roaster route components. Kept out of
+          the visual patch; no wholesale formatting/refactor.
+        </li>
+        <li>
+          Plotted chart/candles could not be visually proved because verified historical Testnet
+          data was unavailable. Loading/error/empty states were visible and theme-consistent.
+        </li>
+        <li>
+          No exhaustive screen-reader, 200% zoom, touch-hardware, connected-wallet or
+          transaction-flow browser audit. Long account wrapping is source-covered but the connected
+          state was not browser-exercised.
+        </li>
+        <li>
+          PR hosting may automatically create a preview check. No production deploy was requested or
+          run; Vercel settings were untouched.
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Changed files and functional scope audit</h2>
+      <p>
+        No change to <code>src/lib</code>, dependencies, lockfile, backend/contracts,
+        network/account configuration, accounting, query selection/polling, wallet signing or
+        transaction rules. Intentional interaction changes are accessibility/presentation: public
+        modal drawer, focus restoration, active-route semantics, selected preview-group expansion,
+        skip links and focusable table scrolling.
+      </p>
+      <details>
+        <summary>Tokens & primitives · 9 files</summary>
+        <ul>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/styles.css"
+              ><code>src/styles.css</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/kit.tsx"
+              ><code>src/components/kit.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/ui/button.tsx"
+              ><code>src/components/ui/button.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/ui/card.tsx"
+              ><code>src/components/ui/card.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/ui/dialog.tsx"
+              ><code>src/components/ui/dialog.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/ui/input.tsx"
+              ><code>src/components/ui/input.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/ui/select.tsx"
+              ><code>src/components/ui/select.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/ui/tabs.tsx"
+              ><code>src/components/ui/tabs.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/ui/textarea.tsx"
+              ><code>src/components/ui/textarea.tsx</code></a
+            >
+          </li>
+        </ul>
+      </details>
+      <details>
+        <summary>Shell, commerce & integrations · 9 files</summary>
+        <ul>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/shell.tsx"
+              ><code>src/components/shell.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/commerce.tsx"
+              ><code>src/components/commerce.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/coffee/lots.tsx"
+              ><code>src/components/coffee/lots.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/coffee/mini-swap.tsx"
+              ><code>src/components/coffee/mini-swap.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/coffee/overview.tsx"
+              ><code>src/components/coffee/overview.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/trading.tsx"
+              ><code>src/components/trading.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/perps/live-perps.tsx"
+              ><code>src/components/perps/live-perps.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/perps/market-chart.tsx"
+              ><code>src/components/perps/market-chart.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/components/wallet/wallet-hub.tsx"
+              ><code>src/components/wallet/wallet-hub.tsx</code></a
+            >
+          </li>
+        </ul>
+      </details>
+      <details>
+        <summary>Public routes · 6 files</summary>
+        <ul>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/routes/index.tsx"
+              ><code>src/routes/index.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/routes/market.index.tsx"
+              ><code>src/routes/market.index.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/routes/market.$id.tsx"
+              ><code>src/routes/market.$id.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/routes/roasters.index.tsx"
+              ><code>src/routes/roasters.index.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/routes/roasters.$id.tsx"
+              ><code>src/routes/roasters.$id.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/routes/app.docs.tsx"
+              ><code>src/routes/app.docs.tsx</code></a
+            >
+          </li>
+        </ul>
+      </details>
+      <details>
+        <summary>Focused tests · 5 files</summary>
+        <ul>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/test/chart-theme.test.tsx"
+              ><code>src/test/chart-theme.test.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/test/coffee-design.test.tsx"
+              ><code>src/test/coffee-design.test.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/test/design-system.test.tsx"
+              ><code>src/test/design-system.test.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/test/shell-design.test.tsx"
+              ><code>src/test/shell-design.test.tsx</code></a
+            >
+          </li>
+          <li>
+            <a
+              href="https://github.com/MTheMoneyApe/Roastake-frontend/blob/reason/unify-roastake-frontend-69e09c76/src/test/coffee-mini-swap-ui.test.tsx"
+              ><code>src/test/coffee-mini-swap-ui.test.tsx</code></a
+            >
+          </li>
+        </ul>
+      </details>
+      <p class="muted" style="margin-top: 12px">
+        This report’s source is <code>docs/visual-consistency-review.html</code>. Screenshots are
+        durable linked evidence, not bundled into the application.
+      </p>
+    </section>
+    <section>
+      <h2>Guidance consulted before editing</h2>
+      <p>
+        <code
+          >bun x modern-web-guidance search "multi-route React TanStack visual design system shared
+          layout tokens responsive navigation accessible theme consistent components"</code
+        >
+      </p>
+      <p>
+        <code
+          >bun x modern-web-guidance retrieve
+          css,navbar,accessibility,responsive-design,component-specific-light-dark-theme</code
+        >
+      </p>
+      <ul>
+        <li>
+          <a
+            href="https://github.com/GoogleChrome/modern-web-guidance/blob/main/skills/modern-web-guidance/guides/css/css.md"
+            >CSS architecture and design tokens</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://developer.chrome.com/docs/modern-web-guidance/guides/ui-components/navbar"
+            >Responsive site navigation</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://developer.chrome.com/docs/modern-web-guidance/guides/accessibility/accessibility"
+            >Accessibility guidance</a
+          >
+        </li>
+      </ul>
+      <p class="muted">
+        Adapted to existing React/TanStack + Radix primitives. No new dependency or experimental
+        browser requirement.
+      </p>
+    </section>
+    <footer>
+      Verified on Reason cloud · local preview only · draft PR #2 remains unmerged · no production
+      deployment
+    </footer>
+    <script>
+      const evidence = [
+        {
+          name: "home-desktop",
+          route: "/",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/6f3b724cef0f7824c1696a1df63f2fc1/c1ca9719-7c18-40ca-bf73-142476011831.png",
+        },
+        {
+          name: "home-mobile",
+          route: "/",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/985a60ebbd427296569930136253d9f1/6809df22-d70e-4300-8d6d-eeaf2c288913.png",
+        },
+        {
+          name: "market-desktop",
+          route: "/market",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/cea7c1859f0a4e23f7f4920ff619d51e/169b084f-2ad5-450e-809f-d7da55f61a3a.png",
+        },
+        {
+          name: "market-mobile",
+          route: "/market",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/f53a7833680d391f5305fc7b3b22c7db/679340c1-ed72-4bc2-a2c1-ed705803c84a.png",
+        },
+        {
+          name: "dashboard-desktop",
+          route: "/app/dashboard",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/5d67c8639aacee81504cadf6f43a6a2e/3226b634-0ffa-4573-b900-fcde94cbca3f.png",
+        },
+        {
+          name: "dashboard-mobile",
+          route: "/app/dashboard",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/2ac49c139d69d57ae6983955a2405264/c4927e06-2916-47c7-a88c-c455d628fe75.png",
+        },
+        {
+          name: "assets-desktop",
+          route: "/app/assets",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/58d592af55db4bfef48e2a1e8424e77d/3274a633-e548-4d75-9f13-e25f0b348613.png",
+        },
+        {
+          name: "assets-mobile",
+          route: "/app/assets",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/d7e17447ee63abd3d5a11339480567b2/22150368-1888-4a35-a74f-665852710129.png",
+        },
+        {
+          name: "perps-desktop",
+          route: "/app/perps",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/4d560090c1558586840d7df8fcd76ac9/c7519840-0511-4bc0-9bf5-dceab8344a1e.png",
+        },
+        {
+          name: "perps-mobile",
+          route: "/app/perps",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/fdde1d0cecd898e02b42dae2aa9c1f85/bdd64e22-e850-4ce6-9142-28da43a4706c.png",
+        },
+        {
+          name: "swap-desktop",
+          route: "/app/swap",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/8b0b2bca65e443ccbfbfb609a919f224/c4145fe5-5eda-47b3-8453-b7309a5585ca.png",
+        },
+        {
+          name: "swap-mobile",
+          route: "/app/swap",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/78a5a3cada85fc28607d84e571b7ce5a/752a3f15-6443-42d2-8498-0ea94125d992.png",
+        },
+        {
+          name: "wallet-desktop",
+          route: "/app/wallet",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/5f8499a2a736d4d02a2d34a3eec94fe3/49cdf33c-1a95-4402-8af1-30f97ea64476.png",
+        },
+        {
+          name: "wallet-mobile",
+          route: "/app/wallet",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/af40133971bb8320139063f41c1ff076/646ca660-23ed-45dc-8572-63dfaadeb7c4.png",
+        },
+        {
+          name: "positions-desktop",
+          route: "/app/positions",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/a3b71db9577dedb03c8368c8c3d1819a/f6f7dea2-2f0b-4d5d-b5ad-4e72c8895106.png",
+        },
+        {
+          name: "positions-mobile",
+          route: "/app/positions",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/cd8d59964aec47e19021d35814aca5ab/31e941fa-6dac-4594-b22d-486b8b92f03e.png",
+        },
+        {
+          name: "passport-desktop",
+          route: "/app/coffee-passport",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/3b0d147bb2a9fbc68e9e7fb11fa14b12/54926d4d-2332-48ee-b0f1-32daa63c2ba1.png",
+        },
+        {
+          name: "passport-mobile",
+          route: "/app/coffee-passport",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/2666a01bacdb4154f19ce75d479e0b28/bcde57a1-802e-425c-8d40-042cb87de01f.png",
+        },
+        {
+          name: "redeem-desktop",
+          route: "/app/redeem",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/030d481e528d67b18125d2c17a75ceda/4faaff34-5d33-485e-bcfd-90ae20d89ec4.png",
+        },
+        {
+          name: "redeem-mobile",
+          route: "/app/redeem",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/000ac6c8ab84c8c73dcca17e1bdb559b/bddf5eff-91b3-4b65-9255-a7583e54b260.png",
+        },
+        {
+          name: "roaster-desktop",
+          route: "/roaster/dashboard",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/ca2f7db93d77b2ac4d8421921559d5d5/70ff14da-5e05-4ac2-b7dc-40e52c027466.png",
+        },
+        {
+          name: "roaster-mobile",
+          route: "/roaster/dashboard",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/90a19dad6d425a0ad26ae8282f86a604/6663b046-3139-46f6-81ca-2c87dc2ccaaf.png",
+        },
+        {
+          name: "admin-desktop",
+          route: "/admin",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/1d8145e973f77643284cecfd1852e2d2/473c8c05-8ad8-4d6e-a2ad-5e2632b0a866.png",
+        },
+        {
+          name: "admin-mobile",
+          route: "/admin",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/faed85f46ba91988fcc1c0f1e9f1f4f4/4acd799c-bb51-44e5-9f35-54ae84ded4d9.png",
+        },
+        {
+          name: "trading-desktop",
+          route: "/app/perps/COFFEE-ARABICA-TESTNET-USD",
+          width: "1440",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/96c4d7d7e8263751e5533b829850c11c/4cca4009-b7d7-479d-9b51-58c05184af67.png",
+        },
+        {
+          name: "trading-mobile",
+          route: "/app/perps/COFFEE-ARABICA-TESTNET-USD",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/355c574c1263f75b853f85235091aa53/9252310b-af8a-4cc0-83f9-da3ba71bbe7b.png",
+        },
+        {
+          name: "public-drawer",
+          route: "/",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/75f27a0e701f857a0e4983c697fd2409/84d47e6a-ff0d-4b41-a78f-af14196c9345.png",
+        },
+        {
+          name: "wallet-dialog",
+          route: "/",
+          width: "390",
+          url: "https://api.reasonmachines.com/media/pr-screenshots/69e09c76-490e-43ce-8712-260d33ba4ed7/2444474722db3b340236c32dc320af23/1217b5e0-875d-4318-af09-0ec676846e4f.png",
+        },
+      ];
+      let mode = "pair";
+      const route = document.getElementById("route");
+      function render() {
+        const items = evidence.filter(
+          (i) =>
+            i.route === route.value &&
+            !["trading-desktop", "trading-mobile", "public-drawer", "wallet-dialog"].includes(
+              i.name,
+            ) &&
+            (mode === "pair" || i.width === (mode === "desktop" ? "1440" : "390")),
+        );
+        const box = document.getElementById("shots");
+        box.className = "comparison" + (mode === "pair" ? "" : " one");
+        box.innerHTML = items
+          .map(
+            (i) =>
+              '<figure><a href="' +
+              i.url +
+              '" target="_blank" rel="noreferrer"><img src="' +
+              i.url +
+              '" alt="' +
+              i.route +
+              " at " +
+              i.width +
+              ' pixels"></a><figcaption>' +
+              i.route +
+              " · " +
+              i.width +
+              "px · open image for full size</figcaption></figure>",
+          )
+          .join("");
+        for (const id of ["pair", "desktop", "mobile"])
+          document.getElementById(id).setAttribute("aria-pressed", id === mode ? "true" : "false");
+      }
+      route.addEventListener("change", render);
+      for (const id of ["pair", "desktop", "mobile"])
+        document.getElementById(id).addEventListener("click", () => {
+          mode = id;
+          render();
+        });
+      render();
+    </script>
+  </body>
+</html>
