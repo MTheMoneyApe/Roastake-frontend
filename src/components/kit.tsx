@@ -11,15 +11,15 @@ import { cn } from "@/lib/utils";
 import { fmt } from "@/lib/demo/calc";
 
 export function DemoBadge({ children = "DEMO", className }: { children?: ReactNode; className?: string }) {
-  return <span className={cn("inline-flex items-center gap-1 rounded-sm border border-brass/60 bg-brass/15 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brass", className)}>● {children}</span>;
+  return <span className={cn("inline-flex items-center gap-1 rounded-full border border-warning-foreground/30 bg-warning px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-warning-foreground", className)}>● {children}</span>;
 }
 
 export type MaturityVariant = "real" | "testnet" | "demo" | "preview";
 
 const MATURITY_STYLES: Record<MaturityVariant, string> = {
   real: "border-gain/50 bg-gain/15 text-gain",
-  testnet: "border-sage/50 bg-forest/35 text-mint",
-  demo: "border-brass/60 bg-brass/15 text-brass",
+  testnet: "border-gain/40 bg-accent text-accent-foreground",
+  demo: "border-warning-foreground/30 bg-warning text-warning-foreground",
   preview: "border-dashed border-muted-foreground/45 bg-muted/40 text-muted-foreground",
 };
 
@@ -38,7 +38,7 @@ export function MaturityBadge({
     <span
       {...rest}
       className={cn(
-        "inline-flex shrink-0 items-center rounded-sm border px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider leading-none",
+        "inline-flex shrink-0 items-center rounded-full border px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider leading-none",
         MATURITY_STYLES[variant],
         className,
       )}
@@ -54,7 +54,7 @@ export function Illustrative({ className }: { className?: string }) {
 export function Help({ text }: { text: string }) {
   return (
     <Tooltip>
-      <TooltipTrigger asChild><button type="button" aria-label="Help" className="text-muted-foreground hover:text-foreground"><HelpCircle className="size-3.5" /></button></TooltipTrigger>
+      <TooltipTrigger asChild><button type="button" aria-label="Help" className="grid size-6 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"><HelpCircle className="size-3.5" /></button></TooltipTrigger>
       <TooltipContent className="max-w-xs">{text}</TooltipContent>
     </Tooltip>
   );
@@ -62,8 +62,8 @@ export function Help({ text }: { text: string }) {
 
 export function PageHeader({ title, subtitle, crumbs = [], actions, help, demo = true }: { title: string; subtitle?: string; crumbs?: { label: string; to?: string }[]; actions?: ReactNode; help?: string; demo?: boolean }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      <div>
+    <div className="mb-6 flex min-w-0 flex-col gap-4 border-b pb-6 md:flex-row md:items-end md:justify-between">
+      <div className="min-w-0">
         {crumbs.length > 0 && (
           <nav aria-label="Breadcrumb" className="mb-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
             {crumbs.map((c, i) => (
@@ -75,11 +75,11 @@ export function PageHeader({ title, subtitle, crumbs = [], actions, help, demo =
           </nav>
         )}
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-3xl font-semibold md:text-4xl">{title}</h1>
+          <h1 className="brand-page-title">{title}</h1>
           {demo && <DemoBadge />}
           {help && <Help text={help} />}
         </div>
-        {subtitle && <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>}
+        {subtitle && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -88,7 +88,7 @@ export function PageHeader({ title, subtitle, crumbs = [], actions, help, demo =
 
 export function Stat({ label, value, sub, tone, help }: { label: string; value: ReactNode; sub?: ReactNode; tone?: "gain" | "loss"; help?: string }) {
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className="brand-surface p-4">
       <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">{label}{help && <Help text={help} />}</div>
       <div className={cn("num mt-1.5 text-xl font-medium md:text-2xl", tone === "gain" && "text-gain", tone === "loss" && "text-loss")}>{value}</div>
       {sub && <div className="mt-1 text-xs text-muted-foreground">{sub}</div>}
@@ -96,16 +96,16 @@ export function Stat({ label, value, sub, tone, help }: { label: string; value: 
   );
 }
 export const Stats = ({ children, cols = 4 }: { children: ReactNode; cols?: number }) => (
-  <div className={cn("grid grid-cols-2 gap-3", cols === 3 && "md:grid-cols-3", cols === 4 && "md:grid-cols-4", cols === 5 && "md:grid-cols-5", cols === 6 && "md:grid-cols-3 lg:grid-cols-6")}>{children}</div>
+  <div className={cn("grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 [&>*]:min-w-0", cols === 3 && "md:grid-cols-3", cols === 4 && "md:grid-cols-4", cols === 5 && "md:grid-cols-5", cols === 6 && "md:grid-cols-3 lg:grid-cols-6")}>{children}</div>
 );
 
 export function Panel({ title, children, actions, className, bodyClass }: { title?: ReactNode; children: ReactNode; actions?: ReactNode; className?: string; bodyClass?: string }) {
   return (
-    <section className={cn("rounded-lg border bg-card", className)}>
+    <section className={cn("brand-surface", className)}>
       {(title || actions) && (
-        <header className="flex items-center justify-between gap-2 border-b px-4 py-3">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
           <h2 className="font-sans text-sm font-semibold tracking-normal">{title}</h2>
-          <div className="flex gap-2">{actions}</div>
+          <div className="flex flex-wrap gap-2">{actions}</div>
         </header>
       )}
       <div className={cn("p-4", bodyClass)}>{children}</div>
@@ -115,8 +115,8 @@ export function Panel({ title, children, actions, className, bodyClass }: { titl
 
 export function Empty({ text, action }: { text: string; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-2 py-10 text-center text-sm text-muted-foreground">
-      <Inbox className="size-6" />
+    <div className="brand-surface flex flex-col items-center gap-3 border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
+      <Inbox className="size-6" aria-hidden="true" />
       <p>{text}</p>
       {action}
     </div>
@@ -127,7 +127,7 @@ export interface Col<T> { key: string; label: string; render: (r: T) => ReactNod
 export function DataTable<T>({ cols, rows, empty = "Nothing here yet.", rowKey }: { cols: Col<T>[]; rows: T[]; empty?: string; rowKey?: (r: T, i: number) => string }) {
   if (!rows.length) return <Empty text={empty} />;
   return (
-    <div className="-mx-4 overflow-x-auto">
+    <div className="-mx-4 overflow-x-auto focus-visible:outline-offset-[-3px]" role="region" aria-label="Scrollable data table" tabIndex={0}>
       <table className="w-full min-w-[560px] text-sm">
         <thead>
           <tr className="border-b text-left text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -147,8 +147,8 @@ export function DataTable<T>({ cols, rows, empty = "Nothing here yet.", rowKey }
 }
 
 export function Pill({ children, tone = "muted" }: { children: ReactNode; tone?: "muted" | "gain" | "loss" | "warn" | "info" }) {
-  const t = { muted: "bg-muted text-muted-foreground", gain: "bg-gain/15 text-gain", loss: "bg-loss/15 text-loss", warn: "bg-brass/20 text-brass", info: "bg-accent text-accent-foreground" }[tone];
-  return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium", t)}>{children}</span>;
+  const t = { muted: "bg-muted text-muted-foreground", gain: "bg-gain/15 text-gain", loss: "bg-loss/15 text-loss", warn: "bg-warning text-warning-foreground", info: "bg-accent text-accent-foreground" }[tone];
+  return <span className={cn("inline-flex items-center rounded-full border border-current/15 px-2 py-1 text-[11px] font-medium", t)}>{children}</span>;
 }
 export const statusTone = (s: string): "muted" | "gain" | "loss" | "warn" | "info" =>
   /deliver|pass|approved|live|filled|operational|funded|completed|low/i.test(s) ? "gain" : /reject|cancel|liquidat|flag|suspend|paused|high|shortfall/i.test(s) ? "loss" : /pending|submitted|processing|roasting|open|screening|degraded|medium|custody/i.test(s) ? "warn" : "info";
@@ -281,7 +281,7 @@ export function Candles({ data, height = 320 }: { data: { o: number; h: number; 
 export function KV({ rows }: { rows: [string, ReactNode][] }) {
   return (
     <dl className="divide-y text-sm">
-      {rows.map(([k, v]) => <div key={k} className="flex justify-between gap-4 py-2"><dt className="text-muted-foreground">{k}</dt><dd className="text-right">{v}</dd></div>)}
+      {rows.map(([k, v]) => <div key={k} className="flex flex-wrap justify-between gap-x-4 gap-y-1 py-2"><dt className="text-muted-foreground">{k}</dt><dd className="min-w-0 break-words text-right [overflow-wrap:anywhere]">{v}</dd></div>)}
     </dl>
   );
 }

@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   Activity,
   Bell,
@@ -43,7 +43,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { demo, useDemo } from "@/lib/demo/store";
 import type { Role } from "@/lib/demo/types";
 import { cn } from "@/lib/utils";
@@ -95,7 +101,8 @@ export const APP_NAV: Group[] = [
         badge: {
           label: "TESTNET",
           variant: "testnet",
-          title: "Genuine wallet connections restricted to NEAR Testnet, EVM testnets, Solana Devnet and Hyperliquid Testnet; no Mainnet execution.",
+          title:
+            "Genuine wallet connections restricted to NEAR Testnet, EVM testnets, Solana Devnet and Hyperliquid Testnet; no Mainnet execution.",
         },
       },
       { to: "/app/activity", label: "Activity", icon: RefreshCw },
@@ -169,7 +176,8 @@ export const ROASTER_NAV: Group[] = [
     groupBadge: {
       label: "PREVIEW",
       variant: "preview",
-      title: "Preview screens only; no real roaster onboarding, inventory, storefront or payments are connected.",
+      title:
+        "Preview screens only; no real roaster onboarding, inventory, storefront or payments are connected.",
     },
     items: [
       ["dashboard", "Overview", LayoutDashboard],
@@ -216,7 +224,8 @@ export const ADMIN_NAV: Group[] = [
     groupBadge: {
       label: "DEMO",
       variant: "demo",
-      title: "Local demonstration UI only; no production admin authorization or operational controls are connected.",
+      title:
+        "Local demonstration UI only; no production admin authorization or operational controls are connected.",
     },
     items: [
       { to: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -235,13 +244,25 @@ export function useHydrated() {
   return h;
 }
 
-function Logo({ to = "/" }: { to?: string }) {
+function Logo({ compact = false, onNav }: { compact?: boolean; onNav?: () => void }) {
   return (
-    <Link to={to} className="flex items-center gap-2">
-      <span className="grid size-8 place-items-center rounded-full bg-brass text-charcoal">
-        <Coffee className="size-4" />
+    <Link
+      to="/"
+      onClick={onNav}
+      aria-label="ROASTAKE home"
+      className="inline-flex shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brass text-charcoal">
+        <Coffee className="size-4" aria-hidden="true" />
       </span>
-      <span className="font-display text-lg font-semibold tracking-tight">ROASTAKE</span>
+      <span
+        className={cn(
+          "font-display text-lg font-semibold tracking-tight",
+          compact && "hidden sm:inline",
+        )}
+      >
+        ROASTAKE
+      </span>
     </Link>
   );
 }
@@ -298,7 +319,12 @@ function Profile() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-2"
+          aria-label="Open profile and demo role menu"
+        >
           <span className="grid size-7 place-items-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
             {s.account[0]}
             {s.account.split(" ")[1]?.[0]}
@@ -358,7 +384,7 @@ function Controls() {
     <div className="flex items-center gap-1.5">
       <Link
         to="/app/multichain"
-        className="hidden items-center gap-1.5 rounded-full border border-gain/40 bg-forest/25 px-2.5 py-1 text-[11px] font-medium text-gain transition-colors hover:bg-forest/40 xl:inline-flex"
+        className="hidden items-center gap-1.5 rounded-full border border-primary/20 bg-accent px-2.5 py-1 text-[11px] font-medium text-accent-foreground transition-colors hover:bg-accent/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 2xl:inline-flex"
         title="NEAR Testnet is ROASTAKE's primary execution network. Perpetuals, Oracle and RHEA Testnet swap integrations are deployed; prices and coffee inventory remain synthetic or simulated."
       >
         <Sparkles className="size-3" aria-hidden="true" />
@@ -381,9 +407,23 @@ function NavList({
   showPortals?: boolean;
 }) {
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const navId = useId();
   const [collapsed, setCollapsed] = useState<Set<string>>(
     () => new Set(groups.filter((g) => g.collapsible && g.defaultCollapsed).map((g) => g.label)),
   );
+  useEffect(() => {
+    const activeGroup = groups.find(
+      (g) => g.collapsible && g.items.some((i) => path === i.to || path.startsWith(i.to + "/")),
+    );
+    if (activeGroup) {
+      setCollapsed((prev) => {
+        if (!prev.has(activeGroup.label)) return prev;
+        const next = new Set(prev);
+        next.delete(activeGroup.label);
+        return next;
+      });
+    }
+  }, [groups, path]);
   const toggle = (label: string) =>
     setCollapsed((prev) => {
       const next = new Set(prev);
@@ -393,7 +433,7 @@ function NavList({
     });
   return (
     <nav aria-label="Protocol sections" className="space-y-5">
-      {groups.map((g) => {
+      {groups.map((g, groupIndex) => {
         const isCollapsed = g.collapsible && collapsed.has(g.label);
         return (
           <div key={g.label}>
@@ -403,7 +443,8 @@ function NavList({
                   type="button"
                   onClick={() => toggle(g.label)}
                   aria-expanded={!isCollapsed}
-                  className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/60"
+                  aria-controls={`${navId}-group-${groupIndex}`}
+                  className="flex min-h-8 items-center gap-1 rounded-sm text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
                 >
                   <span>{g.label}</span>
                   <span aria-hidden="true">{isCollapsed ? "+" : "−"}</span>
@@ -414,51 +455,56 @@ function NavList({
                 </p>
               )}
               {g.groupBadge && (
-                <MaturityBadge variant={g.groupBadge.variant} className="text-[9px]">
+                <MaturityBadge
+                  variant={g.groupBadge.variant}
+                  title={g.groupBadge.title}
+                  className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-foreground"
+                >
                   {g.groupBadge.label}
                 </MaturityBadge>
               )}
             </div>
-            {!isCollapsed && (
-              <ul className="space-y-0.5">
-                {g.items.map((i) => {
-                  const active =
-                    path === i.to || (i.to !== "/admin" && path.startsWith(i.to + "/"));
-                  return (
-                    <li key={i.to}>
-                      <Link
-                        to={i.to}
-                        onClick={onNav}
-                        aria-current={path === i.to ? "page" : undefined}
-                        className={cn(
-                          "flex items-center justify-between gap-2 rounded-md border-l-2 border-transparent px-3 py-1.5 text-sm transition-colors",
-                          active
-                            ? "border-sidebar-primary bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                            : "text-sidebar-foreground hover:bg-sidebar-accent/60",
-                        )}
-                      >
-                        <span className="flex min-w-0 items-center gap-2.5">
-                          <i.icon
-                            className={cn("size-4 shrink-0", active && "text-sidebar-primary")}
-                            aria-hidden="true"
-                          />
-                          <span className="truncate">{i.label}</span>
-                        </span>
-                        {i.badge && (
-                          <MaturityBadge
-                            variant={i.badge.variant}
-                            className="text-[9px]"
-                            aria-label={i.badge.title}
-                          >
-                            {i.badge.label}
-                          </MaturityBadge>
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+            <ul
+              id={`${navId}-group-${groupIndex}`}
+              hidden={Boolean(isCollapsed)}
+              className="space-y-0.5"
+            >
+              {g.items.map((i) => {
+                const active = path === i.to || (i.to !== "/admin" && path.startsWith(i.to + "/"));
+                return (
+                  <li key={i.to}>
+                    <Link
+                      to={i.to}
+                      onClick={onNav}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "flex min-h-9 items-center justify-between gap-2 rounded-md border-l-2 border-transparent px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-inset",
+                        active
+                          ? "border-sidebar-primary bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent/60",
+                      )}
+                    >
+                      <span className="flex min-w-0 items-center gap-2.5">
+                        <i.icon
+                          className={cn("size-4 shrink-0", active && "text-sidebar-primary")}
+                          aria-hidden="true"
+                        />
+                        <span className="truncate">{i.label}</span>
+                      </span>
+                      {i.badge && (
+                        <MaturityBadge
+                          variant={i.badge.variant}
+                          className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-foreground"
+                          aria-label={i.badge.title}
+                        >
+                          {i.badge.label}
+                        </MaturityBadge>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         );
       })}
@@ -473,7 +519,7 @@ function NavList({
                 to="/roaster/$section"
                 params={{ section: "dashboard" }}
                 onClick={onNav}
-                className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60"
+                className="flex min-h-9 items-center gap-2.5 rounded-md px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
               >
                 <Store className="size-4 shrink-0" aria-hidden="true" />
                 <span>Roaster Portal</span>
@@ -483,7 +529,7 @@ function NavList({
               <Link
                 to="/admin"
                 onClick={onNav}
-                className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60"
+                className="flex min-h-9 items-center gap-2.5 rounded-md px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
               >
                 <Settings className="size-4 shrink-0" aria-hidden="true" />
                 <span>Admin Console</span>
@@ -516,7 +562,7 @@ const MOBILE_PORTFOLIO_PATHS = new Set(["/app/wallet", "/app/activity"]);
 export function AppShell({
   children,
   nav = APP_NAV,
-  dark = true,
+  dark = false,
   home = "/app/dashboard",
 }: {
   children: ReactNode;
@@ -526,7 +572,12 @@ export function AppShell({
 }) {
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const menuTrigger = useRef<HTMLButtonElement | null>(null);
   const isMainAppNav = nav === APP_NAV;
+  const currentPage = nav
+    .flatMap((group) => group.items)
+    .find((item) => path === item.to || (item.to !== "/admin" && path.startsWith(item.to + "/")));
+  const workspaceLabel = isMainAppNav ? "Protocol App" : nav[0].label;
 
   const mobileItems = isMainAppNav
     ? [
@@ -566,84 +617,135 @@ export function AppShell({
       }));
 
   return (
-    <div className={cn(dark && "dark", "min-h-screen bg-background text-foreground")}>
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-        <div className="flex h-14 items-center px-4 text-sidebar-foreground">
-          <Logo to={home} />
-        </div>
-        <div className="flex-1 overflow-y-auto px-2 pb-6">
-          <NavList groups={nav} />
-        </div>
-      </aside>
-      <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <div className={cn(dark && "dark", "min-h-screen min-w-0 bg-background text-foreground")}>
+        <a href="#main-content" className="brand-skip-link">
+          Skip to content
+        </a>
+        <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar [--ring:var(--sidebar-ring)] lg:flex">
+          <div className="flex min-h-16 items-center border-b border-sidebar-border px-5 text-sidebar-foreground">
+            <Logo />
+          </div>
+          <div className="flex-1 overflow-y-auto px-2 pb-6">
+            <NavList groups={nav} />
+          </div>
+        </aside>
         <SheetContent
           side="left"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            menuTrigger.current?.focus();
+          }}
           className={cn(
             dark && "dark",
-            "w-72 overflow-y-auto border-sidebar-border bg-sidebar p-3 text-sidebar-foreground lg:hidden",
+            "w-72 max-w-[calc(100vw-1.5rem)] overflow-y-auto border-sidebar-border bg-sidebar p-3 text-sidebar-foreground [--ring:var(--sidebar-ring)] lg:hidden",
           )}
         >
           <SheetTitle className="sr-only">Protocol sections</SheetTitle>
-          <div className="mb-4 flex items-center pr-8">
-            <Logo to={home} />
+          <SheetDescription className="sr-only">
+            Navigate the protocol, coffee marketplace and preview portals.
+          </SheetDescription>
+          <div className="mb-5 flex min-h-10 items-center pr-8">
+            <Logo onNav={() => setOpen(false)} />
           </div>
           <NavList groups={nav} showPortals={isMainAppNav} onNav={() => setOpen(false)} />
         </SheetContent>
-      </Sheet>
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-2 border-b bg-background/85 px-2.5 backdrop-blur sm:px-3 md:px-6">
-          <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="size-8 shrink-0 sm:size-9 lg:hidden"
-              aria-label="Open menu"
-              aria-expanded={open}
-              onClick={() => setOpen(true)}
-            >
-              <Menu />
-            </Button>
-            <span className="min-w-0 lg:hidden [&_span.font-display]:text-base sm:[&_span.font-display]:text-lg [&_span.grid]:size-7 sm:[&_span.grid]:size-8">
-              <Logo to={home} />
-            </span>
-          </div>
-          <div className="shrink-0 [&_button[aria-haspopup='menu']]:px-1.5 sm:[&_button[aria-haspopup='menu']]:px-3 [&_button[aria-label='Notifications']]:hidden sm:[&_button[aria-label='Notifications']]:inline-flex">
-            <Controls />
-          </div>
-        </header>
-        <main className="mx-auto max-w-[1400px] px-3 py-6 pb-24 md:px-6 lg:pb-10">{children}</main>
-      </div>
-      <nav
-        aria-label="Quick sections"
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-card lg:hidden"
-      >
-        {mobileItems.map((i) => (
-          <Link
-            key={i.to}
-            to={i.to}
-            aria-current={path === i.to ? "page" : undefined}
-            className={cn(
-              "flex flex-col items-center gap-0.5 border-t-2 border-transparent py-2 text-[10px] transition-colors",
-              i.active
-                ? "border-primary font-semibold text-primary"
-                : "text-muted-foreground hover:text-foreground",
-            )}
+        <div className="min-w-0 lg:pl-64">
+          <header className="brand-header sticky top-0 z-20 backdrop-blur">
+            <div className="brand-container flex min-h-16 min-w-0 items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <SheetTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-9 shrink-0 lg:hidden"
+                    aria-label="Open menu"
+                    onClick={(event) => {
+                      menuTrigger.current = event.currentTarget;
+                    }}
+                  >
+                    <Menu aria-hidden="true" />
+                  </Button>
+                </SheetTrigger>
+                <span className="lg:hidden">
+                  <Logo compact />
+                </span>
+                <nav
+                  aria-label="Current workspace"
+                  className="hidden min-w-0 items-center gap-2 text-sm lg:flex"
+                >
+                  <Link
+                    to={home}
+                    className="shrink-0 rounded-sm font-medium text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {workspaceLabel}
+                  </Link>
+                  {currentPage && currentPage.to !== home && (
+                    <>
+                      <span className="text-muted-foreground" aria-hidden="true">
+                        /
+                      </span>
+                      <span className="truncate text-muted-foreground">{currentPage.label}</span>
+                    </>
+                  )}
+                  <Link
+                    to="/market"
+                    className="ml-2 hidden shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:inline-flex"
+                  >
+                    <ShoppingBag className="size-3.5" aria-hidden="true" />
+                    Marketplace
+                  </Link>
+                </nav>
+              </div>
+              <div className="shrink-0 [&_button[aria-haspopup='menu']]:px-1.5 sm:[&_button[aria-haspopup='menu']]:px-3 [&_button[aria-label='Notifications']]:hidden sm:[&_button[aria-label='Notifications']]:inline-flex">
+                <Controls />
+              </div>
+            </div>
+          </header>
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="brand-page min-w-0 pb-[calc(6rem+env(safe-area-inset-bottom))] focus-visible:outline-none lg:pb-10"
           >
-            <i.icon className="size-5" aria-hidden="true" />
-            <span className="truncate">{i.label}</span>
-          </Link>
-        ))}
-        <Button
-          variant="ghost"
-          onClick={() => setOpen(true)}
-          aria-expanded={open}
-          className="h-auto flex-col gap-0.5 rounded-none border-t-2 border-transparent py-2 text-[10px] text-muted-foreground"
+            {children}
+          </main>
+        </div>
+        <nav
+          aria-label="Quick sections"
+          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
         >
-          <Menu className="size-5" aria-hidden="true" />
-          <span>More</span>
-        </Button>
-      </nav>
-    </div>
+          {mobileItems.map((i) => (
+            <Link
+              key={i.to}
+              to={i.to}
+              aria-current={i.active ? "page" : undefined}
+              className={cn(
+                "flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 border-t-2 border-transparent px-1 py-2 text-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+                i.active
+                  ? "border-primary font-semibold text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <i.icon className="size-5" aria-hidden="true" />
+              <span className="truncate">{i.label}</span>
+            </Link>
+          ))}
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              aria-label="More sections"
+              onClick={(event) => {
+                menuTrigger.current = event.currentTarget;
+              }}
+              className="h-auto min-h-14 flex-col gap-0.5 rounded-none border-t-2 border-transparent py-2 text-[10px] text-muted-foreground"
+            >
+              <Menu className="size-5" aria-hidden="true" />
+              <span>More</span>
+            </Button>
+          </SheetTrigger>
+        </nav>
+      </div>
+    </Sheet>
   );
 }
 
@@ -656,128 +758,171 @@ const PUBLIC_LINKS = [
   ["/app/dashboard", "Protocol App"],
 ] as const;
 export function PublicShell({ children }: { children: ReactNode }) {
+  const path = useRouterState({ select: (r) => r.location.pathname });
   const cart = useDemo((s) => s.cart.reduce((a, c) => a + c.qty, 0));
   const h = useHydrated();
   const [open, setOpen] = useState(false);
   return (
-    <div className="min-h-screen bg-background">
-      <div className="demo-stripe border-b border-brass/30 py-1 text-center text-[11px] font-medium uppercase tracking-wider text-espresso">
-        ROASTAKE Testnet prototype · marketplace, coffee inventory, demo balances & yields are simulated; Perps and RHEA swaps use NEAR Testnet transactions.
-      </div>
-      <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:gap-4 sm:px-4">
-          <div className="flex items-center gap-8">
-            <Logo />
-            <nav className="hidden items-center gap-6 lg:flex">
-              {PUBLIC_LINKS.map(([to, l]) => (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <div className="min-h-screen min-w-0 bg-background text-foreground">
+        <a href="#main-content" className="brand-skip-link">
+          Skip to content
+        </a>
+        <div className="demo-stripe border-b border-brass/30 px-4 py-1.5 text-center text-[10px] font-medium leading-relaxed tracking-wide text-espresso sm:text-[11px]">
+          ROASTAKE Testnet prototype · marketplace, coffee inventory, demo balances & yields are
+          simulated; Perps and RHEA swaps use NEAR Testnet transactions.
+        </div>
+        <header className="brand-header sticky top-0 z-30 backdrop-blur">
+          <div className="brand-container flex min-h-16 min-w-0 items-center justify-between gap-2 sm:gap-4">
+            <div className="flex min-w-0 items-center gap-6">
+              <Logo compact />
+              <nav aria-label="Main navigation" className="hidden items-center gap-4 xl:flex">
+                {PUBLIC_LINKS.map(([to, label]) => {
+                  const active = path === to || path.startsWith(to + "/");
+                  return (
+                    <Link
+                      key={to}
+                      to={to}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "whitespace-nowrap rounded-sm py-2 text-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                        active ? "font-medium text-foreground" : "text-muted-foreground",
+                      )}
+                    >
+                      {label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+            <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/cart" aria-label="Coffee cart" className="gap-2">
+                  <ShoppingBag />
+                  {h && cart > 0 && (
+                    <span className="num rounded-full bg-copper px-1.5 text-[11px] text-cream">
+                      {cart}
+                    </span>
+                  )}
+                </Link>
+              </Button>
+              <div className="hidden sm:block">
+                <Notifications />
+              </div>
+              <WalletButton />
+              <Profile />
+              <SheetTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="shrink-0 xl:hidden"
+                  aria-label="Open navigation menu"
+                >
+                  <Menu aria-hidden="true" />
+                </Button>
+              </SheetTrigger>
+            </div>
+          </div>
+        </header>
+        <SheetContent
+          side="right"
+          className="w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto xl:hidden"
+        >
+          <SheetTitle className="sr-only">ROASTAKE navigation</SheetTitle>
+          <SheetDescription className="sr-only">
+            Explore coffee, trading and the protocol app.
+          </SheetDescription>
+          <div className="mb-8 pr-8">
+            <Logo onNav={() => setOpen(false)} />
+          </div>
+          <nav aria-label="Main navigation" className="space-y-1">
+            {[...PUBLIC_LINKS, ["/orders", "Orders"] as const].map(([to, label]) => {
+              const active = path === to || path.startsWith(to + "/");
+              return (
                 <Link
                   key={to}
                   to={to}
-                  className="text-sm text-muted-foreground hover:text-foreground"
-                  activeProps={{ className: "text-foreground font-medium" }}
+                  onClick={() => setOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex min-h-11 items-center rounded-lg px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    active
+                      ? "bg-accent font-semibold text-accent-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
                 >
-                  {l}
+                  {label}
                 </Link>
-              ))}
-            </nav>
-          </div>
-          <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/cart" aria-label="Coffee cart" className="gap-2">
-                <ShoppingBag />
-                {h && cart > 0 && (
-                  <span className="num rounded-full bg-copper px-1.5 text-[11px] text-cream">
-                    {cart}
-                  </span>
-                )}
-              </Link>
-            </Button>
-            <div className="hidden sm:block">
-              <Notifications />
-            </div>
-            <WalletButton />
-            <Profile />
-            <Button
-              size="icon"
-              variant="ghost"
-              className="lg:hidden"
-              aria-label="Menu"
-              onClick={() => setOpen(!open)}
-            >
-              <Menu />
-            </Button>
-          </div>
-        </div>
-        {open && (
-          <nav className="flex flex-col gap-1 border-t px-4 py-3 lg:hidden">
-            {[...PUBLIC_LINKS, ["/orders", "Orders"] as const].map(([to, l]) => (
-              <Link key={to} to={to} onClick={() => setOpen(false)} className="py-1.5 text-sm">
-                {l}
-              </Link>
-            ))}
+              );
+            })}
           </nav>
-        )}
-      </header>
-      <main>{children}</main>
-      <footer className="mt-20 bg-forest text-mint">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 md:grid-cols-4">
-          <div>
-            <p className="font-display text-2xl text-cream">ROASTAKE</p>
-            <p className="mt-2 text-sm opacity-80">Roast. Stake. Repeat.</p>
-            <p className="mt-4 text-xs opacity-60">
-              A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions using non-monetary test tokens. Marketplace orders, inventory, coffee custody, demo balances and yields are simulated; no verified physical backing, real shipments or Mainnet deployment.
-            </p>
-          </div>
-          {[
-            [
-              "Shop",
-              [
-                ["/market", "Marketplace"],
-                ["/roasters", "Roasters"],
-                ["/discovery-boxes", "Discovery boxes"],
-                ["/subscriptions", "Subscriptions"],
-                ["/wholesale", "Wholesale"],
-              ],
-            ],
-            [
-              "Protocol",
-              [
-                ["/app/assets", "Coffee assets"],
-                ["/app/vaults", "Vaults"],
-                ["/app/perps", "Perpetuals"],
-                ["/app/governance", "Governance"],
-                ["/app/ventures", "Ventures"],
-              ],
-            ],
-            [
-              "Resources",
-              [
-                ["/app/docs", "Documentation"],
-                ["/app/risk-center", "Risk disclosures"],
-                ["/roaster/dashboard", "Roaster portal (preview)"],
-                ["/admin", "Admin console (preview)"],
-              ],
-            ],
-          ].map(([t, ls]) => (
-            <div key={t as string}>
-              <p className="mb-3 text-xs uppercase tracking-wider text-brass">{t as string}</p>
-              <ul className="space-y-1.5 text-sm">
-                {(ls as string[][]).map(([to, l]) => (
-                  <li key={to}>
-                    <Link to={to} className="opacity-80 hover:opacity-100">
-                      {l}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+        </SheetContent>
+        <main id="main-content" tabIndex={-1} className="min-w-0 focus-visible:outline-none">
+          {children}
+        </main>
+        <footer className="mt-20 bg-forest text-mint">
+          <div className="brand-container grid gap-8 py-14 md:grid-cols-4">
+            <div>
+              <Logo />
+              <p className="mt-2 text-sm opacity-80">Roast. Stake. Repeat.</p>
+              <p className="mt-4 text-xs opacity-60">
+                A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions
+                using non-monetary test tokens. Marketplace orders, inventory, coffee custody, demo
+                balances and yields are simulated; no verified physical backing, real shipments or
+                Mainnet deployment.
+              </p>
             </div>
-          ))}
-        </div>
-      </footer>
-    </div>
+            {[
+              [
+                "Shop",
+                [
+                  ["/market", "Marketplace"],
+                  ["/roasters", "Roasters"],
+                  ["/discovery-boxes", "Discovery boxes"],
+                  ["/subscriptions", "Subscriptions"],
+                  ["/wholesale", "Wholesale"],
+                ],
+              ],
+              [
+                "Protocol",
+                [
+                  ["/app/assets", "Coffee assets"],
+                  ["/app/vaults", "Vaults"],
+                  ["/app/perps", "Perpetuals"],
+                  ["/app/governance", "Governance"],
+                  ["/app/ventures", "Ventures"],
+                ],
+              ],
+              [
+                "Resources",
+                [
+                  ["/app/docs", "Documentation"],
+                  ["/app/risk-center", "Risk disclosures"],
+                  ["/roaster/dashboard", "Roaster portal (preview)"],
+                  ["/admin", "Admin console (preview)"],
+                ],
+              ],
+            ].map(([t, ls]) => (
+              <div key={t as string}>
+                <p className="mb-3 text-xs uppercase tracking-wider text-brass">{t as string}</p>
+                <ul className="space-y-1.5 text-sm">
+                  {(ls as string[][]).map(([to, l]) => (
+                    <li key={to}>
+                      <Link to={to} className="opacity-80 hover:opacity-100">
+                        {l}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </footer>
+      </div>
+    </Sheet>
   );
 }
 
 export const Section = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <div className={cn("mx-auto max-w-7xl px-4", className)}>{children}</div>
+  <div className={cn("brand-container", className)}>{children}</div>
 );

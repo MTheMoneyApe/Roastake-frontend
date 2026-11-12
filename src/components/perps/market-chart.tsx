@@ -36,6 +36,35 @@ export interface PerpsMarketChartProps {
 
 export type ArabicaMarketChartProps = PerpsMarketChartProps;
 
+function resolveChartTheme(container: HTMLElement) {
+  const styles = getComputedStyle(container);
+  const canvas = document.createElement("canvas");
+  canvas.width = 1;
+  canvas.height = 1;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) throw new Error("Canvas 2D context unavailable");
+
+  const resolveColor = (token: string) => {
+    // Lightweight Charts parses RGB, not CSS variables or OKLCH. Let the browser
+    // render the inherited token into an sRGB pixel before passing it to the chart.
+    context.clearRect(0, 0, 1, 1);
+    context.fillStyle = styles.getPropertyValue(token).trim();
+    context.fillRect(0, 0, 1, 1);
+    const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data;
+    return `rgba(${red}, ${green}, ${blue}, ${alpha / 255})`;
+  };
+
+  return {
+    background: resolveColor("--card"),
+    foreground: resolveColor("--foreground"),
+    border: resolveColor("--border"),
+    gain: resolveColor("--gain"),
+    loss: resolveColor("--loss"),
+    line: resolveColor("--chart-1"),
+    close: resolveColor("--brass"),
+  };
+}
+
 function TradeMarkerCard({ marker }: { marker: VerifiedTradeMarker }) {
   const isOpen = marker.kind === "LONG_OPEN" || marker.kind === "SHORT_OPEN";
   const badgeTone =
@@ -239,28 +268,29 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
       try {
         const lwc = await import("lightweight-charts");
         if (cancelled || !chartHostRef.current) return;
+        const theme = resolveChartTheme(chartHostRef.current);
 
         const instance = lwc.createChart(chartHostRef.current, {
           autoSize: true,
           layout: {
             attributionLogo: true,
-            background: { type: lwc.ColorType.Solid, color: "#0f1714" },
-            textColor: "#cbd8d0",
+            background: { type: lwc.ColorType.Solid, color: theme.background },
+            textColor: theme.foreground,
             fontFamily: "IBM Plex Mono, ui-monospace, monospace",
             fontSize: 11,
           },
           grid: {
-            vertLines: { color: "#1c2923" },
-            horzLines: { color: "#1c2923" },
+            vertLines: { color: theme.border },
+            horzLines: { color: theme.border },
           },
           rightPriceScale: {
-            borderColor: "#263630",
+            borderColor: theme.border,
             scaleMargins: { top: 0.22, bottom: 0.22 },
           },
           timeScale: {
             timeVisible: true,
             secondsVisible: true,
-            borderColor: "#263630",
+            borderColor: theme.border,
             rightOffset: 1,
             barSpacing: 48,
             fixLeftEdge: true,
@@ -278,18 +308,18 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
         let mainSeries: ISeriesApi<"Line" | "Candlestick", Time>;
         if (timeframeAvailability.canRenderCandles && candleData.length > 0) {
           const candlesSeries = instance.addSeries(lwc.CandlestickSeries, {
-            upColor: "#34d399",
-            downColor: "#f87171",
+            upColor: theme.gain,
+            downColor: theme.loss,
             borderVisible: false,
-            wickUpColor: "#34d399",
-            wickDownColor: "#f87171",
+            wickUpColor: theme.gain,
+            wickDownColor: theme.loss,
             title: "ORACLE SAMPLE OHLC",
           });
           candlesSeries.setData(candleData);
           mainSeries = candlesSeries;
         } else {
           const lineSeries = instance.addSeries(lwc.LineSeries, {
-            color: "#5ec294",
+            color: theme.line,
             lineWidth: 2,
             pointMarkersVisible: true,
             pointMarkersRadius: 4,
@@ -302,9 +332,19 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
         }
 
         if (chartMarkers.length > 0) {
-          markersApi = lwc.createSeriesMarkers(mainSeries, chartMarkers, {
-            autoScale: true,
-          });
+          markersApi = lwc.createSeriesMarkers(
+            mainSeries,
+            chartMarkers.map((marker) => ({
+              ...marker,
+              color:
+                marker.shape === "arrowUp"
+                  ? theme.gain
+                  : marker.shape === "arrowDown"
+                    ? theme.loss
+                    : theme.close,
+            })),
+            { autoScale: true },
+          );
         }
         instance.timeScale().fitContent();
 
@@ -484,18 +524,18 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
         {status === "loading" ? (
           <div
             role="status"
-            className="flex h-[300px] flex-col items-center justify-center gap-2 rounded-md border bg-[#0f1714] px-4 text-center text-sm text-[#cbd8d0]"
+            className="flex h-[300px] flex-col items-center justify-center gap-2 rounded-md border bg-card px-4 text-center text-sm text-foreground"
           >
-            <Loader2 className="size-5 animate-spin text-[#5ec294]" aria-hidden="true" />
+            <Loader2 className="size-5 animate-spin text-primary" aria-hidden="true" />
             <p>Loading verified on-chain observations...</p>
-            <p className="text-xs text-[#8ea399]">
+            <p className="text-xs text-muted-foreground">
               Verifying finalized receipts via NEAR Testnet JSON-RPC (zero local fallback data).
             </p>
           </div>
         ) : status === "error" ? (
           <div
             role="alert"
-            className="flex h-[300px] flex-col items-center justify-center gap-3 rounded-md border border-loss/50 bg-[#0f1714] px-4 text-center text-sm text-[#cbd8d0]"
+            className="flex h-[300px] flex-col items-center justify-center gap-3 rounded-md border border-loss/50 bg-card px-4 text-center text-sm text-foreground"
           >
             <AlertTriangle className="size-6 text-loss" aria-hidden="true" />
             <div className="space-y-1">
@@ -512,40 +552,40 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
             </Button>
           </div>
         ) : status === "empty" ? (
-          <div className="flex h-[300px] flex-col items-center justify-center gap-2 rounded-md border bg-[#0f1714] px-4 text-center text-sm text-[#cbd8d0]">
-            <Info className="size-5 text-[#8ea399]" aria-hidden="true" />
+          <div className="flex h-[300px] flex-col items-center justify-center gap-2 rounded-md border bg-card px-4 text-center text-sm text-foreground">
+            <Info className="size-5 text-muted-foreground" aria-hidden="true" />
             <p className="font-medium">No verified historical observations available yet.</p>
-            <p className="max-w-md text-xs text-[#8ea399]">
+            <p className="max-w-md text-xs text-muted-foreground">
               No finalized <code className="font-mono">oracle_sandbox_tick</code> events were
               confirmed for <code className="font-mono">{targetMarketId}</code>.
             </p>
           </div>
         ) : !timeframeAvailability.canRenderLine && !timeframeAvailability.canRenderCandles ? (
-          <div className="flex h-[300px] flex-col items-center justify-center gap-3 rounded-md border bg-[#0f1714] px-6 text-center text-sm text-[#cbd8d0]">
-            <Info className="size-5 text-[#f59e0b]" aria-hidden="true" />
+          <div className="flex h-[300px] flex-col items-center justify-center gap-3 rounded-md border bg-card px-6 text-center text-sm text-foreground">
+            <Info className="size-5 text-brass" aria-hidden="true" />
             <div className="max-w-lg space-y-1.5">
-              <p className="font-medium text-[#eef4f0]">
+              <p className="font-medium text-foreground">
                 {timeframe} interval unavailable without fabricating history
               </p>
-              <p className="text-xs text-[#a9bdb3]">{timeframeAvailability.reason}</p>
+              <p className="text-xs text-muted-foreground">{timeframeAvailability.reason}</p>
             </div>
             <Button type="button" size="sm" variant="secondary" onClick={() => setTimeframe("ALL")}>
               Return to ALL verified ticks
             </Button>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-md border border-[#24352e] bg-[#0f1714]">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             {/* Crosshair / Selected Tick Readout HUD */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1d2b25] px-3 py-2 font-mono text-[11px] text-[#cbd8d0]">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2 font-mono text-[11px] text-foreground">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="font-semibold text-[#eef4f0]">{targetMarketId}</span>
+                <span className="font-semibold text-foreground">{targetMarketId}</span>
                 {activeObservation && (
                   <>
-                    <span className="text-[#5ec294]">
-                      {formatUsdE8(activeObservation.priceE8)}/kg
+                    <span className="text-gain">{formatUsdE8(activeObservation.priceE8)}/kg</span>
+                    <span className="text-muted-foreground">
+                      Oracle #{activeObservation.sequence}
                     </span>
-                    <span className="text-[#8ea399]">Oracle #{activeObservation.sequence}</span>
-                    <span className="text-[#8ea399]">
+                    <span className="text-muted-foreground">
                       {formatObservationUtc(activeObservation.timestampSec)}
                     </span>
                   </>
@@ -556,7 +596,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
                   href={activeObservation.explorerUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[#8ea399] underline decoration-dotted underline-offset-4 hover:text-[#eef4f0]"
+                  className="inline-flex items-center gap-1 text-muted-foreground underline decoration-dotted underline-offset-4 hover:text-foreground"
                 >
                   <span>tx {activeObservation.txHash.slice(0, 8)}...</span>
                   <ExternalLink className="size-3" aria-hidden="true" />
@@ -571,7 +611,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
               className="relative h-[300px] w-full sm:h-[340px]"
             >
               {canvasUnavailable && (
-                <div className="flex h-full items-center justify-center px-4 text-center text-xs text-[#8ea399]">
+                <div className="flex h-full items-center justify-center px-4 text-center text-xs text-muted-foreground">
                   Canvas 2D context unavailable in this environment; verified observation ledger
                   below remains active.
                 </div>

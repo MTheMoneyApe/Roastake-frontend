@@ -29,21 +29,21 @@ function ProductPage() {
   return (
     <PublicShell>
       <Section className="py-10">
-        <nav className="mb-6 text-xs text-muted-foreground"><Link to="/market">Market</Link> / {p.country} / <span className="text-foreground">{p.name}</span></nav>
+        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted-foreground"><Link to="/market">Market</Link> / {p.country} / <span className="text-foreground">{p.name}</span></nav>
         <div className="grid gap-10 md:grid-cols-2">
           <ProductImage p={p} className="aspect-square" />
-          <div>
-            <p className="text-xs uppercase tracking-wider text-copper">{p.origin}, {p.country}</p>
-            <h1 className="mt-1 text-4xl md:text-5xl">{p.name}</h1>
+          <div className="min-w-0">
+            <p className="brand-eyebrow">{p.origin}, {p.country}</p>
+            <h1 className="brand-page-title mt-1">{p.name}</h1>
             <Link to="/roasters/$id" params={{ id: roaster.id }} className="mt-2 inline-block text-sm text-muted-foreground underline-offset-4 hover:underline">Roasted by {roaster.name}</Link>
             <div className="mt-4 flex flex-wrap gap-2">{p.notes.map((n) => <span key={n} className="rounded-full bg-accent px-3 py-1 text-xs text-accent-foreground">{n}</span>)}</div>
             <p className="num mt-6 text-3xl">€{price.toFixed(2)}</p>
             <div className="mt-6 space-y-4">
-              <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Size</p><div className="flex gap-2">{p.sizes.map((z) => <Button key={z} size="sm" variant={z === size ? "default" : "outline"} onClick={() => setSize(z)}>{p.format === "Capsules" ? `${z} caps` : z >= 1000 ? `${z / 1000} kg` : `${z} g`}</Button>)}</div></div>
+              <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Size</p><div className="flex flex-wrap gap-2">{p.sizes.map((z) => <Button key={z} size="sm" variant={z === size ? "default" : "outline"} onClick={() => setSize(z)}>{p.format === "Capsules" ? `${z} caps` : z >= 1000 ? `${z / 1000} kg` : `${z} g`}</Button>)}</div></div>
               {p.format !== "Capsules" && <div><p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Grind</p><div className="flex flex-wrap gap-2">{GRINDS.map((g) => <Button key={g} size="sm" variant={g === grind ? "default" : "outline"} onClick={() => setGrind(g)}>{g}</Button>)}</div></div>}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center rounded-md border"><Button variant="ghost" size="sm" onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease">−</Button><span className="num w-8 text-center">{qty}</span><Button variant="ghost" size="sm" onClick={() => setQty(qty + 1)} aria-label="Increase">+</Button></div>
-                <Button size="lg" className="flex-1" disabled={p.stock === 0 || p.status !== 'Live'} onClick={() => {if(demo.addToCart(p.id, qty, size, grind))setAdded(true);}}>{p.stock === 0 ? "Sold out" : "Add to cart"}</Button>
+                <Button size="lg" className="min-w-36 flex-1" disabled={p.stock === 0 || p.status !== 'Live'} onClick={() => {if(demo.addToCart(p.id, qty, size, grind))setAdded(true);}}>{p.stock === 0 ? "Sold out" : "Add to cart"}</Button>
               </div>
               <p className="text-xs text-muted-foreground">{p.stock} in stock (demo) · ships from {roaster.city} · <DemoBadge>No real charge</DemoBadge></p>
               {added && <div role="status" className="flex flex-wrap items-center gap-3 border-t pt-4"><p className="text-sm">Coffee added to your demo cart.</p><Button asChild variant="outline"><Link to="/cart">View cart</Link></Button></div>}
@@ -57,7 +57,7 @@ function ProductPage() {
           <TabsContent value="brew" className="max-w-2xl"><KV rows={[["Pour-over", "15 g · 250 g water · 94 °C · 3:00"], ["Espresso", "18 g in · 40 g out · 28 s"], ["AeroPress", "14 g · 220 g · 1:45 steep"], ["Rest after roast", "7–21 days"]]} /></TabsContent>
           <TabsContent value="seller" className="max-w-2xl"><p className="text-sm text-muted-foreground">{roaster.story}</p><p className="mt-2 text-sm">Ships to: {roaster.zones.join(", ")}</p></TabsContent>
         </Tabs>
-        <h2 className="mt-16 text-3xl">More from {roaster.name}</h2>
+        <h2 className="brand-section-title mt-16">More from {roaster.name}</h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{s.products.filter((x) => x.roasterId === roaster.id && x.id !== p.id).slice(0, 4).map((x) => <ProductCard key={x.id} p={x} />)}</div>
       </Section>
     </PublicShell>

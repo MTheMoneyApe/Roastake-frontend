@@ -341,8 +341,8 @@ function LiveMarketOpenOrderForm({
               className={`flex cursor-pointer items-center justify-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold transition ${
                 side === option
                   ? option === "Long"
-                    ? "bg-[var(--gain)] text-black underline underline-offset-4"
-                    : "bg-[var(--loss)] text-white underline underline-offset-4"
+                    ? "bg-gain/15 text-gain underline underline-offset-4"
+                    : "bg-loss/15 text-loss underline underline-offset-4"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >

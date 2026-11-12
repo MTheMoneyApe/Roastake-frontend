@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 import { PublicShell, Section } from "@/components/shell";
 import { ProductCard } from "@/components/commerce";
-import { Empty } from "@/components/kit";
+import { Empty, PageHeader } from "@/components/kit";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -44,10 +44,10 @@ function Market() {
   return (
     <PublicShell>
       <Section className="py-12">
-        <p className="font-mono text-xs uppercase tracking-widest text-copper">Marketplace · demo inventory</p>
-        <h1 className="mt-2 text-5xl">Coffee from independent roasters</h1>
+        <p className="brand-eyebrow mb-2">Marketplace · demo inventory</p>
+        <PageHeader title="Coffee from independent roasters" subtitle="Illustrative coffee listings and EUR prices. No real coffee orders or payments." />
         <div className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          <Input placeholder="Search coffee, origin, flavour…" value={q} onChange={(e) => setQ(e.target.value)} className="sm:col-span-2" />
+          <Input aria-label="Search coffee, origin or flavour" placeholder="Search coffee, origin, flavour…" value={q} onChange={(e) => setQ(e.target.value)} className="sm:col-span-2" />
           <Sel k="country" label="Countries" items={opts("country")} />
           <Sel k="roasterId" label="Roasters" items={s.roasters.map((r) => r.id)} names={Object.fromEntries(s.roasters.map((r) => [r.id, r.name]))} />
           <Sel k="process" label="Processes" items={opts("process")} />
@@ -57,9 +57,9 @@ function Market() {
           <Sel k="price" label="Prices" items={["0-14", "14-19", "19-99"]} names={{ "0-14": "Under €14", "14-19": "€14–19", "19-99": "€19+" }} />
           <Sel k="avail" label="Availability" items={["in"]} names={{ in: "In stock only" }} />
         </div>
-        <div className="mt-6 flex items-center justify-between text-sm text-muted-foreground">
-          <span>{list.length} coffees</span>
-          <Select value={sort} onValueChange={setSort}><SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="featured">Featured</SelectItem><SelectItem value="price-asc">Price: low to high</SelectItem><SelectItem value="price-desc">Price: high to low</SelectItem></SelectContent></Select>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+          <span role="status" aria-live="polite">{list.length} coffees</span>
+          <Select value={sort} onValueChange={setSort}><SelectTrigger aria-label="Sort coffees" className="h-9 w-44 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="featured">Featured</SelectItem><SelectItem value="price-asc">Price: low to high</SelectItem><SelectItem value="price-desc">Price: high to low</SelectItem></SelectContent></Select>
         </div>
         {list.length === 0 ? <Empty text="No coffees match these filters." action={<Button variant="outline" size="sm" onClick={() => { setQ(""); setF(Object.fromEntries(Object.keys(f).map((k) => [k, ALL]))); }}>Clear filters</Button>} /> : (
           <div className="mt-6 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">{list.map((p) => <ProductCard key={p.id} p={p} />)}</div>

@@ -112,7 +112,7 @@ export function WalletHubHeaderButton() {
         </span>
       )}
       {!nearConnected && connectedAccounts.length > 0 && (
-        <span className="hidden rounded bg-brass/20 px-1 py-0.5 font-mono text-[10px] text-brass xl:inline">
+        <span className="hidden rounded bg-brass/20 px-1 py-0.5 font-mono text-[10px] text-warning-foreground xl:inline">
           NEAR unset
         </span>
       )}
@@ -825,7 +825,7 @@ export function WalletHubDialog() {
 
   return (
     <Dialog open={isHubOpen} onOpenChange={(next) => (next ? openHub() : closeHub())}>
-      <DialogContent className="dark grid-cols-1 w-[calc(100vw-1rem)] max-h-[88vh] max-w-3xl overflow-y-auto overflow-x-hidden p-4 text-foreground sm:w-full sm:p-6">
+      <DialogContent className="grid-cols-1 w-[calc(100vw-1rem)] max-h-[88vh] max-w-3xl overflow-y-auto overflow-x-hidden p-4 text-foreground sm:w-full sm:p-6">
         <DialogHeader className="min-w-0 pr-6 text-left">
           <DialogTitle className="flex flex-wrap items-center gap-2 font-display text-xl">
             <span>ROASTAKE Multichain Wallet Hub</span>

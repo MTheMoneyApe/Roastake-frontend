@@ -19,11 +19,11 @@ export const Route = createFileRoute("/roasters/$id")({
         <div className="relative isolate">
           <div className="absolute inset-0 -z-10 h-full w-full bg-muted" aria-hidden="true" />
           <div className="absolute inset-0 -z-10 bg-forest/80" />
-          <Section className="py-20 text-cream"><p className="text-xs uppercase tracking-widest text-brass">{r.city}, {r.country}</p><h1 className="mt-2 text-5xl">{r.name}</h1><p className="mt-4 max-w-xl text-cream/85">{r.story}</p></Section>
+          <Section className="py-20 text-cream"><p className="text-xs uppercase tracking-widest text-brass">{r.city}, {r.country}</p><h1 className="brand-page-title mt-2">{r.name}</h1><p className="mt-4 max-w-xl text-cream/85">{r.story}</p></Section>
         </div>
-        <Section className="grid gap-10 py-12 lg:grid-cols-[1fr_280px]">
-          <div><h2 className="text-3xl">Catalogue</h2>{items.length ? <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{items.map((p) => <ProductCard key={p.id} p={p} />)}</div> : <Empty text="No live products yet." />}</div>
-          <aside><KV rows={[["Founded", r.founded], ["Rating", `★ ${r.rating || "—"}`], ["Ships to", r.zones.join(", ")], ["Status", r.status]]} /></aside>
+        <Section className="grid gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <div className="min-w-0"><h2 className="brand-section-title">Catalogue</h2>{items.length ? <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{items.map((p) => <ProductCard key={p.id} p={p} />)}</div> : <Empty text="No live products yet." />}</div>
+          <aside className="brand-surface min-w-0 self-start p-5"><KV rows={[["Founded", r.founded], ["Rating", `★ ${r.rating || "—"}`], ["Ships to", r.zones.join(", ")], ["Status", r.status]]} /></aside>
         </Section>
       </PublicShell>
     );

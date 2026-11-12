@@ -83,10 +83,10 @@ function Page() {
     <AppShell>
       <div className="space-y-8">
         <section className="space-y-3">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-brass">
+          <p className="brand-eyebrow">
             Resources · source of truth
           </p>
-          <h1 className="font-display text-3xl font-semibold sm:text-4xl">
+          <h1 className="brand-page-title">
             ROASTAKE Documentation
           </h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
@@ -99,7 +99,7 @@ function Page() {
 
         <section className="grid gap-4 md:grid-cols-2">
           {RESOURCES.map((resource) => (
-            <article key={resource.title} className="rounded-lg border bg-card p-5">
+            <article key={resource.title} className="brand-surface min-w-0 p-5">
               <h2 className="font-display text-xl font-semibold">{resource.title}</h2>
               <p className="mt-2 text-sm text-muted-foreground">{resource.description}</p>
               <a
@@ -116,13 +116,13 @@ function Page() {
 
         <section className="space-y-4">
           <div>
-            <h2 className="font-display text-2xl font-semibold">Implementation status</h2>
+            <h2 className="brand-section-title">Implementation status</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               All chain integrations below are NEAR Testnet only. Testnet tokens have no monetary
               value and no Mainnet deployment is available.
             </p>
           </div>
-          <div className="divide-y rounded-lg border bg-card">
+          <div className="brand-surface divide-y">
             {MODULES.map((item) => (
               <div
                 key={item.name}

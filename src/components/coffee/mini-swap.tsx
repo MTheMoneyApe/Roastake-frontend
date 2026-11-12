@@ -547,7 +547,7 @@ export function CoffeeMiniSwap() {
 
           {!blocked && reviewing && (
             <div className="space-y-3 rounded-md border border-brass/50 bg-brass/10 p-3">
-              <p className="font-mono text-[11px] uppercase tracking-wider text-brass">
+              <p className="font-mono text-[11px] uppercase tracking-wider text-warning-foreground">
                 Review before signing
               </p>
               <dl className="space-y-1 text-xs">
