@@ -93,13 +93,13 @@ const COFFEE_ACTIONS = [
   {
     to: "/app/coffee-passport",
     title: "Coffee Passport",
-    detail: "Origin & custody provenance",
+    detail: "Sample lot details; custody not verified",
     icon: BookOpen,
   },
   {
     to: "/market",
     title: "Marketplace",
-    detail: "Coffee from independent roasters",
+    detail: "Sample listings; no real orders",
     icon: ShoppingBag,
   },
   {
@@ -109,7 +109,7 @@ const COFFEE_ACTIONS = [
     icon: Flame,
   },
   { to: "/app/redeem", title: "Redeem", detail: "Reserve roasted coffee in demo", icon: Package },
-  { to: "/app/swap", title: "Swap", detail: "Simulate coffee token exchange", icon: Repeat },
+  { to: "/app/swap", title: "Swap", detail: "NEP-141 swaps via RHEA Testnet pools", icon: Repeat },
 ] as const;
 
 export function Dashboard() {
@@ -343,11 +343,14 @@ export function Dashboard() {
         <div className="grid gap-6 border-y py-6 md:grid-cols-[1fr_240px]">
           <div>
             <p className="font-mono text-xs uppercase text-copper">Coffee DeFi &amp; Provenance</p>
-            <h2 id="coffee-ecosystem-heading" className="mt-2 text-2xl">
-              From origin to ownership.
-            </h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 id="coffee-ecosystem-heading" className="mt-2 text-2xl">
+                Coffee data prototype.
+              </h2>
+              <DemoBadge>SIMULATED</DemoBadge>
+            </div>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-              Lot-specific tokens model recorded kilograms. Green and roasted coffee stay separate.
+              Lot attributes, origin stories, quantities and custody records are illustrative local data. No physical inventory, producer identity or warehouse custody is independently verified.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Button asChild>
@@ -397,7 +400,7 @@ export function Dashboard() {
                 <h3 className="text-xl font-medium">Coffee-backed assets</h3>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                Simulated custody records · 1 token represents 1 kg of its identified lot.
+                Demo inventory records only · no physical backing, custody or redemption is verified.
               </p>
             </div>
             <Button asChild variant="ghost" size="sm">
