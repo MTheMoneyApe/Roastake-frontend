@@ -187,9 +187,9 @@ describe("ROASTAKE bilingual editorial landing", () => {
         language === "es" ? "CAFÉ REAL. NUEVAS POSIBILIDADES FINANCIERAS." : "REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
       );
       const cta = language === "es" ? "Iniciar app" : "Launch App";
-      screen
-        .getAllByRole("link", { name: cta })
-        .forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
+      const primaryCtas = screen.getAllByRole("link", { name: cta });
+      expect(primaryCtas).toHaveLength(1);
+      primaryCtas.forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
       expect(container.querySelectorAll("h2")).toHaveLength(6);
       expect(container).toHaveTextContent(language === "es" ? "La capa financiera para la economía global del café." : "The financial layer for the global coffee economy.");
       expect(container.querySelector("#ecosystem-layers ol")?.children).toHaveLength(3);
