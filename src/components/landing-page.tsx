@@ -470,7 +470,6 @@ export function LandingPage() {
           <p className="landing-kicker text-hero-highlight">ROASTAKE</p>
           <h2 id="closing-title">{c.closing}</h2>
           {actions}
-          <p className="landing-maturity text-hero-muted">{c.heroNote}</p>
         </Section>
       </section>
     </div>
