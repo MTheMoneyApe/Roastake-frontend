@@ -27,32 +27,51 @@ export function RoadmapPage() {
       <section aria-labelledby="planned-modules" className="space-y-5">
         <div>
           <h2 id="planned-modules" className="font-display text-2xl font-semibold">
-            {SCOPE_LABELS.planned}
+            Three phases, one coffee economy
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            {SCOPE_DESCRIPTIONS.planned} Every generic module and operational portal preview belongs
-            here, including detail and application screens.
+            The roadmap is organized around the product's core progression. The modules below are
+            design previews, not deployed capabilities or delivery commitments.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {planned.items.map(({ to, label, icon: Icon }) => (
-            <Link
-              key={to}
-              to={to}
-              className="group rounded-xl border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <Icon className="size-5 text-primary" aria-hidden="true" />
-                <ArrowUpRight
-                  className="size-4 text-muted-foreground group-hover:text-primary"
-                  aria-hidden="true"
-                />
-              </div>
-              <h3 className="mt-4 font-semibold">{label}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Planned · open the non-operational design preview
-              </p>
-            </Link>
+        <div className="grid gap-4 lg:grid-cols-3">
+          {[
+            {
+              title: "Coffee Markets",
+              description: "Market access, wholesale discovery and risk infrastructure.",
+              paths: ["/app/risk-center", "/app/portfolio", "/subscriptions", "/wholesale", "/discovery-boxes"],
+            },
+            {
+              title: "Coffee Assets",
+              description: "Proposed representation, vaults and asset-financing mechanics.",
+              paths: ["/app/tokenization", "/app/vaults", "/app/staking", "/app/farming", "/app/lending", "/app/borrowing"],
+            },
+            {
+              title: "Coffee Capital",
+              description: "Governance, treasury, ventures and ecosystem operations.",
+              paths: ["/app/governance", "/app/governance/proposals", "/app/treasury", "/app/ventures", "/app/ventures/apply", "/roaster/dashboard", "/admin"],
+            },
+          ].map((phase) => (
+            <article key={phase.title} className="rounded-xl border bg-card p-5">
+              <h3 className="font-display text-xl font-semibold">{phase.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{phase.description}</p>
+              <ul className="mt-4 space-y-2 border-t pt-4">
+                {phase.paths.map((path) => {
+                  const item = planned.items.find((candidate) => candidate.to === path);
+                  return item ? (
+                    <li key={item.to}>
+                      <Link
+                        to={item.to}
+                        aria-label={`${item.label} Planned · open the non-operational design preview`}
+                        className="text-sm text-primary underline underline-offset-4 hover:no-underline"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ) : null;
+                })}
+              </ul>
+            </article>
           ))}
         </div>
       </section>
