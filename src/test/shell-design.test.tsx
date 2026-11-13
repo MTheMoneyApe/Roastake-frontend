@@ -219,12 +219,16 @@ describe("Shared brand shells", () => {
     );
     const nav = screen.getByRole("navigation", { name: "Main navigation" });
     const trigger = within(nav).getByRole("button", { name: "Menu" });
+    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ bottom: 180 } as DOMRect);
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(document.getElementById(trigger.getAttribute("aria-controls")!)).toHaveAttribute(
       "hidden",
     );
     fireEvent.click(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(document.getElementById(trigger.getAttribute("aria-controls")!)).toHaveStyle({
+      top: "188px",
+    });
     expect(
       within(nav)
         .getAllByRole("link")

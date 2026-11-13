@@ -536,6 +536,13 @@ const publicSpanishLabels: Record<string, string> = {
   "/app/docs": "Documentación",
 };
 
+function positionPublicMenu(menu: HTMLElement | null, trigger: HTMLElement | null) {
+  if (!menu || !trigger) return;
+  const top = trigger.getBoundingClientRect().bottom + 8;
+  menu.style.top = `${top}px`;
+  menu.style.maxHeight = `${Math.max(44, window.innerHeight - top - 16)}px`;
+}
+
 function PublicNavigation() {
   const { language } = useLandingLanguage();
   const path = useRouterState({ select: (r) => r.location.pathname });
@@ -583,7 +590,10 @@ function PublicNavigation() {
       menu.hidden = wasHidden;
       if (!inline) {
         menu.setAttribute("popover", "auto");
-        if (wasOpen) menu.showPopover();
+        if (wasOpen) {
+          positionPublicMenu(menu, trigger.current);
+          menu.showPopover();
+        }
       } else {
         setOpen(false);
       }
@@ -615,12 +625,15 @@ function PublicNavigation() {
         ref={trigger}
         type="button"
         variant="ghost"
-        className={wide ? "hidden" : "gap-2"}
+        className={wide ? "hidden" : "min-h-11 gap-2"}
         popoverTarget={id}
         aria-controls={id}
         aria-expanded={open}
         onClick={() => {
-          if (!nativePopover) setOpen((value) => !value);
+          if (!nativePopover) {
+            positionPublicMenu(list.current, trigger.current);
+            setOpen((value) => !value);
+          }
         }}
       >
         <Menu className="size-4" aria-hidden="true" />
@@ -631,7 +644,10 @@ function PublicNavigation() {
         id={id}
         popover={wide ? undefined : "auto"}
         hidden={!wide && !nativePopover && !open}
-        onToggle={(event) => setOpen(event.newState === "open")}
+        onToggle={(event) => {
+          if (event.newState === "open") positionPublicMenu(list.current, trigger.current);
+          setOpen(event.newState === "open");
+        }}
         onKeyDown={(event) => {
           if (!nativePopover && event.key === "Escape") {
             close();
@@ -654,7 +670,7 @@ function PublicNavigation() {
                 onClick={close}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-10 items-center whitespace-nowrap rounded-md border-b-2 border-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring forced-colors:focus-visible:outline",
+                  "flex min-h-11 items-center whitespace-nowrap rounded-md border-b-2 border-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring forced-colors:focus-visible:outline",
                   active
                     ? "border-primary bg-accent font-semibold text-accent-foreground forced-colors:border-[Highlight]"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
