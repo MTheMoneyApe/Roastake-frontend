@@ -762,9 +762,14 @@ export function SpotMarketsPage() {
         subtitle="Demo reference prices for coffee tokens. Trade them through the simulated swap."
         crumbs={[{ label: "Trade" }]}
         actions={
-          <Button size="sm" asChild>
-            <Link to="/app/swap">Open swap</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" asChild>
+              <Link to="/app/market-analytics">Market analytics</Link>
+            </Button>
+            <Button size="sm" asChild>
+              <Link to="/app/swap">Open swap</Link>
+            </Button>
+          </div>
         }
       />
       <Panel title="Coffee tokens" bodyClass="p-0">
