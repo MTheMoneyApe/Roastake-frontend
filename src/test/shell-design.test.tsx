@@ -259,7 +259,7 @@ describe("Shared brand shells", () => {
     expect(trigger).toHaveFocus();
   });
 
-  it("uses ordinary links in one concise public navigation and closes on selection", () => {
+  it("exposes only Launch App in the editorial landing navigation", () => {
     location.pathname = "/app/assets/demo-lot";
     render(
       <LandingShell>
@@ -269,34 +269,13 @@ describe("Shared brand shells", () => {
     const nav = screen.getByRole("navigation", { name: "Main navigation" });
     const trigger = within(nav).getByRole("button", { name: "Menu" });
     vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ bottom: 180 } as DOMRect);
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(document.getElementById(trigger.getAttribute("aria-controls")!)).toHaveAttribute(
-      "hidden",
-    );
     fireEvent.click(trigger);
-    expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(document.getElementById(trigger.getAttribute("aria-controls")!)).toHaveStyle({
-      top: "188px",
-    });
-    expect(
-      within(nav)
-        .getAllByRole("link")
-        .map((link) => link.getAttribute("href")),
-    ).toEqual(PUBLIC_NAV.map(({ to }) => to));
-    expect(within(nav).getByRole("link", { name: "Coffee Assets demo" })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
-    expect(within(nav).getByRole("link", { name: "Coffee Economy" })).not.toHaveAttribute(
-      "aria-current",
-    );
-    expect(within(nav).queryByRole("menuitem")).not.toBeInTheDocument();
-    fireEvent.click(within(nav).getByRole("link", { name: "Documentation" }));
+    expect(within(nav).getAllByRole("link")).toHaveLength(1);
+    const launch = within(nav).getByRole("link", { name: "Launch App" });
+    expect(launch).toHaveAttribute("href", "/app/perps");
+    expect(within(nav).queryByRole("link", { name: "Coffee Economy" })).not.toBeInTheDocument();
+    fireEvent.click(launch);
     expect(trigger).toHaveAttribute("aria-expanded", "false");
-    fireEvent.click(trigger);
-    fireEvent.keyDown(within(nav).getByRole("link", { name: "Documentation" }), { key: "Escape" });
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(trigger).toHaveFocus();
   });
 
   it("reuses exactly the same public link tree when the header no longer fits", () => {
