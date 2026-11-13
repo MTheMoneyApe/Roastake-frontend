@@ -39,6 +39,7 @@ export type NavGroup = {
   items: NavItem[];
   collapsible?: boolean;
   defaultCollapsed?: boolean;
+  standalone?: boolean;
 };
 
 export const SCOPE_LABELS = {
@@ -56,8 +57,8 @@ export const SCOPE_DESCRIPTIONS = {
 
 export const APP_NAV: NavGroup[] = [
   {
-    label: SCOPE_LABELS.live,
-    description: SCOPE_DESCRIPTIONS.live,
+    label: "Markets / Testnet",
+    description: SCOPE_LABELS.live,
     groupBadge: { label: "TESTNET", variant: "testnet" },
     items: [
       {
@@ -105,95 +106,91 @@ export const APP_NAV: NavGroup[] = [
     ],
   },
   {
-    label: SCOPE_LABELS.demo,
-    description: SCOPE_DESCRIPTIONS.demo,
+    label: "Coffee Economy / Demo",
+    description: SCOPE_LABELS.demo,
     groupBadge: { label: "DEMO", variant: "demo" },
     items: [
-      { to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { to: "/market", label: "Marketplace", icon: ShoppingBag },
-      { to: "/roasters", label: "Roaster Profiles", icon: Store },
-      { to: "/orders", label: "Orders", icon: Truck },
-      { to: "/app/assets", label: "Asset Explorer", icon: Wheat },
+      { to: "/app/assets", label: "Coffee Assets", icon: Wheat },
       { to: "/app/coffee-passport", label: "Coffee Passport", icon: BookOpen },
       { to: "/app/roast", label: "Roasting Lab", icon: Flame },
       { to: "/app/redeem", label: "Redeem", icon: Package },
+    ],
+  },
+  {
+    label: "Demo Workspace",
+    description: SCOPE_LABELS.demo,
+    collapsible: true,
+    defaultCollapsed: true,
+    items: [
+      { to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { to: "/orders", label: "Orders", icon: Truck },
+      { to: "/roasters", label: "Roaster Profiles", icon: Store },
       { to: "/app/markets", label: "Spot Markets", icon: Gauge },
       { to: "/app/positions", label: "Positions", icon: Layers },
       { to: "/app/market-analytics", label: "Market Analytics", icon: PieChart },
       { to: "/app/activity", label: "Activity", icon: RefreshCw },
       { to: "/app/multichain", label: "Multi-chain Overview", icon: Globe },
-      { to: "/app/docs", label: "Prototype Documentation", icon: BookOpen },
     ],
   },
   {
-    label: SCOPE_LABELS.planned,
-    description: SCOPE_DESCRIPTIONS.planned,
-    groupBadge: { label: "PLANNED", variant: "preview" },
-    collapsible: true,
-    defaultCollapsed: true,
-    items: [
-      { to: "/roadmap", label: "Ecosystem Roadmap", icon: BookOpen },
-      { to: "/app/vaults", label: "Vaults", icon: Landmark },
-      { to: "/app/staking", label: "Staking", icon: Coins },
-      { to: "/app/farming", label: "Farming", icon: Sprout },
-      { to: "/app/lending", label: "Lending", icon: Scale },
-      { to: "/app/borrowing", label: "Borrowing", icon: Wallet },
-      { to: "/app/governance", label: "Governance", icon: Vote },
-      { to: "/app/governance/proposals", label: "Governance Proposals", icon: Vote },
-      { to: "/app/treasury", label: "Treasury", icon: Building2 },
-      { to: "/app/ventures", label: "Ventures", icon: Briefcase },
-      { to: "/app/ventures/apply", label: "Venture Applications", icon: Briefcase },
-      { to: "/app/portfolio", label: "Portfolio Module", icon: PieChart },
-      { to: "/app/tokenization", label: "Tokenization", icon: Layers },
-      { to: "/app/risk-center", label: "Risk Center", icon: ShieldAlert },
-      { to: "/subscriptions", label: "Subscriptions", icon: Repeat },
-      { to: "/wholesale", label: "Wholesale", icon: Truck },
-      { to: "/discovery-boxes", label: "Discovery Boxes", icon: Coffee },
-      { to: "/roaster/dashboard", label: "Roaster Portal", icon: Users },
-      { to: "/admin", label: "Admin Console", icon: Settings },
-    ],
+    label: "Roadmap",
+    standalone: true,
+    items: [{ to: "/roadmap", label: "Roadmap", icon: BookOpen }],
+  },
+  {
+    label: "Documentation",
+    standalone: true,
+    items: [{ to: "/app/docs", label: "Documentation", icon: BookOpen }],
   },
 ];
 
-// Public header, mobile drawer and footer share exactly the same destinations and status groups.
-export const PUBLIC_NAV: NavGroup[] = APP_NAV.map((group) => ({
-  ...group,
-  items: group.items.filter((item) =>
-    [
-      "/app/perps",
-      "/app/swap",
-      "/app/oracle",
-      "/market",
-      "/roasters",
-      "/app/assets",
-      "/app/coffee-passport",
-      "/orders",
-      "/app/dashboard",
-      "/roadmap",
-      "/app/vaults",
-      "/app/governance",
-      "/app/ventures",
-      "/subscriptions",
-      "/wholesale",
-      "/discovery-boxes",
-    ].includes(item.to),
-  ),
-}));
+// Planned previews remain reachable through the roadmap, not as peers of working features.
+// This registry also keeps nested route classification independent of navigation visibility.
+export const ROADMAP_NAV: NavGroup = {
+  label: SCOPE_LABELS.planned,
+  description: SCOPE_DESCRIPTIONS.planned,
+  items: [
+    { to: "/app/vaults", label: "Vaults", icon: Landmark },
+    { to: "/app/staking", label: "Staking", icon: Coins },
+    { to: "/app/farming", label: "Farming", icon: Sprout },
+    { to: "/app/lending", label: "Lending", icon: Scale },
+    { to: "/app/borrowing", label: "Borrowing", icon: Wallet },
+    { to: "/app/governance", label: "Governance", icon: Vote },
+    { to: "/app/governance/proposals", label: "Governance Proposals", icon: Vote },
+    { to: "/app/treasury", label: "Treasury", icon: Building2 },
+    { to: "/app/ventures", label: "Ventures", icon: Briefcase },
+    { to: "/app/ventures/apply", label: "Venture Applications", icon: Briefcase },
+    { to: "/app/portfolio", label: "Portfolio Module", icon: PieChart },
+    { to: "/app/tokenization", label: "Tokenization", icon: Layers },
+    { to: "/app/risk-center", label: "Risk Center", icon: ShieldAlert },
+    { to: "/subscriptions", label: "Subscriptions", icon: Repeat },
+    { to: "/wholesale", label: "Wholesale", icon: Truck },
+    { to: "/discovery-boxes", label: "Discovery Boxes", icon: Coffee },
+    { to: "/roaster/dashboard", label: "Roaster Portal", icon: Users },
+    { to: "/admin", label: "Admin Console", icon: Settings },
+  ],
+};
 
-export type RouteScope = keyof typeof SCOPE_LABELS;
+// One concise information architecture for the public header and footer at every size.
+export const PUBLIC_NAV: NavItem[] = [
+  { to: "/", label: "Coffee Economy", icon: Coffee },
+  { to: "/app/perps", label: "Testnet Markets", icon: ChartCandlestick },
+  { to: "/app/assets", label: "Coffee Assets demo", icon: Wheat },
+  { to: "/roadmap", label: "Roadmap", icon: BookOpen },
+  { to: "/app/docs", label: "Documentation", icon: BookOpen },
+];
+
+export const DOCUMENTATION_DESCRIPTION =
+  "Product documentation and implementation notes. Read the scope of each feature: live NEAR Testnet integrations, browser-only demonstrations and non-operational roadmap previews.";
+
+export type RouteScope = keyof typeof SCOPE_LABELS | "docs";
 export function getRouteScope(pathname: string): RouteScope {
   const path = pathname.replace(/\/+$/, "") || "/";
-  // Longest match keeps specific nested destinations unambiguous.
-  const groups = [...APP_NAV].reverse();
-  for (const group of groups) {
-    if (group.items.some(({ to }) => path === to || path.startsWith(`${to}/`))) {
-      return group.label === SCOPE_LABELS.live
-        ? "live"
-        : group.label === SCOPE_LABELS.planned
-          ? "planned"
-          : "demo";
-    }
-  }
+  const matches = (to: string) => path === to || path.startsWith(`${to}/`);
+  if (matches("/app/docs")) return "docs";
+  if (matches("/roadmap") || ROADMAP_NAV.items.some(({ to }) => matches(to))) return "planned";
+  if (APP_NAV[0].items.some(({ to }) => matches(to))) return "live";
   // The dynamic roaster/admin sections all render generic planned ModulePage previews.
   if (path === "/roaster" || path.startsWith("/roaster/") || path.startsWith("/admin/"))
     return "planned";
@@ -209,5 +206,6 @@ export function getRouteScopeDescription(pathname: string): string {
     return "OutLayer Oracle · separate read-only NEAR Testnet integration. It does not power Perps; reading observations does not execute trades or verify physical coffee backing.";
   if (/^\/app\/wallet(?:\/|$)/.test(pathname))
     return "Test-network wallet connections only. NEAR Testnet is the primary execution network; EVM testnets, Solana Devnet and Hyperliquid Testnet are separate wallet contexts. Demo balances are illustrative.";
-  return SCOPE_DESCRIPTIONS[getRouteScope(pathname)];
+  const scope = getRouteScope(pathname);
+  return scope === "docs" ? DOCUMENTATION_DESCRIPTION : SCOPE_DESCRIPTIONS[scope];
 }

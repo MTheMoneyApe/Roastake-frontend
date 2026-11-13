@@ -3,12 +3,14 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ADMIN_NAV, AppShell, PublicShell, ROASTER_NAV } from "@/components/shell";
 import { ThemeProvider, THEME_STORAGE_KEY } from "@/components/theme-provider";
-import { PUBLIC_NAV, SCOPE_LABELS } from "@/lib/navigation";
+import { APP_NAV, PUBLIC_NAV, ROADMAP_NAV } from "@/lib/navigation";
 import { ModulePage } from "@/components/module-page";
+import { RoadmapPage } from "@/routes/roadmap";
 
 const location = vi.hoisted(() => ({ pathname: "/app/assets" }));
 
 vi.mock("@tanstack/react-router", () => ({
+  createFileRoute: () => () => ({}),
   useParams: () => ({}),
   useRouterState: ({ select }: { select: (state: { location: typeof location }) => unknown }) =>
     select({ location }),
@@ -53,7 +55,10 @@ beforeEach(() => {
   document.documentElement.classList.remove("dark");
   document.documentElement.dataset.theme = "light";
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 describe("Shared brand shells", () => {
   it.each([
@@ -155,7 +160,7 @@ describe("Shared brand shells", () => {
     },
   );
 
-  it("marks nested routes and their mobile section current, while keeping preview disclosure operable", () => {
+  it("marks nested routes current and keeps the compact demo workspace operable", () => {
     location.pathname = "/app/perps/COL-G";
     render(
       <AppShell>
@@ -167,13 +172,8 @@ describe("Shared brand shells", () => {
       "aria-current",
       "page",
     );
-    const quickNav = screen.getByRole("navigation", { name: "Quick sections" });
-    expect(within(quickNav).getByRole("link", { name: "Testnet" })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
-    expect(quickNav.className).toContain("safe-area-inset-bottom");
-    const disclosure = screen.getByRole("button", { name: "Roadmap / Planned" });
+    expect(within(sidebar).queryByRole("link", { name: "Vaults" })).not.toBeInTheDocument();
+    const disclosure = screen.getByRole("button", { name: "Demo Workspace" });
     expect(disclosure).toHaveAttribute("aria-expanded", "false");
     const target = document.getElementById(disclosure.getAttribute("aria-controls")!);
     expect(target).toHaveAttribute("hidden");
@@ -199,7 +199,7 @@ describe("Shared brand shells", () => {
       "href",
       "/app/dashboard",
     );
-    expect(within(drawer).getByRole("link", { name: "Asset Explorer" })).toHaveAttribute(
+    expect(within(drawer).getByRole("link", { name: "Coffee Assets" })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -208,67 +208,73 @@ describe("Shared brand shells", () => {
     expect(trigger).toHaveFocus();
   });
 
-  it("shares selected public links with a labelled drawer, closes on selection, and restores focus", async () => {
-    location.pathname = "/market/coffee";
-    const { container } = render(
+  it("uses ordinary links in one concise public navigation and closes on selection", () => {
+    location.pathname = "/app/assets/demo-lot";
+    render(
       <PublicShell>
-        <h1>Marketplace</h1>
+        <h1>Coffee assets</h1>
       </PublicShell>,
     );
-    expect(container.querySelector("header")).toHaveClass("brand-header");
-    expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
-    for (const logo of screen.getAllByRole("link", { name: "ROASTAKE home" })) {
-      expect(logo).toHaveAttribute("href", "/");
-    }
-    const desktopNav = screen.getByRole("navigation", { name: "Main navigation" });
-    expect(desktopNav).toHaveClass("xl:flex");
-    for (const label of Object.values(SCOPE_LABELS)) {
-      expect(within(desktopNav).getByRole("button", { name: label })).toBeInTheDocument();
-    }
-    const expectedLinks = PUBLIC_NAV.flatMap((group) => group.items.map((item) => item.to));
-    const trigger = screen.getByRole("button", { name: "Open navigation menu" });
-    trigger.focus();
+    const nav = screen.getByRole("navigation", { name: "Main navigation" });
+    const trigger = within(nav).getByRole("button", { name: "Menu" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(document.getElementById(trigger.getAttribute("aria-controls")!)).toHaveAttribute(
+      "hidden",
+    );
     fireEvent.click(trigger);
-    const drawer = await screen.findByRole("dialog", { name: "ROASTAKE navigation" });
-    expect(drawer).toHaveAccessibleDescription("Explore coffee, trading and the protocol app.");
-    const drawerNav = within(drawer).getByRole("navigation", { name: "Main navigation" });
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
     expect(
-      within(drawerNav)
+      within(nav)
         .getAllByRole("link")
         .map((link) => link.getAttribute("href")),
-    ).toEqual(expectedLinks);
-    expect(within(drawerNav).getByRole("link", { name: "Marketplace" })).toHaveAttribute(
+    ).toEqual(PUBLIC_NAV.map(({ to }) => to));
+    expect(within(nav).getByRole("link", { name: "Coffee Assets demo" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    fireEvent.click(within(drawerNav).getByRole("link", { name: "Asset Explorer" }));
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(within(nav).getByRole("link", { name: "Coffee Economy" })).not.toHaveAttribute(
+      "aria-current",
+    );
+    expect(within(nav).queryByRole("menuitem")).not.toBeInTheDocument();
+    fireEvent.click(within(nav).getByRole("link", { name: "Documentation" }));
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(trigger);
+    fireEvent.keyDown(within(nav).getByRole("link", { name: "Documentation" }), { key: "Escape" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger).toHaveFocus();
   });
 
-  it("opens the public desktop status dropdown and keeps its links scoped to the selected group", async () => {
+  it("reuses exactly the same public link tree when the header no longer fits", () => {
+    let width = 1600;
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(() => width);
+    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockReturnValue(650);
+    location.pathname = "/";
     render(
       <PublicShell>
         <h1>Home</h1>
       </PublicShell>,
     );
-    const desktop = screen.getByRole("navigation", { name: "Main navigation" });
-    fireEvent.keyDown(within(desktop).getByRole("button", { name: SCOPE_LABELS.live }), {
-      key: "Enter",
-    });
-    const menu = await screen.findByRole("menu");
+    const nav = screen.getByRole("navigation", { name: "Main navigation" });
+    const originalList = nav.querySelector("ul");
     expect(
-      within(menu)
-        .getAllByRole("menuitem")
-        .map((link) => link.getAttribute("href")),
-    ).toEqual(PUBLIC_NAV[0].items.map((item) => item.to));
-    expect(within(menu).getByRole("menuitem", { name: "RHEA Mini Swap" })).toHaveAttribute(
-      "href",
-      "/app/swap",
+      within(nav)
+        .getAllByRole("link")
+        .map((link) => link.textContent),
+    ).toEqual(PUBLIC_NAV.map(({ label }) => label));
+    expect(within(nav).getByRole("link", { name: "Coffee Economy" })).toHaveAttribute(
+      "aria-current",
+      "page",
     );
-    expect(within(menu).queryByText("Vaults")).not.toBeInTheDocument();
-    fireEvent.click(within(menu).getByRole("menuitem", { name: "OutLayer Oracle" }));
-    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+    width = 400;
+    fireEvent(window, new Event("resize"));
+    fireEvent.click(within(nav).getByRole("button", { name: "Menu" }));
+    expect(nav.querySelector("ul")).toBe(originalList);
+    expect(
+      within(nav)
+        .getAllByRole("link")
+        .map((link) => link.getAttribute("href")),
+    ).toEqual(PUBLIC_NAV.map(({ to }) => to));
+    expect(screen.getAllByRole("navigation", { name: "Main navigation" })).toHaveLength(1);
   });
 
   it("audits footer destinations against the same public status groups", () => {
@@ -278,14 +284,12 @@ describe("Shared brand shells", () => {
       </PublicShell>,
     );
     const footer = screen.getByRole("contentinfo");
-    for (const label of Object.values(SCOPE_LABELS))
-      expect(within(footer).getByText(label)).toBeInTheDocument();
     expect(
       within(footer)
         .getAllByRole("link")
         .filter((link) => link.getAttribute("aria-label") !== "ROASTAKE home")
         .map((link) => link.getAttribute("href")),
-    ).toEqual(PUBLIC_NAV.flatMap((group) => group.items.map((item) => item.to)));
+    ).toEqual(PUBLIC_NAV.map(({ to }) => to));
     expect(within(footer).getByText(/OutLayer oracle does not power Perps/)).toBeInTheDocument();
   });
 
@@ -298,6 +302,7 @@ describe("Shared brand shells", () => {
     },
     { path: "/app/oracle", scope: "live", text: /does not power Perps/ },
     { path: "/app/assets/demo-lot", scope: "demo", text: /browser-only illustrations/ },
+    { path: "/app/docs", scope: "docs", text: /Product documentation/ },
     {
       path: "/app/governance/proposals/preview",
       scope: "planned",
@@ -338,7 +343,22 @@ describe("Shared brand shells", () => {
     ).toBeInTheDocument();
   });
 
-  it("marks only the deepest planned destination current in the sidebar", () => {
+  it("keeps every planned preview reachable from the roadmap", () => {
+    render(<RoadmapPage />);
+    for (const { to, label } of ROADMAP_NAV.items) {
+      expect(
+        screen.getByRole("link", {
+          name: `${label} Planned · open the non-operational design preview`,
+        }),
+      ).toHaveAttribute("href", to);
+    }
+    expect(screen.getByText(/not deployed or operational/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Live on NEAR Testnet" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Demo / Illustrative" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Documentation" })).not.toBeInTheDocument();
+  });
+
+  it("keeps planned detail routes accessible without exposing planned peers in the sidebar", () => {
     location.pathname = "/app/governance/proposals/illustrative-preview";
     render(
       <AppShell>
@@ -346,35 +366,47 @@ describe("Shared brand shells", () => {
       </AppShell>,
     );
     const sidebar = screen.getByRole("navigation", { name: "Protocol sections" });
-    expect(within(sidebar).getByRole("link", { name: "Governance Proposals" })).toHaveAttribute(
-      "aria-current",
-      "page",
+    for (const { label } of ROADMAP_NAV.items)
+      expect(within(sidebar).queryByRole("link", { name: label })).not.toBeInTheDocument();
+    expect(within(sidebar).getByRole("link", { name: "Roadmap" })).toHaveAttribute(
+      "href",
+      "/roadmap",
     );
-    expect(within(sidebar).getByRole("link", { name: "Governance" })).not.toHaveAttribute(
-      "aria-current",
-    );
-    const quick = screen.getByRole("navigation", { name: "Quick sections" });
-    expect(within(quick).getByRole("link", { name: "Roadmap" })).toHaveAttribute(
-      "aria-current",
-      "page",
+    expect(within(sidebar).getByRole("link", { name: "Documentation" })).toHaveAttribute(
+      "href",
+      "/app/docs",
     );
   });
 
-  it("opens the selected preview group without changing its hierarchy", () => {
-    location.pathname = "/app/vaults";
+  it("opens the workspace for its own deep links and shares the same app IA in the mobile drawer", async () => {
+    location.pathname = "/app/activity";
     render(
       <AppShell>
-        <h1>Vaults</h1>
+        <h1>Activity</h1>
       </AppShell>,
     );
-    expect(screen.getByRole("button", { name: "Roadmap / Planned" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Demo Workspace" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );
     const sidebar = screen.getByRole("navigation", { name: "Protocol sections" });
-    expect(within(sidebar).getByRole("link", { name: "Vaults" })).toHaveAttribute(
+    expect(within(sidebar).getByRole("link", { name: "Activity" })).toHaveAttribute(
       "aria-current",
       "page",
     );
+    const expected = APP_NAV.flatMap(({ items }) => items.map(({ to }) => to));
+    expect(
+      within(sidebar)
+        .getAllByRole("link")
+        .map((link) => link.getAttribute("href")),
+    ).toEqual(expected);
+    fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
+    const drawer = await screen.findByRole("dialog", { name: "Protocol sections" });
+    expect(
+      within(drawer)
+        .getAllByRole("link")
+        .filter((link) => link.getAttribute("aria-label") !== "ROASTAKE home")
+        .map((link) => link.getAttribute("href")),
+    ).toEqual(expected);
   });
 });

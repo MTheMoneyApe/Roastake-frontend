@@ -110,7 +110,7 @@ export function LotList({
               {l.custodian} · {l.warehouse}
             </p>
             <p className="mt-1 text-muted-foreground">
-              Traceability:{" "}
+              Seeded / browser-only record. Traceability:{" "}
               {l.certificates.length ? "demo documents recorded" : "documents missing"} · custody
               not verified
             </p>
@@ -173,9 +173,11 @@ export function AssetExplorer() {
           </SelectContent>
         </Select>
       </div>
-      <p className="text-xs text-muted-foreground">
-        1 GCT = 1 recorded kg green coffee. 1 RCT = 1 recorded kg roasted coffee. Demo token supply
-        is an accounting claim in the simulation, not additional physical mass or verified backing.
+      <p className="text-sm text-muted-foreground">
+        Proposed accounting: 1 GCT = 1 kg green coffee; 1 RCT = 1 kg roasted coffee of a specific lot.
+        GCT and RCT are conceptual coffee assets, not backed or redeemable today. This browser demo
+        uses that accounting convention; it does not establish legal claims, verified inventory or
+        custody. Roasting is yield-based, never a 1:1 GCT-to-RCT conversion.
       </p>
       <LotList query={q} kind={kind} />
     </div>
@@ -221,7 +223,9 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
           Every field on this passport — producer, farm, harvest, grades, quantities, custodian,
           warehouse and history — is illustrative sample data. ROASTAKE is not connected to producer
           identity checks, warehouse systems, custody attestations or verified certificates. Nothing
-          here proves that physical coffee exists or is held for these tokens.
+          here proves that physical coffee exists or is held for these tokens. GCT and RCT are
+          conceptual coffee assets, not backed or redeemable today. Seeded examples and subsequent
+          browser-only simulations are not live inventory.
         </p>
       </div>
       <LotJourney lot={l} state={s} />
@@ -250,7 +254,7 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
           <h2 className="brand-section-title mb-3">Simulated token and inventory ledger</h2>
           <KV
             rows={[
-              ["Token unit", `1 ${l.kind} = 1 recorded kg of this lot`],
+              ["Proposed token unit", `1 ${l.kind} = 1 recorded kg of this lot (demo only)`],
               ["Token supply", `${fmt(l.supply)} tokens`],
               ["Illustrative physical quantity", `${fmt(l.physicalKg)} kg`],
               ["Demo available quantity", `${fmt(a.available)} kg`],
@@ -258,7 +262,7 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
               ["Redemption reserves", `${fmt(l.reservedRedemption)} kg`],
               ["Unissued physical", `${fmt(a.unissued)} kg`],
               ["Record shortfall", `${fmt(a.shortfall)} kg`],
-              ["Your wallet", `${fmt(s.balances[l.id] ?? 0)} tokens`],
+              ["Your simulated wallet", `${fmt(s.balances[l.id] ?? 0)} tokens`],
               ["Demo custodian", l.custodian],
               ["Demo warehouse", l.warehouse],
             ]}

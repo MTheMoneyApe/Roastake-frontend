@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   APP_NAV,
   PUBLIC_NAV,
+  ROADMAP_NAV,
   SCOPE_LABELS,
   getRouteScope,
   getRouteScopeDescription,
@@ -17,14 +18,14 @@ const routeSources = import.meta.glob("../routes/*.tsx", {
 describe("Implementation-status navigation", () => {
   it.each([
     { name: "app", groups: APP_NAV },
-    { name: "public/footer", groups: PUBLIC_NAV },
+    { name: "public/footer", groups: [{ label: "Public", items: PUBLIC_NAV }] },
+    { name: "roadmap", groups: [ROADMAP_NAV] },
   ])(
     "has unique destinations and labels with real route-tree matches in $name navigation",
     ({ groups }) => {
       const items = groups.flatMap((group) => group.items);
       expect(new Set(items.map(({ to }) => to)).size).toBe(items.length);
       expect(new Set(items.map(({ label }) => label.toLowerCase())).size).toBe(items.length);
-      expect(groups.map(({ label }) => label)).toEqual(Object.values(SCOPE_LABELS));
       const router = getRouter();
       for (const { to } of items) {
         expect(to).not.toMatch(/[#?$]/);
@@ -51,10 +52,9 @@ describe("Implementation-status navigation", () => {
   });
 
   it("keeps all key planned product names in the roadmap rather than the live or demo groups", () => {
-    const planned = APP_NAV.find(({ label }) => label === SCOPE_LABELS.planned)!;
+    const planned = ROADMAP_NAV;
     expect(planned.items.map(({ to }) => to)).toEqual(
       expect.arrayContaining([
-        "/roadmap",
         "/app/vaults",
         "/app/governance",
         "/app/ventures",
@@ -66,9 +66,56 @@ describe("Implementation-status navigation", () => {
       ]),
     );
     for (const { to } of planned.items) expect(getRouteScope(to)).toBe("planned");
-    for (const group of APP_NAV.slice(0, 2)) {
-      for (const { to } of group.items) expect(getRouteScope(to)).not.toBe("planned");
-    }
+    const appPaths = APP_NAV.flatMap(({ items }) => items.map(({ to }) => to));
+    expect(appPaths.filter((to) => getRouteScope(to) === "planned")).toEqual(["/roadmap"]);
+    for (const { to } of planned.items) expect(appPaths).not.toContain(to);
+  });
+
+  it("keeps the app concise and documentation outside the demo workspace", () => {
+    expect(APP_NAV.map(({ label }) => label)).toEqual([
+      "Markets / Testnet",
+      "Coffee Economy / Demo",
+      "Demo Workspace",
+      "Roadmap",
+      "Documentation",
+    ]);
+    expect(APP_NAV[0].items).toHaveLength(4);
+    expect(APP_NAV[1].items).toHaveLength(5);
+    expect(APP_NAV[2]).toMatchObject({ collapsible: true, defaultCollapsed: true });
+    expect(APP_NAV[2].items.map(({ to }) => to)).toEqual(
+      expect.arrayContaining([
+        "/app/dashboard",
+        "/orders",
+        "/roasters",
+        "/app/positions",
+        "/app/market-analytics",
+        "/app/activity",
+        "/app/markets",
+        "/app/multichain",
+      ]),
+    );
+    expect(APP_NAV.at(-1)).toMatchObject({
+      standalone: true,
+      items: [{ to: "/app/docs", label: "Documentation" }],
+    });
+    expect(getRouteScope("/app/docs")).toBe("docs");
+    expect(getRouteScope("/app/docs/implementation/")).toBe("docs");
+    expect(getRouteScopeDescription("/app/docs")).toMatch(/Product documentation/);
+    expect(Object.values(SCOPE_LABELS)).toEqual([
+      "Live on NEAR Testnet",
+      "Demo / Illustrative",
+      "Roadmap / Planned",
+    ]);
+  });
+
+  it("uses only five public destinations in a stable order", () => {
+    expect(PUBLIC_NAV.map(({ to, label }) => ({ to, label }))).toEqual([
+      { to: "/", label: "Coffee Economy" },
+      { to: "/app/perps", label: "Testnet Markets" },
+      { to: "/app/assets", label: "Coffee Assets demo" },
+      { to: "/roadmap", label: "Roadmap" },
+      { to: "/app/docs", label: "Documentation" },
+    ]);
   });
 
   it.each([

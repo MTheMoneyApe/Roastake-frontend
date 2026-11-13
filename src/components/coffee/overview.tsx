@@ -27,6 +27,7 @@ import { abbreviateAddress } from "@/lib/wallet/config";
 import { useWalletHub } from "@/lib/wallet/context";
 import { SimulatedDemoNetworkSelect } from "@/components/wallet/wallet-pages";
 import { LotList } from "./lots";
+import { SCOPE_LABELS } from "@/lib/navigation";
 import { OracleOverviewCard } from "./oracle";
 
 export function BackDashboard() {
@@ -53,7 +54,7 @@ export function ActivityList({ limit, category = "All" }: { limit?: number; cate
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-sm font-medium">{r.action}</p>
-                <Pill>{r.status}</Pill>
+                <Pill>Simulated · {r.status}</Pill>
                 <DemoBadge />
               </div>
               <p className="mt-1 break-words text-xs text-muted-foreground">{r.detail}</p>
@@ -87,7 +88,7 @@ const COFFEE_ACTIONS = [
   {
     to: "/app/assets",
     title: "Asset Explorer",
-    detail: "Inspect lot-specific GCT & RCT",
+    detail: "Illustrative GCT & RCT records",
     icon: Wheat,
   },
   {
@@ -108,7 +109,7 @@ const COFFEE_ACTIONS = [
     detail: "Simulate green-to-roasted yield",
     icon: Flame,
   },
-  { to: "/app/redeem", title: "Redeem", detail: "Reserve roasted coffee in demo", icon: Package },
+  { to: "/app/redeem", title: "Redeem", detail: "Simulated reservation; no shipment", icon: Package },
   { to: "/app/swap", title: "Swap", detail: "NEP-141 swaps via RHEA Testnet pools", icon: Repeat },
 ] as const;
 
@@ -178,9 +179,10 @@ export function Dashboard() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gain/40 bg-forest/20 px-4 py-3 text-xs">
           <div className="flex flex-wrap items-center gap-2">
-            <MaturityBadge variant="testnet">NEAR TESTNET · PERPS CONTRACT</MaturityBadge>
-            <MaturityBadge variant="testnet">ORACLE · READ-ONLY</MaturityBadge>
-            <MaturityBadge variant="demo">COFFEE DEFI · DEMO PROTOTYPE</MaturityBadge>
+            <MaturityBadge variant="testnet">{SCOPE_LABELS.live}</MaturityBadge>
+            <span>Perps contract · separate read-only Oracle</span>
+            <MaturityBadge variant="demo">{SCOPE_LABELS.demo}</MaturityBadge>
+            <span>Coffee prototype</span>
           </div>
           <p className="text-muted-foreground">
             Active view: <strong className="text-foreground">{s.role}</strong> ·{" "}
@@ -254,7 +256,11 @@ export function Dashboard() {
               LP Vault &amp; Solvency
             </p>
             <p className="mt-1 font-medium text-sm num">
-              {perpsProtocol ? formatUsdE8(perpsProtocol.lpSnapshot.lp_mtm_equity_e8) : "Querying…"}
+              {perpsProtocol
+                ? formatUsdE8(perpsProtocol.lpSnapshot.lp_mtm_equity_e8)
+                : perpsQuery.isError
+                  ? "RPC unavailable"
+                  : "Querying…"}
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {perpsProtocol
@@ -285,11 +291,20 @@ export function Dashboard() {
             <p className="mt-0.5 text-[11px] text-muted-foreground num">
               {nearConnected && traderQuery.data
                 ? `${formatFixedPoint(traderQuery.data.circleUsdcBalanceUnits, 6, { maxFractionDigits: 4 })} USDC · Free margin ${traderQuery.data.account ? formatUsdE8(traderQuery.data.account.free_collateral_e8) : "Unregistered"}`
-                : "HOT Connect ready on NEAR Testnet (zero txs signed on connect)."}
+                : nearConnected
+                  ? traderQuery.isError
+                    ? "Trader balance unavailable · NEAR Testnet RPC read failed. No demo fallback."
+                    : "Reading Testnet token balance and margin… No demo fallback."
+                  : "Connect to read Testnet balances (zero transactions signed on connect)."}
             </p>
           </div>
         </div>
       </section>
+
+      <p className="rounded-lg border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+        Connected-wallet portfolio valuation is unavailable. Individual Testnet balance and margin
+        reads above are separate from the browser-only simulation below.
+      </p>
 
       {/* C. Coffee Oracle (Real Read-Only Testnet Telemetry) */}
       <OracleOverviewCard />
@@ -305,13 +320,14 @@ export function Dashboard() {
               <h2 id="demo-portfolio-heading" className="font-display text-xl font-semibold">
                 Demo Portfolio
               </h2>
-              <DemoBadge>SIMULATED · LOCAL BROWSER DATA</DemoBadge>
+              <MaturityBadge variant="demo">{SCOPE_LABELS.demo}</MaturityBadge>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
               Offline prototype balances stored in browser{" "}
               <span className="font-mono">localStorage</span> for{" "}
               <strong className="text-foreground">{s.account}</strong>. Never mixed with real wallet
-              balances or NEAR Testnet oracle accounting.
+              balances or NEAR Testnet oracle accounting. This is not a connected-wallet valuation.
+              Prices, rewards and yield are illustrative; no real investment return is measured.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -326,14 +342,14 @@ export function Dashboard() {
           <Stat
             label="Simulated portfolio value"
             value={usd(p.total)}
-            sub="Demo balance · all holdings"
+            sub="Illustrative prices · browser-only holdings"
           />
           <Stat label="GCT balance" value={fmt(c.gct, 2)} sub="Simulated green coffee tokens" />
           <Stat label="RCT balance" value={fmt(c.rct, 2)} sub="Simulated roasted coffee tokens" />
           <Stat
-            label="Coffee represented"
+            label="Simulated coffee claims"
             value={`${fmt(c.representedKg, 2)} kg`}
-            sub={`${fmt(c.walletKg)} demo wallet + ${fmt(c.depositedKg + c.collateralKg)} simulated vaults`}
+            sub={`${fmt(c.walletKg)} wallet + ${fmt(c.depositedKg)} vaults (incl. demo rewards) + ${fmt(c.collateralKg)} collateral; not verified kg`}
           />
         </Stats>
       </section>
@@ -397,7 +413,7 @@ export function Dashboard() {
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-xl font-medium">Coffee-backed assets</h3>
+                <h3 className="text-xl font-medium">Illustrative coffee assets</h3>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 Demo inventory records only · no physical backing, custody or redemption is verified.
@@ -439,10 +455,12 @@ export function Dashboard() {
           <p className="mt-2 text-xs text-muted-foreground">
             Demo token supply {fmt(c.supply)} · Physical {fmt(c.physical)} kg · Available{" "}
             {fmt(c.available)} kg · Encumbered {fmt(c.encumbered)} kg · Reserves {fmt(c.reserved)}{" "}
-            kg · Lots {s.lots.length} · Fees {usd(c.recentFees)}
+            kg · Lots {s.lots.length} · Recent simulated fee entries {usd(c.recentFees)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Simulated demo data only — no real yields.
+            Seeded / browser-only data, not verified inventory, backing or custody. Green and roasted
+            mass are combined for this illustrative total, not a 1:1 conversion. GCT and RCT remain
+            conceptual, not backed or redeemable today. No real yield.
           </p>
         </div>
       </section>

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { PublicShell, Section } from "@/components/shell";
 import { MaturityBadge, PageHeader } from "@/components/kit";
-import { APP_NAV, SCOPE_DESCRIPTIONS, SCOPE_LABELS } from "@/lib/navigation";
+import { APP_NAV, ROADMAP_NAV, SCOPE_DESCRIPTIONS, SCOPE_LABELS } from "@/lib/navigation";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/roadmap")({
@@ -15,14 +15,14 @@ export const Route = createFileRoute("/roadmap")({
 });
 
 export function RoadmapPage() {
-  const planned = APP_NAV.find((group) => group.label === SCOPE_LABELS.planned)!;
+  const planned = ROADMAP_NAV;
   return (
     <Section className="space-y-10 py-8 sm:py-12">
       <PageHeader
         title="Ecosystem Roadmap"
         subtitle="A map of the product vision, not a list of deployed capabilities or a promise of delivery dates."
         demo={false}
-        actions={<MaturityBadge variant="preview">ROADMAP / PLANNED</MaturityBadge>}
+        actions={<MaturityBadge variant="preview">{SCOPE_LABELS.planned}</MaturityBadge>}
       />
       <section aria-labelledby="planned-modules" className="space-y-5">
         <div>
@@ -35,27 +35,25 @@ export function RoadmapPage() {
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {planned.items
-            .filter(({ to }) => to !== "/roadmap")
-            .map(({ to, label, icon: Icon }) => (
-              <Link
-                key={to}
-                to={to}
-                className="group rounded-xl border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <Icon className="size-5 text-primary" aria-hidden="true" />
-                  <ArrowUpRight
-                    className="size-4 text-muted-foreground group-hover:text-primary"
-                    aria-hidden="true"
-                  />
-                </div>
-                <h3 className="mt-4 font-semibold">{label}</h3>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Planned · open the non-operational design preview
-                </p>
-              </Link>
-            ))}
+          {planned.items.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className="group rounded-xl border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <Icon className="size-5 text-primary" aria-hidden="true" />
+                <ArrowUpRight
+                  className="size-4 text-muted-foreground group-hover:text-primary"
+                  aria-hidden="true"
+                />
+              </div>
+              <h3 className="mt-4 font-semibold">{label}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Planned · open the non-operational design preview
+              </p>
+            </Link>
+          ))}
         </div>
       </section>
       <section
@@ -66,25 +64,25 @@ export function RoadmapPage() {
           What you can explore today
         </h2>
         <div className="mt-5 grid gap-7 md:grid-cols-2">
-          {APP_NAV.filter((group) => group.label !== SCOPE_LABELS.planned).map((group) => (
+          {APP_NAV.slice(0, 2).map((group, index) => (
             <div key={group.label}>
-              <h3 className="font-semibold">{group.label}</h3>
+              <h3 className="font-semibold">
+                {index === 0 ? SCOPE_LABELS.live : SCOPE_LABELS.demo}
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {group.description}
+                {index === 0 ? SCOPE_DESCRIPTIONS.live : SCOPE_DESCRIPTIONS.demo}
               </p>
               <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-3 text-sm">
-                {group.items
-                  .slice(0, group.label === SCOPE_LABELS.live ? 4 : 6)
-                  .map(({ to, label }) => (
-                    <li key={to}>
-                      <Link
-                        to={to}
-                        className="text-primary underline underline-offset-4 hover:no-underline"
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
+                {group.items.map(({ to, label }) => (
+                  <li key={to}>
+                    <Link
+                      to={to}
+                      className="text-primary underline underline-offset-4 hover:no-underline"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}

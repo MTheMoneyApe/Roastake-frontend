@@ -2,8 +2,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   Bell,
-  BookOpen,
-  ChartCandlestick,
   Coffee,
   Flame,
   Layers,
@@ -14,7 +12,6 @@ import {
   Settings,
   ShoppingBag,
   Sparkles,
-  Store,
   Truck,
   Users,
   Wallet,
@@ -253,20 +250,8 @@ function Profile() {
           <Link to="/app/activity">Activity</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
-          Portals (Roadmap / Planned)
-        </DropdownMenuLabel>
         <DropdownMenuItem asChild>
-          <Link to="/roaster/$section" params={{ section: "dashboard" }}>
-            <Store className="mr-2 size-3.5" aria-hidden="true" />
-            Roaster Portal
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/admin">
-            <Settings className="mr-2 size-3.5" aria-hidden="true" />
-            Admin Console
-          </Link>
+          <Link to="/roadmap">Roadmap / Planned portals</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => demo.reset()} className="text-loss">
@@ -280,14 +265,13 @@ function Profile() {
 function Controls() {
   return (
     <div className="flex items-center gap-1.5">
-      <Link
-        to="/app/perps"
-        className="hidden items-center gap-1.5 rounded-full border border-primary/20 bg-accent px-2.5 py-1 text-[11px] font-medium text-accent-foreground transition-colors hover:bg-accent/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 2xl:inline-flex"
+      <span
+        className="hidden items-center gap-1.5 rounded-full border border-primary/20 bg-accent px-2.5 py-1 text-[11px] font-medium text-accent-foreground 2xl:inline-flex"
         title="NEAR Testnet execution with non-monetary test tokens. Perps prices are operator-controlled and synthetic; OutLayer is separate and read-only."
       >
         <Sparkles className="size-3" aria-hidden="true" />
         <span>NEAR Testnet · Test tokens only</span>
-      </Link>
+      </span>
       <ThemeToggle />
       <Notifications />
       <WalletButton />
@@ -332,33 +316,35 @@ function NavList({ groups, onNav }: { groups: Group[]; onNav?: () => void }) {
         const isCollapsed = g.collapsible && collapsed.has(g.label);
         return (
           <div key={g.label}>
-            <div className="mb-1.5 flex items-center justify-between gap-2 px-3">
-              {g.collapsible ? (
-                <button
-                  type="button"
-                  onClick={() => toggle(g.label)}
-                  aria-expanded={!isCollapsed}
-                  aria-controls={`${navId}-group-${groupIndex}`}
-                  className="flex min-h-8 items-center gap-1 rounded-sm text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-                >
-                  <span>{g.label}</span>
-                  <span aria-hidden="true">{isCollapsed ? "+" : "−"}</span>
-                </button>
-              ) : (
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground">
-                  {g.label}
-                </p>
-              )}
-              {g.groupBadge && (
-                <MaturityBadge
-                  variant={g.groupBadge.variant}
-                  title={g.groupBadge.title}
-                  className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-accent-foreground"
-                >
-                  {g.groupBadge.label}
-                </MaturityBadge>
-              )}
-            </div>
+            {!g.standalone && (
+              <div className="mb-1.5 flex items-center justify-between gap-2 px-3">
+                {g.collapsible ? (
+                  <button
+                    type="button"
+                    onClick={() => toggle(g.label)}
+                    aria-expanded={!isCollapsed}
+                    aria-controls={`${navId}-group-${groupIndex}`}
+                    className="flex min-h-8 items-center gap-1 rounded-sm text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                  >
+                    <span>{g.label}</span>
+                    <span aria-hidden="true">{isCollapsed ? "+" : "−"}</span>
+                  </button>
+                ) : (
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground">
+                    {g.label}
+                  </p>
+                )}
+                {g.groupBadge && (
+                  <MaturityBadge
+                    variant={g.groupBadge.variant}
+                    title={g.groupBadge.title}
+                    className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-accent-foreground"
+                  >
+                    {g.groupBadge.label}
+                  </MaturityBadge>
+                )}
+              </div>
+            )}
             {g.description && !isCollapsed && (
               <p className="mb-2 px-3 text-[11px] leading-relaxed text-sidebar-foreground/80">
                 {g.description}
@@ -425,36 +411,11 @@ export function AppShell({
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (r) => r.location.pathname });
   const menuTrigger = useRef<HTMLButtonElement | null>(null);
-  const isMainAppNav = nav === APP_NAV;
   const currentPage = nav
     .flatMap((group) => group.items)
     .filter((item) => path === item.to || (item.to !== "/admin" && path.startsWith(item.to + "/")))
     .sort((a, b) => b.to.length - a.to.length)[0];
-  const workspaceLabel = isMainAppNav ? "Protocol App" : nav[0].label;
-
-  const mobileItems = isMainAppNav
-    ? [
-        {
-          to: "/app/perps",
-          label: "Testnet",
-          icon: ChartCandlestick,
-          active: getRouteScope(path) === "live" && path !== "/app/wallet",
-        },
-        { to: "/app/assets", label: "Demo", icon: Coffee, active: getRouteScope(path) === "demo" },
-        {
-          to: "/roadmap",
-          label: "Roadmap",
-          icon: BookOpen,
-          active: getRouteScope(path) === "planned",
-        },
-        { to: "/app/wallet", label: "Wallet", icon: Wallet, active: path === "/app/wallet" },
-      ]
-    : nav[0].items.slice(0, 4).map((item) => ({
-        to: item.to,
-        label: item.label,
-        icon: item.icon,
-        active: path === item.to || (item.to !== "/admin" && path.startsWith(item.to + "/")),
-      }));
+  const workspaceLabel = nav === APP_NAV ? "Protocol App" : nav[0].label;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -525,13 +486,6 @@ export function AppShell({
                       <span className="truncate text-muted-foreground">{currentPage.label}</span>
                     </>
                   )}
-                  <Link
-                    to="/market"
-                    className="ml-2 hidden shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring xl:inline-flex"
-                  >
-                    <ShoppingBag className="size-3.5" aria-hidden="true" />
-                    Marketplace
-                  </Link>
                 </nav>
               </div>
               <div className="shrink-0 [&_button[aria-haspopup='menu']]:px-1.5 sm:[&_button[aria-haspopup='menu']]:px-3 [&_button[aria-label='Notifications']]:hidden sm:[&_button[aria-label='Notifications']]:inline-flex">
@@ -542,46 +496,12 @@ export function AppShell({
           <main
             id="main-content"
             tabIndex={-1}
-            className="brand-page min-w-0 pb-[calc(6rem+env(safe-area-inset-bottom))] focus-visible:outline-none lg:pb-10"
+            className="brand-page min-w-0 pb-10 focus-visible:outline-none"
           >
             <ScopeNotice />
             {children}
           </main>
         </div>
-        <nav
-          aria-label="Quick sections"
-          className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
-        >
-          {mobileItems.map((i) => (
-            <Link
-              key={i.to}
-              to={i.to}
-              aria-current={i.active ? "page" : undefined}
-              className={cn(
-                "flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 border-t-2 border-transparent px-1 py-2 text-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
-                i.active
-                  ? "border-primary font-semibold text-primary"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <i.icon className="size-5" aria-hidden="true" />
-              <span className="max-w-full truncate">{i.label}</span>
-            </Link>
-          ))}
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              aria-label="More sections"
-              onClick={(event) => {
-                menuTrigger.current = event.currentTarget;
-              }}
-              className="h-auto min-h-14 flex-col gap-0.5 rounded-none border-t-2 border-transparent py-2 text-[10px] text-muted-foreground"
-            >
-              <Menu className="size-5" aria-hidden="true" />
-              <span>More</span>
-            </Button>
-          </SheetTrigger>
-        </nav>
       </div>
     </Sheet>
   );
@@ -599,7 +519,7 @@ function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
         publicPage && "brand-container mt-6",
       )}
     >
-      <p className="font-semibold">{SCOPE_LABELS[scope]}</p>
+      <p className="font-semibold">{scope === "docs" ? "Documentation" : SCOPE_LABELS[scope]}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
         {getRouteScopeDescription(path)}
       </p>
@@ -607,182 +527,200 @@ function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
   );
 }
 
-function PublicNavigation({ mobile = false, onNav }: { mobile?: boolean; onNav?: () => void }) {
+function PublicNavigation() {
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const id = useId();
+  const nav = useRef<HTMLElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const [wide, setWide] = useState(false);
+  const [open, setOpen] = useState(false);
+  const nativePopover =
+    typeof HTMLElement !== "undefined" && "showPopover" in HTMLElement.prototype;
+
+  useEffect(() => {
+    const menu = list.current;
+    const row = nav.current?.parentElement;
+    if (!menu || !row) return;
+    let lastWidth = 0;
+    let inline = false;
+    const measure = () => {
+      const rowStyle = getComputedStyle(row);
+      const width =
+        row.clientWidth -
+        (parseFloat(rowStyle.paddingLeft) || 0) -
+        (parseFloat(rowStyle.paddingRight) || 0);
+      if (!width || (!inline && width <= lastWidth)) return;
+      lastWidth = width;
+      const wasOpen = nativePopover && menu.matches(":popover-open");
+      menu.removeAttribute("popover");
+      menu.style.cssText =
+        "display:flex;position:static;flex-direction:row;column-gap:0.25rem;width:max-content;max-width:none;max-height:none;padding:0;border:0";
+      const gap = parseFloat(rowStyle.columnGap) || 0;
+      const siblings = Array.from(row.children).filter((child) => child !== nav.current);
+      const occupied = siblings.reduce(
+        (sum, child) => sum + child.getBoundingClientRect().width,
+        0,
+      );
+      inline = menu.scrollWidth + occupied + gap * siblings.length <= width;
+      menu.style.cssText = "";
+      if (!inline) {
+        menu.setAttribute("popover", "auto");
+        if (wasOpen) menu.showPopover();
+      } else {
+        setOpen(false);
+      }
+      setWide(inline);
+    };
+    measure();
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    observer?.observe(row);
+    observer?.observe(menu);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [nativePopover]);
+
+  const close = () => {
+    if (!wide && nativePopover) list.current?.hidePopover();
+    setOpen(false);
+  };
+
   return (
-    <nav
-      aria-label="Main navigation"
-      className={mobile ? "space-y-6" : "hidden items-center gap-1 xl:flex"}
-    >
-      {PUBLIC_NAV.map((group) => {
-        const activeGroup = group.items.some(({ to }) => path === to || path.startsWith(to + "/"));
-        const links = group.items.map(({ to, label }) => {
-          const active = path === to || path.startsWith(to + "/");
-          const link = (
-            <Link
-              key={to}
-              to={to}
-              onClick={onNav}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "flex min-h-10 items-center rounded-md px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                active
-                  ? "bg-accent font-semibold text-accent-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-              )}
-            >
-              {label}
-            </Link>
-          );
-          return mobile ? (
-            link
-          ) : (
-            <DropdownMenuItem key={to} asChild>
-              {link}
-            </DropdownMenuItem>
-          );
-        });
-        if (mobile)
+    <nav ref={nav} aria-label="Main navigation" className="shrink-0">
+      <Button
+        ref={trigger}
+        type="button"
+        variant="ghost"
+        className={wide ? "hidden" : "gap-2"}
+        popoverTarget={id}
+        aria-controls={id}
+        aria-expanded={open}
+        onClick={() => {
+          if (!nativePopover) setOpen((value) => !value);
+        }}
+      >
+        <Menu className="size-4" aria-hidden="true" />
+        <span>Menu</span>
+      </Button>
+      <ul
+        ref={list}
+        id={id}
+        popover={wide ? undefined : "auto"}
+        hidden={!wide && !nativePopover && !open}
+        onToggle={(event) => setOpen(event.newState === "open")}
+        onKeyDown={(event) => {
+          if (!nativePopover && event.key === "Escape") {
+            close();
+            trigger.current?.focus();
+          }
+        }}
+        className={cn(
+          "text-foreground",
+          wide
+            ? "flex items-center gap-1"
+            : "fixed inset-auto right-4 top-32 m-0 max-h-[calc(100dvh-9rem)] w-72 max-w-[calc(100dvw-2rem)] space-y-1 overflow-y-auto rounded-xl border bg-card p-2 shadow-lg",
+        )}
+      >
+        {PUBLIC_NAV.map(({ to, label }) => {
+          const active = path === to || (to !== "/" && path.startsWith(to + "/"));
           return (
-            <section key={group.label} aria-label={group.label}>
-              <h2 className="px-3 text-xs font-semibold">{group.label}</h2>
-              <p className="px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-                {group.description}
-              </p>
-              {links}
-            </section>
-          );
-        return (
-          <DropdownMenu key={group.label}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn("gap-1.5 text-xs", activeGroup && "bg-accent text-accent-foreground")}
+            <li key={to}>
+              <Link
+                to={to}
+                onClick={close}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "flex min-h-10 items-center whitespace-nowrap rounded-md border-b-2 border-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring forced-colors:focus-visible:outline",
+                  active
+                    ? "border-primary bg-accent font-semibold text-accent-foreground forced-colors:border-[Highlight]"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
               >
-                {group.label}
-                <span aria-hidden="true">⌄</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="max-h-[75vh] w-80 overflow-y-auto">
-              <DropdownMenuLabel className="whitespace-normal text-xs font-normal leading-relaxed text-muted-foreground">
-                {group.description}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {links}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      })}
+                {label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 }
 
 export function PublicShell({ children }: { children: ReactNode }) {
-  const path = useRouterState({ select: (r) => r.location.pathname });
   const cart = useDemo((s) => s.cart.reduce((a, c) => a + c.qty, 0));
   const h = useHydrated();
-  const [open, setOpen] = useState(false);
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <div className="min-h-screen min-w-0 bg-background text-foreground">
-        <a href="#main-content" className="brand-skip-link">
-          Skip to content
-        </a>
-        <div className="border-b border-warning-foreground/30 bg-warning px-4 py-1.5 text-center text-[10px] font-medium leading-relaxed tracking-wide text-warning-foreground sm:text-[11px]">
-          NEAR Testnet prototype · Perps prices are operator-controlled and synthetic; RHEA uses
-          non-monetary test tokens. Marketplace, coffee backing, balances &amp; yields are
-          illustrative.
-        </div>
-        <header className="brand-header sticky top-0 z-30 backdrop-blur">
-          <div className="brand-container flex min-h-16 min-w-0 items-center justify-between gap-2 sm:gap-4">
-            <div className="flex min-w-0 items-center gap-6">
-              <Logo compact />
-              <PublicNavigation />
-            </div>
-            <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
-              <ThemeToggle />
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/cart" aria-label="Coffee cart" className="gap-2">
-                  <ShoppingBag />
-                  {h && cart > 0 && (
-                    <span className="num rounded-full bg-highlight px-1.5 text-[11px] text-highlight-foreground">
-                      {cart}
-                    </span>
-                  )}
-                </Link>
-              </Button>
-              <div className="hidden sm:block">
-                <Notifications />
-              </div>
-              <WalletButton />
-              <Profile />
-              <SheetTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="shrink-0 xl:hidden"
-                  aria-label="Open navigation menu"
-                >
-                  <Menu aria-hidden="true" />
-                </Button>
-              </SheetTrigger>
-            </div>
-          </div>
-        </header>
-        <SheetContent
-          side="right"
-          className="w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto xl:hidden"
-        >
-          <SheetTitle className="sr-only">ROASTAKE navigation</SheetTitle>
-          <SheetDescription className="sr-only">
-            Explore coffee, trading and the protocol app.
-          </SheetDescription>
-          <div className="mb-8 pr-8">
-            <Logo onNav={() => setOpen(false)} />
-          </div>
-          <PublicNavigation mobile onNav={() => setOpen(false)} />
-        </SheetContent>
-        <main id="main-content" tabIndex={-1} className="min-w-0 focus-visible:outline-none">
-          <ScopeNotice publicPage />
-          {children}
-        </main>
-        <footer className="mt-20 bg-feature text-feature-foreground">
-          <div className="brand-container grid gap-8 py-14 md:grid-cols-4">
-            <div>
-              <Logo />
-              <p className="mt-2 text-sm text-feature-muted">Roast. Stake. Repeat.</p>
-              <p className="mt-4 text-xs text-feature-muted">
-                A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions
-                using non-monetary test tokens. Perps prices are operator-controlled and synthetic;
-                the separate read-only OutLayer oracle does not power Perps. Marketplace orders,
-                inventory, coffee custody, demo balances and yields are simulated; no verified
-                physical backing, real shipments or Mainnet deployment.
-              </p>
-            </div>
-            {PUBLIC_NAV.map((group) => (
-              <div key={group.label}>
-                <p className="mb-3 text-xs uppercase tracking-wider text-feature-highlight">
-                  {group.label}
-                </p>
-                <p className="mb-4 text-xs leading-relaxed text-feature-muted">
-                  {group.description}
-                </p>
-                <ul className="space-y-1.5 text-sm">
-                  {group.items.map(({ to, label }) => (
-                    <li key={to}>
-                      <Link to={to} className="text-feature-muted hover:text-feature-foreground">
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </footer>
+    <div className="min-h-screen min-w-0 bg-background text-foreground">
+      <a href="#main-content" className="brand-skip-link">
+        Skip to content
+      </a>
+      <div className="border-b border-warning-foreground/30 bg-warning px-4 py-1.5 text-center text-[10px] font-medium leading-relaxed tracking-wide text-warning-foreground sm:text-[11px]">
+        NEAR Testnet prototype · Perps prices are operator-controlled and synthetic; RHEA uses
+        non-monetary test tokens. Marketplace, coffee backing, balances &amp; yields are
+        illustrative.
       </div>
-    </Sheet>
+      <header className="brand-header sticky top-0 z-30 backdrop-blur">
+        <div className="brand-container flex min-h-16 min-w-0 items-center justify-between gap-2 sm:gap-4">
+          <Logo compact />
+          <PublicNavigation />
+          <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
+            <ThemeToggle />
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/cart" aria-label="Coffee cart" className="gap-2">
+                <ShoppingBag />
+                {h && cart > 0 && (
+                  <span className="num rounded-full bg-highlight px-1.5 text-[11px] text-highlight-foreground">
+                    {cart}
+                  </span>
+                )}
+              </Link>
+            </Button>
+            <div className="hidden sm:block">
+              <Notifications />
+            </div>
+            <WalletButton />
+            <Profile />
+          </div>
+        </div>
+      </header>
+      <main id="main-content" tabIndex={-1} className="min-w-0 focus-visible:outline-none">
+        <ScopeNotice publicPage />
+        {children}
+      </main>
+      <footer className="mt-20 bg-feature text-feature-foreground">
+        <div className="brand-container grid gap-8 py-14 md:grid-cols-2">
+          <div>
+            <Logo />
+            <p className="mt-2 text-sm text-feature-muted">Roast. Stake. Repeat.</p>
+            <p className="mt-4 text-xs text-feature-muted">
+              A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions
+              using non-monetary test tokens. Perps prices are operator-controlled and synthetic;
+              the separate read-only OutLayer oracle does not power Perps. Marketplace orders,
+              inventory, coffee custody, demo balances and yields are simulated; no verified
+              physical backing, real shipments or Mainnet deployment.
+            </p>
+          </div>
+          <nav aria-label="Explore">
+            <p className="mb-3 text-xs uppercase tracking-wider text-feature-highlight">Explore</p>
+            <ul className="space-y-1.5 text-sm">
+              {PUBLIC_NAV.map(({ to, label }) => (
+                <li key={to}>
+                  <Link
+                    to={to}
+                    className="rounded-sm text-feature-muted hover:text-feature-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+      </footer>
+    </div>
   );
 }
 
