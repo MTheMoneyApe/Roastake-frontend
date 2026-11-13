@@ -465,11 +465,6 @@ function LandingShellContent({ children }: { children: ReactNode }) {
       <a href="#main-content" className="brand-skip-link">
         {es ? "Saltar al contenido" : "Skip to content"}
       </a>
-      <div className="border-b border-warning-foreground/30 bg-warning px-4 py-1.5 text-center text-[11px] font-medium leading-relaxed tracking-wide text-warning-foreground">
-        {es
-          ? "Prototipo NEAR Testnet · Perps usa precios sintéticos de operador. RHEA usa tokens de prueba sin valor monetario. La experiencia de café es ilustrativa."
-          : "NEAR Testnet prototype · Perps uses operator-controlled synthetic prices. RHEA uses non-monetary test tokens. The coffee experience is illustrative."}
-      </div>
       <header className="brand-header sticky top-0 z-30 backdrop-blur">
         <div className="brand-container flex min-h-16 min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 py-2 sm:flex-nowrap sm:gap-4 sm:py-0">
           <Logo compact />
