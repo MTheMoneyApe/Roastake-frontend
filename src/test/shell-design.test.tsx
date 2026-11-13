@@ -3,7 +3,7 @@ import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ADMIN_NAV, AppShell, PublicShell, ROASTER_NAV } from "@/components/shell";
+import { ADMIN_NAV, AppShell, LandingShell, PublicShell, ROASTER_NAV } from "@/components/shell";
 import { ThemeProvider, THEME_STORAGE_KEY } from "@/components/theme-provider";
 import { APP_NAV, PUBLIC_NAV, ROADMAP_NAV } from "@/lib/navigation";
 import { ModulePage } from "@/components/module-page";
@@ -63,33 +63,26 @@ afterEach(() => {
 });
 
 describe("Shared brand shells", () => {
-  it("keeps the demo cart reachable on mobile without adding a sixth primary link", () => {
+  it("keeps cart and checkout reachable from the shared mobile app sidebar", async () => {
     window.innerWidth = 320;
     render(
       <PublicShell>
         <h1>Marketplace</h1>
       </PublicShell>,
     );
-    const cart = screen.getByRole("link", { name: "Coffee cart" });
-    expect(cart).toHaveAttribute("href", "/cart");
-    let ancestor: HTMLElement | null = cart;
-    while (ancestor && ancestor.tagName !== "HEADER") {
-      expect(ancestor).not.toHaveClass("hidden");
-      ancestor = ancestor.parentElement;
-    }
-    expect(
-      within(screen.getByRole("navigation", { name: "Main navigation" })).getAllByRole("link", {
-        hidden: true,
-      }),
-    ).toHaveLength(5);
+    fireEvent.click(screen.getByRole("button", { name: "Open menu" }));
+    const drawer = await screen.findByRole("dialog", { name: "Protocol sections" });
+    fireEvent.click(within(drawer).getByRole("button", { name: /Demo Workspace/ }));
+    expect(within(drawer).getByRole("link", { name: "Coffee Cart" })).toHaveAttribute("href", "/cart");
+    expect(within(drawer).getByRole("link", { name: "Checkout" })).toHaveAttribute("href", "/checkout");
   });
   it.each([
     {
       label: "public",
       shell: (
-        <PublicShell>
+        <LandingShell>
           <h1>Marketplace</h1>
-        </PublicShell>
+        </LandingShell>
       ),
     },
     {
@@ -147,7 +140,7 @@ describe("Shared brand shells", () => {
       "#main-content",
     );
     for (const logo of screen.getAllByRole("link", { name: "ROASTAKE home" })) {
-      expect(logo).toHaveAttribute("href", "/app/dashboard");
+      expect(logo).toHaveAttribute("href", "/");
     }
     expect(screen.queryByRole("button", { name: "Notifications" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Connect Wallet" })).toBeInTheDocument();
@@ -255,7 +248,7 @@ describe("Shared brand shells", () => {
     );
     expect(within(drawer).getByRole("link", { name: "ROASTAKE home" })).toHaveAttribute(
       "href",
-      "/app/dashboard",
+      "/",
     );
     expect(within(drawer).getByRole("link", { name: "Coffee Assets" })).toHaveAttribute(
       "aria-current",
@@ -269,9 +262,9 @@ describe("Shared brand shells", () => {
   it("uses ordinary links in one concise public navigation and closes on selection", () => {
     location.pathname = "/app/assets/demo-lot";
     render(
-      <PublicShell>
+      <LandingShell>
         <h1>Coffee assets</h1>
-      </PublicShell>,
+      </LandingShell>,
     );
     const nav = screen.getByRole("navigation", { name: "Main navigation" });
     const trigger = within(nav).getByRole("button", { name: "Menu" });
@@ -316,9 +309,9 @@ describe("Shared brand shells", () => {
     });
     location.pathname = "/";
     render(
-      <PublicShell>
+      <LandingShell>
         <h1>Home</h1>
-      </PublicShell>,
+      </LandingShell>,
     );
     const nav = screen.getByRole("navigation", { name: "Main navigation" });
     const originalList = nav.querySelector("ul");
@@ -352,9 +345,9 @@ describe("Shared brand shells", () => {
     });
     // JSDOM bounding boxes are zero; scrollWidth models intrinsic action widths.
     render(
-      <PublicShell>
+      <LandingShell>
         <h1>Home</h1>
-      </PublicShell>,
+      </LandingShell>,
     );
     const nav = screen.getByRole("navigation", { name: "Main navigation" });
     expect(within(nav).getByRole("button", { name: "Menu" })).not.toHaveClass("hidden");
@@ -372,9 +365,9 @@ describe("Shared brand shells", () => {
         return this.hasAttribute("hidden") ? 0 : 650;
       });
       const view = (
-        <PublicShell>
+        <LandingShell>
           <h1>Home</h1>
-        </PublicShell>
+        </LandingShell>
       );
       const host = document.createElement("div");
       host.innerHTML = renderToString(view);
@@ -428,9 +421,9 @@ describe("Shared brand shells", () => {
   it("keeps existing English page content correctly marked when public chrome is Spanish", () => {
     location.pathname = "/market";
     render(
-      <PublicShell>
+      <LandingShell>
         <h1>Marketplace</h1>
-      </PublicShell>,
+      </LandingShell>,
     );
     fireEvent.change(screen.getByRole("combobox", { name: "Language / Idioma" }), {
       target: { value: "es" },
@@ -442,9 +435,9 @@ describe("Shared brand shells", () => {
 
   it("audits footer destinations against the same public status groups", () => {
     render(
-      <PublicShell>
+      <LandingShell>
         <h1>Home</h1>
-      </PublicShell>,
+      </LandingShell>,
     );
     const footer = screen.getByRole("contentinfo");
     expect(
@@ -492,9 +485,9 @@ describe("Shared brand shells", () => {
   it("labels public generic module surfaces as roadmap previews and keeps the module content reachable", () => {
     location.pathname = "/subscriptions";
     render(
-      <PublicShell>
+      <LandingShell>
         <ModulePage path="/subscriptions" />
-      </PublicShell>,
+      </LandingShell>,
     );
     expect(screen.getByRole("complementary", { name: "Implementation status" })).toHaveAttribute(
       "data-scope",
