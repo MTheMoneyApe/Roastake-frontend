@@ -95,11 +95,12 @@ describe("ROASTAKE bilingual editorial landing", () => {
       );
   });
 
-  it("keeps explicit working CTA routes at the hero and closing", () => {
+  it("keeps one primary Launch App CTA in the hero", () => {
     render(<LandingPage />);
     const markets = screen.getAllByRole("link", { name: "Launch App" });
-    expect(markets).toHaveLength(2);
+    expect(markets).toHaveLength(1);
     markets.forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
+    expect(document.querySelector(".landing-closing")).not.toBeInTheDocument();
     const docs = screen.getAllByRole("link", { name: "Open the documentation" });
     expect(docs).toHaveLength(1);
     docs.forEach((link) => expect(link).toHaveAttribute("href", "/app/docs"));
@@ -144,6 +145,8 @@ describe("ROASTAKE bilingual editorial landing", () => {
     expect(oracle).toHaveTextContent(/or verify coffee, custody or backing/);
     expect(container).toHaveTextContent(/Browser.only examples. No verified inventory/);
     expect(container).not.toHaveTextContent(/Testnet today. Physical integrations are future work/);
+    expect(container).not.toHaveTextContent(/0[1-5]\s*\//);
+    expect(container.querySelectorAll(".landing-product-index")).toHaveLength(0);
     expect(container).not.toHaveTextContent(/NEAR Testnet prototype · Perps uses/);
     expect(container.querySelector("#coffee-capital")).toHaveTextContent(
       /No live investment product/,
