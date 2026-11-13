@@ -429,6 +429,7 @@ export function WalletHubPanels({
             Advanced networks · EVM, Solana and Hyperliquid
           </summary>
           <div className="mt-3 space-y-4">
+            <div role="tablist" aria-label="Secondary wallet ecosystems" className="flex flex-wrap gap-2">
           {SECONDARY_TABS.map((tab) => {
             const active = activeSecondaryTab === tab.id;
             return (
@@ -450,8 +451,7 @@ export function WalletHubPanels({
               </Button>
             );
           })}
-          </div>
-        </details>
+            </div>
 
         {/* EVM Testnets Panel (including HyperEVM Chain ID 998) */}
         {activeSecondaryTab === "evm" && (
@@ -813,6 +813,8 @@ export function WalletHubPanels({
             )}
           </div>
         )}
+          </div>
+        </details>
       </section>
 
       {!compact && (
