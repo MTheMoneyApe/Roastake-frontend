@@ -1,6 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { hydrateRoot } from "react-dom/client";
-import { renderToString } from "react-dom/server";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ADMIN_NAV, AppShell, LandingShell, PublicShell, ROASTER_NAV } from "@/components/shell";
@@ -259,140 +257,23 @@ describe("Shared brand shells", () => {
     expect(trigger).toHaveFocus();
   });
 
-  it("exposes only Launch App in the editorial landing navigation", () => {
-    location.pathname = "/app/assets/demo-lot";
-    render(
-      <LandingShell>
-        <h1>Coffee assets</h1>
-      </LandingShell>,
-    );
-    const nav = screen.getByRole("navigation", { name: "Main navigation" });
-    const trigger = within(nav).getByRole("button", { name: "Menu" });
-    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ bottom: 180 } as DOMRect);
-    fireEvent.click(trigger);
-    expect(within(nav).getAllByRole("link")).toHaveLength(1);
-    const launch = within(nav).getByRole("link", { name: "Launch App" });
-    expect(launch).toHaveAttribute("href", "/app/perps");
-    expect(within(nav).queryByRole("link", { name: "Coffee Economy" })).not.toBeInTheDocument();
-    fireEvent.click(launch);
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-  });
-
-  it("reuses exactly the same public link tree when the header no longer fits", () => {
-    let width = 1600;
-    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(() => width);
-    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockImplementation(function (
-      this: HTMLElement,
-    ) {
-      return this.tagName === "UL" ? 650 : 150;
-    });
-    location.pathname = "/";
-    render(
-      <LandingShell>
-        <h1>Home</h1>
-      </LandingShell>,
-    );
-    const nav = screen.getByRole("navigation", { name: "Main navigation" });
-    const originalList = nav.querySelector("ul");
-    expect(
-      within(nav)
-        .getAllByRole("link")
-        .map((link) => link.textContent),
-    ).toEqual(PUBLIC_NAV.map(({ label }) => label));
-    expect(within(nav).getByRole("link", { name: "Launch App" })).not.toHaveAttribute(
-      "aria-current",
-    );
-    width = 400;
-    fireEvent(window, new Event("resize"));
-    fireEvent.click(within(nav).getByRole("button", { name: "Menu" }));
-    expect(nav.querySelector("ul")).toBe(originalList);
-    expect(
-      within(nav)
-        .getAllByRole("link")
-        .map((link) => link.getAttribute("href")),
-    ).toEqual(PUBLIC_NAV.map(({ to }) => to));
-    expect(screen.getAllByRole("navigation", { name: "Main navigation" })).toHaveLength(1);
-  });
-
-  it("collapses before header actions overflow at laptop widths even when flex items shrink", () => {
-    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(1024);
-    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockImplementation(function (
-      this: HTMLElement,
-    ) {
-      return this.tagName === "UL" ? 650 : this.tagName === "A" ? 140 : 350;
-    });
-    // JSDOM bounding boxes are zero; scrollWidth models intrinsic action widths.
-    render(
-      <LandingShell>
-        <h1>Home</h1>
-      </LandingShell>,
-    );
-    const nav = screen.getByRole("navigation", { name: "Main navigation" });
-    expect(within(nav).getByRole("button", { name: "Menu" })).not.toHaveClass("hidden");
-  });
-
-  it.each([320, 390])(
-    "hydrates a %ipx public header with a visible trigger and measurable native-popover links",
-    async (width) => {
+  it.each([320, 390, 430, 1440])(
+    "keeps the Launch App button directly visible at %ipx",
+    (width) => {
+      vi.stubGlobal("innerWidth", width);
       location.pathname = "/";
-      vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(width);
-      // Hidden server markup has no intrinsic width, just as in a real browser.
-      vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockImplementation(function (
-        this: HTMLElement,
-      ) {
-        return this.hasAttribute("hidden") ? 0 : 650;
-      });
-      const view = (
+      render(
         <LandingShell>
           <h1>Home</h1>
-        </LandingShell>
+        </LandingShell>,
       );
-      const host = document.createElement("div");
-      host.innerHTML = renderToString(view);
-      document.body.append(host);
-      const nativeDescriptor = Object.getOwnPropertyDescriptor(
-        HTMLElement.prototype,
-        "showPopover",
-      );
-      Object.defineProperty(HTMLElement.prototype, "showPopover", {
-        configurable: true,
-        value: vi.fn(),
-      });
-      const matches = HTMLElement.prototype.matches;
-      vi.spyOn(HTMLElement.prototype, "matches").mockImplementation(function (
-        this: HTMLElement,
-        selector,
-      ) {
-        return selector === ":popover-open" ? false : matches.call(this, selector);
-      });
-      const errors = vi.spyOn(console, "error").mockImplementation(() => {});
-      let root: ReturnType<typeof hydrateRoot> | undefined;
-      try {
-        await act(async () => {
-          root = hydrateRoot(host, view);
-        });
-        const nav = within(host).getByRole("navigation", { name: "Main navigation" });
-        const trigger = within(nav).getByRole("button", { name: "Menu" });
-        expect(trigger).not.toHaveClass("hidden");
-        expect(trigger).toHaveAttribute("aria-expanded", "false");
-        const list = document.getElementById(trigger.getAttribute("aria-controls")!)!;
-        expect(list).toHaveAttribute("popover", "auto");
-        expect(list).not.toHaveAttribute("hidden");
-        expect(
-          within(nav)
-            .getAllByRole("link")
-            .map((link) => link.getAttribute("href")),
-        ).toEqual(PUBLIC_NAV.map(({ to }) => to));
-        expect(errors).not.toHaveBeenCalled();
-      } finally {
-        await act(async () => {
-          root?.unmount();
-        });
-        host.remove();
-        if (nativeDescriptor)
-          Object.defineProperty(HTMLElement.prototype, "showPopover", nativeDescriptor);
-        else Reflect.deleteProperty(HTMLElement.prototype, "showPopover");
-      }
+      const nav = screen.getByRole("navigation", { name: "Main navigation" });
+      expect(within(nav).getAllByRole("link")).toHaveLength(1);
+      const launch = within(nav).getByRole("link", { name: "Launch App" });
+      expect(launch).toHaveAttribute("href", "/app/perps");
+      expect(launch).toBeVisible();
+      expect(within(nav).queryByRole("button", { name: "Menu" })).not.toBeInTheDocument();
+      expect(within(nav).queryByRole("link", { name: "Coffee Economy" })).not.toBeInTheDocument();
     },
   );
 
