@@ -624,9 +624,13 @@ function PublicShellContent({ children }: { children: ReactNode }) {
               </option>
             </select>
             <ThemeToggle />
-            <div className="hidden sm:flex sm:items-center sm:gap-1.5">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/cart" aria-label="Coffee cart" className="gap-2">
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <Button variant="ghost" size="icon" asChild>
+                <Link
+                  to="/cart"
+                  aria-label={es ? "Carrito de café" : "Coffee cart"}
+                  className="relative min-h-11 min-w-11 gap-1"
+                >
                   <ShoppingBag />
                   {h && cart > 0 && (
                     <span className="num rounded-full bg-highlight px-1.5 text-[11px] text-highlight-foreground">
@@ -635,7 +639,9 @@ function PublicShellContent({ children }: { children: ReactNode }) {
                   )}
                 </Link>
               </Button>
-              <WalletButton />
+              <div className="hidden sm:block">
+                <WalletButton />
+              </div>
             </div>
           </div>
         </div>

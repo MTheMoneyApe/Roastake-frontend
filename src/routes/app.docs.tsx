@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/shell";
 import { seo } from "@/lib/seo";
+import { SCOPE_LABELS } from "@/lib/navigation";
 
 export const Route = createFileRoute("/app/docs")({
   head: () =>
@@ -28,7 +29,8 @@ const RESOURCES = [
   },
   {
     title: "Backend README",
-    description: "Architecture, build instructions, deployed contracts and current implementation scope.",
+    description:
+      "Architecture, build instructions, deployed contracts and current implementation scope.",
     href: "https://github.com/MTheMoneyApe/Roastake/blob/hackathon-submission/README.md",
     action: "Read backend README",
   },
@@ -43,38 +45,38 @@ const RESOURCES = [
 const MODULES = [
   {
     name: "Perpetuals",
-    status: "NEAR Testnet",
+    status: SCOPE_LABELS.live,
     detail:
       "Three registered markets: Arabica, Robusta and Gesha. Contract interactions are on-chain, but prices are operator-controlled synthetic Testnet values.",
     to: "/app/perps",
   },
   {
     name: "Coffee Mini Swap",
-    status: "NEAR Testnet",
+    status: SCOPE_LABELS.live,
     detail:
       "NEP-141 swaps against RHEA Testnet pools. Uses non-monetary Testnet tokens and depends on available pool liquidity.",
     to: "/app/swap",
   },
   {
     name: "Coffee Oracle",
-    status: "Read-only Testnet",
+    status: SCOPE_LABELS.live,
     detail:
       "Separate Oracle contract telemetry for an IMF monthly Arabica benchmark and a synthetic Gesha fixture. This feed does not power Perpetuals.",
     to: "/app/oracle",
   },
   {
     name: "Marketplace & coffee provenance",
-    status: "Simulated prototype",
+    status: SCOPE_LABELS.demo,
     detail:
       "Products, roasters, orders, custody, tokenized inventory and redemption records are sample/local demo data. No physical backing or shipment is verified.",
     to: "/market",
   },
   {
     name: "Vaults, lending, governance & portals",
-    status: "Roadmap preview",
+    status: SCOPE_LABELS.planned,
     detail:
       "These screens are previews, not deployed protocol services. Demo roles are local UI state, not authentication or authorization.",
-    to: "/app/dashboard",
+    to: "/roadmap",
   },
 ];
 
@@ -83,17 +85,13 @@ function Page() {
     <AppShell>
       <div className="space-y-8">
         <section className="space-y-3">
-          <p className="brand-eyebrow">
-            Resources · source of truth
-          </p>
-          <h1 className="brand-page-title">
-            ROASTAKE Documentation
-          </h1>
+          <p className="brand-eyebrow">Resources · source of truth</p>
+          <h1 className="brand-page-title">ROASTAKE Documentation</h1>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            This page links to the maintained source repositories and distinguishes deployed
-            Testnet integrations from local simulations and roadmap previews. Read the repository
-            READMEs for implementation details; this page is a navigation index, not an audit or
-            security certification.
+            This page links to the maintained source repositories and distinguishes deployed Testnet
+            integrations from local simulations and roadmap previews. Read the repository READMEs
+            for implementation details; this page is a navigation index, not an audit or security
+            certification.
           </p>
         </section>
 
@@ -151,19 +149,45 @@ function Page() {
         <section className="rounded-lg border border-brass/40 bg-brass/5 p-5">
           <h2 className="font-display text-xl font-semibold">Important limitations</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-            <li>Perpetuals price inputs are synthetic and operator-controlled, not commercial coffee prices or independent market oracles.</li>
-            <li>The separate Oracle page is read-only and does not supply the Perpetuals execution feed.</li>
-            <li>Marketplace orders, coffee inventory, custody, yields and most portfolio balances are simulated in the browser.</li>
-            <li>No physical coffee backing, custody verification, redemption shipment, Mainnet deployment or independent security audit certification is claimed.</li>
+            <li>
+              Perpetuals price inputs are synthetic and operator-controlled, not commercial coffee
+              prices or independent market oracles.
+            </li>
+            <li>
+              The separate Oracle page is read-only, does not supply the Perpetuals execution feed
+              and does not verify physical coffee.
+            </li>
+            <li>
+              GCT/RCT and 1 token = 1 kg are proposed accounting concepts, not backed or redeemable
+              assets. Roasting mass loss means green input and roasted output are not 1:1; yield,
+              loss and fees are separate.
+            </li>
+            <li>
+              Marketplace orders, coffee inventory, custody, yields and most portfolio balances are
+              simulated in the browser.
+            </li>
+            <li>
+              No physical coffee backing, custody verification, redemption shipment, Mainnet
+              deployment or independent security audit certification is claimed.
+            </li>
           </ul>
           <div className="mt-4 flex flex-wrap gap-3">
-            <Link to="/app/perps" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+            <Link
+              to="/app/perps"
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
               Perpetuals <span aria-hidden="true">→</span>
             </Link>
-            <Link to="/app/multichain" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+            <Link
+              to="/app/multichain"
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
               Network deployment matrix <span aria-hidden="true">→</span>
             </Link>
-            <Link to="/app/risk-center" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+            <Link
+              to="/app/risk-center"
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
               Risk disclosures <span aria-hidden="true">→</span>
             </Link>
           </div>

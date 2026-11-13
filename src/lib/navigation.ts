@@ -29,6 +29,7 @@ import {
   Wheat,
 } from "lucide-react";
 import type { MaturityVariant } from "@/components/kit";
+import { resolveThreeMarketEntry } from "@/lib/perps/config";
 
 export type NavBadge = { label: string; variant: MaturityVariant; title?: string };
 export type NavItem = { to: string; label: string; icon: typeof Coffee; badge?: NavBadge };
@@ -70,6 +71,17 @@ export const APP_NAV: NavGroup[] = [
           variant: "testnet",
           title:
             "NEAR Testnet execution with operator-controlled synthetic prices, not the OutLayer oracle.",
+        },
+      },
+      {
+        to: "/app/positions",
+        label: "Positions",
+        icon: Layers,
+        badge: {
+          label: "TESTNET + DEMO",
+          variant: "testnet",
+          title:
+            "Live NEAR Testnet positions and separate local demo positions; demo balances are not connected-wallet value.",
         },
       },
       {
@@ -127,9 +139,17 @@ export const APP_NAV: NavGroup[] = [
       { to: "/orders", label: "Orders", icon: Truck },
       { to: "/roasters", label: "Roaster Profiles", icon: Store },
       { to: "/app/markets", label: "Spot Markets", icon: Gauge },
-      { to: "/app/positions", label: "Positions", icon: Layers },
       { to: "/app/market-analytics", label: "Market Analytics", icon: PieChart },
-      { to: "/app/activity", label: "Activity", icon: RefreshCw },
+      {
+        to: "/app/activity",
+        label: "Activity",
+        icon: RefreshCw,
+        badge: {
+          label: "TESTNET + DEMO",
+          variant: "testnet",
+          title: "NEAR Testnet transaction receipts and separate browser-only demo logs.",
+        },
+      },
       { to: "/app/multichain", label: "Multi-chain Overview", icon: Globe },
     ],
   },
@@ -189,6 +209,15 @@ export function getRouteScope(pathname: string): RouteScope {
   const path = pathname.replace(/\/+$/, "") || "/";
   const matches = (to: string) => path === to || path.startsWith(`${to}/`);
   if (matches("/app/docs")) return "docs";
+  if (path.startsWith("/app/perps/")) {
+    const entry = resolveThreeMarketEntry(path.slice("/app/perps/".length));
+    return entry?.status === "configured_testnet"
+      ? "live"
+      : entry?.status === "preview"
+        ? "planned"
+        : "demo";
+  }
+  if (matches("/app/activity")) return "live";
   if (matches("/roadmap") || ROADMAP_NAV.items.some(({ to }) => matches(to))) return "planned";
   if (APP_NAV[0].items.some(({ to }) => matches(to))) return "live";
   // The dynamic roaster/admin sections all render generic planned ModulePage previews.
@@ -198,8 +227,17 @@ export function getRouteScope(pathname: string): RouteScope {
 }
 
 export function getRouteScopeDescription(pathname: string): string {
-  if (/^\/app\/perps(?:\/|$)/.test(pathname))
+  if (/^\/app\/perps(?:\/|$)/.test(pathname)) {
+    const scope = getRouteScope(pathname);
+    if (scope === "demo")
+      return "Legacy browser-only simulated market, not NEAR Testnet execution. No real orders, margin, settlement or connected-wallet value. The separate OutLayer oracle does not power this demo.";
+    if (scope === "planned") return SCOPE_DESCRIPTIONS.planned;
     return "NEAR Testnet execution · operator-controlled synthetic prices. The separate OutLayer read-only oracle does not power Perps. Test tokens have no monetary value.";
+  }
+  if (/^\/app\/activity(?:\/|$)/.test(pathname))
+    return "NEAR Testnet session transaction receipts and separately labeled historical proof are distinct from browser-only simulated coffee logs. Test tokens have no monetary value; demo events are not transactions or physical shipments.";
+  if (/^\/app\/positions(?:\/|$)/.test(pathname))
+    return "Live NEAR Testnet positions use operator-controlled synthetic prices and non-monetary test USDC. Separate local demo positions are browser-only and not on-chain or connected-wallet value. Test tokens have no monetary value.";
   if (/^\/app\/swap(?:\/|$)/.test(pathname))
     return "RHEA Mini Swap · real NEAR Testnet transactions using non-monetary test tokens. Coffee names and lot backing are illustrative; no Mainnet trading or verified physical coffee backing.";
   if (/^\/app\/oracle(?:\/|$)/.test(pathname))

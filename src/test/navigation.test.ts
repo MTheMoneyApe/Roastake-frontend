@@ -51,6 +51,33 @@ describe("Implementation-status navigation", () => {
     }
   });
 
+  it("classifies the mixed positions page by its live Testnet feature and distinguishes local demo data", () => {
+    const positions = APP_NAV[0].items.find(({ to }) => to === "/app/positions");
+    expect(positions).toBeDefined();
+    expect(positions?.badge?.title).toMatch(/live NEAR Testnet positions/i);
+    expect(positions?.badge?.title).toMatch(/local demo positions/i);
+    expect(APP_NAV[2].items.some(({ to }) => to === "/app/positions")).toBe(false);
+    expect(getRouteScope("/app/positions")).toBe("live");
+    expect(getRouteScopeDescription("/app/positions")).toMatch(
+      /operator-controlled synthetic prices/,
+    );
+    expect(getRouteScopeDescription("/app/positions")).toMatch(
+      /local demo positions.*not on-chain/i,
+    );
+    expect(getRouteScopeDescription("/app/positions")).toMatch(/no monetary value/);
+  });
+
+  it.each([
+    "admin.$section.tsx",
+    "app.vaults.$id.tsx",
+    "app.governance.proposals.$id.tsx",
+    "app.ventures.$id.tsx",
+  ])("describes %s metadata as a planned preview rather than an operational demo", (file) => {
+    const source = routeSources[`../routes/${file}`];
+    expect(source).toMatch(/Roadmap \/ Planned/);
+    expect(source).not.toMatch(/seo\("(?:Id|Section)"|simulated demo module/);
+  });
+
   it("keeps all key planned product names in the roadmap rather than the live or demo groups", () => {
     const planned = ROADMAP_NAV;
     expect(planned.items.map(({ to }) => to)).toEqual(
@@ -79,7 +106,7 @@ describe("Implementation-status navigation", () => {
       "Roadmap",
       "Documentation",
     ]);
-    expect(APP_NAV[0].items).toHaveLength(4);
+    expect(APP_NAV[0].items).toHaveLength(5);
     expect(APP_NAV[1].items).toHaveLength(5);
     expect(APP_NAV[2]).toMatchObject({ collapsible: true, defaultCollapsed: true });
     expect(APP_NAV[2].items.map(({ to }) => to)).toEqual(
@@ -87,7 +114,6 @@ describe("Implementation-status navigation", () => {
         "/app/dashboard",
         "/orders",
         "/roasters",
-        "/app/positions",
         "/app/market-analytics",
         "/app/activity",
         "/app/markets",
@@ -133,11 +159,24 @@ describe("Implementation-status navigation", () => {
     expect(getRouteScope(path)).toBe("demo"),
   );
 
+  it("does not label legacy browser markets as live Testnet execution", () => {
+    for (const path of ["/app/perps/COL-G", "/app/perps/unknown-market/"]) {
+      expect(getRouteScope(path)).toBe("demo");
+      expect(getRouteScopeDescription(path)).toMatch(/browser-only simulated market/);
+      expect(getRouteScopeDescription(path)).toMatch(/not NEAR Testnet execution/);
+    }
+    expect(getRouteScopeDescription("/app/activity")).toMatch(
+      /receipts.*distinct from browser-only simulated/,
+    );
+  });
+
   it("distinguishes operator-controlled Perps, non-monetary RHEA and the separate read-only OutLayer source", () => {
-    expect(getRouteScopeDescription("/app/perps/COL-G")).toMatch(
+    expect(getRouteScopeDescription("/app/perps/COFFEE-ARABICA-TESTNET-USD")).toMatch(
       /operator-controlled synthetic prices/,
     );
-    expect(getRouteScopeDescription("/app/perps/COL-G")).toMatch(/OutLayer.*does not power Perps/);
+    expect(getRouteScopeDescription("/app/perps/COFFEE-ARABICA-TESTNET-USD")).toMatch(
+      /OutLayer.*does not power Perps/,
+    );
     expect(getRouteScopeDescription("/app/swap")).toMatch(
       /real NEAR Testnet transactions using non-monetary test tokens/,
     );
@@ -145,7 +184,13 @@ describe("Implementation-status navigation", () => {
       /separate read-only NEAR Testnet integration/,
     );
     expect(getRouteScopeDescription("/app/oracle")).toMatch(/does not power Perps/);
-    for (const path of ["/app/perps/COL-G", "/app/swap", "/app/oracle", "/app/wallet"])
+    for (const path of [
+      "/app/perps/COFFEE-ARABICA-TESTNET-USD",
+      "/app/swap",
+      "/app/oracle",
+      "/app/wallet",
+      "/app/activity",
+    ])
       expect(getRouteScope(path)).toBe("live");
   });
 });

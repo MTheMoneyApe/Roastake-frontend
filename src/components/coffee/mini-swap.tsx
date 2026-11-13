@@ -104,6 +104,8 @@ export function CoffeeMiniSwap() {
   const [reviewing, setReviewing] = useState(false);
   const [tx, setTx] = useState<TxState>({ phase: "idle" });
   const [refreshKey, setRefreshKey] = useState(0);
+  const swapInFlight = useRef(false);
+  const txBusy = tx.phase === "signing" || tx.phase === "verifying";
 
   const asset = useMemo(() => getCoffeeAsset(symbol) ?? COFFEE_ASSETS[0], [symbol]);
   const route = useMemo(() => buildSwapRoute(asset, direction), [asset, direction]);
@@ -122,7 +124,9 @@ export function CoffeeMiniSwap() {
       .catch((error: unknown) => {
         if (!cancelled) {
           setPool(null);
-          setPoolReadError(error instanceof Error ? error.message : "Could not read the RHEA pool from Testnet.");
+          setPoolReadError(
+            error instanceof Error ? error.message : "Could not read the RHEA pool from Testnet.",
+          );
         }
       })
       .finally(() => {
@@ -163,7 +167,11 @@ export function CoffeeMiniSwap() {
         setBalanceIn(0n);
         setBalanceOut(0n);
         setOutputRegistered(null);
-        setWalletReadError(error instanceof Error ? error.message : "Could not read wallet token state from Testnet.");
+        setWalletReadError(
+          error instanceof Error
+            ? error.message
+            : "Could not read wallet token state from Testnet.",
+        );
       })
       .finally(() => {
         if (!cancelled) setWalletReadLoading(false);
@@ -225,7 +233,16 @@ export function CoffeeMiniSwap() {
     }, QUOTE_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [parsedAmount, pool, poolLoading, poolReadError, route.poolId, route.tokenIn, route.tokenOut, slippage]);
+  }, [
+    parsedAmount,
+    pool,
+    poolLoading,
+    poolReadError,
+    route.poolId,
+    route.tokenIn,
+    route.tokenOut,
+    slippage,
+  ]);
 
   // A quote becomes stale on its own; re-render so the gate closes.
   const [, forceTick] = useState(0);
@@ -296,7 +313,9 @@ export function CoffeeMiniSwap() {
   }, []);
 
   const runSwap = useCallback(async () => {
-    if (!accountId || !quote || blocked) return;
+    if (!accountId || !quote || blocked || swapInFlight.current) return;
+    // Lock synchronously as well as disabling controls: two taps can precede a render.
+    swapInFlight.current = true;
     setTx({ phase: "signing" });
     try {
       if (outputRegistered === false) {
@@ -355,6 +374,8 @@ export function CoffeeMiniSwap() {
         phase: "error",
         message: err instanceof Error ? err.message : "Wallet rejected or the transaction failed.",
       });
+    } finally {
+      swapInFlight.current = false;
     }
   }, [
     accountId,
@@ -404,7 +425,7 @@ export function CoffeeMiniSwap() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="mini-swap-asset">Coffee asset</Label>
-              <Select value={symbol} onValueChange={(value) => setSymbol(value)}>
+              <Select value={symbol} onValueChange={(value) => setSymbol(value)} disabled={txBusy}>
                 <SelectTrigger id="mini-swap-asset" aria-label="Coffee asset">
                   <SelectValue />
                 </SelectTrigger>
@@ -421,6 +442,7 @@ export function CoffeeMiniSwap() {
               <Label htmlFor="mini-swap-slippage">Slippage (%)</Label>
               <Input
                 id="mini-swap-slippage"
+                disabled={txBusy}
                 type="number"
                 inputMode="decimal"
                 min="0"
@@ -437,6 +459,7 @@ export function CoffeeMiniSwap() {
             <div className="flex gap-2">
               <Input
                 id="mini-swap-amount"
+                disabled={txBusy}
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
@@ -453,7 +476,7 @@ export function CoffeeMiniSwap() {
                 onClick={() =>
                   setAmount(formatTokenAmount(balanceIn, route.decimalsIn, route.decimalsIn))
                 }
-                disabled={balanceIn <= 0n}
+                disabled={balanceIn <= 0n || txBusy}
               >
                 Max
               </Button>
@@ -472,6 +495,7 @@ export function CoffeeMiniSwap() {
               size="icon"
               variant="ghost"
               aria-label="Reverse direction"
+              disabled={txBusy}
               onClick={() => {
                 setDirection((current) =>
                   current === "usdc-to-coffee" ? "coffee-to-usdc" : "usdc-to-coffee",
@@ -519,8 +543,8 @@ export function CoffeeMiniSwap() {
 
           {poolReadError && (
             <p role="alert" className="text-xs text-loss">
-              RHEA pool state could not be verified from NEAR Testnet RPC. Swaps are disabled; refresh
-              to retry. This is not evidence that the pool is empty or missing.
+              RHEA pool state could not be verified from NEAR Testnet RPC. Swaps are disabled;
+              refresh to retry. This is not evidence that the pool is empty or missing.
             </p>
           )}
           {walletReadLoading && (
@@ -530,14 +554,14 @@ export function CoffeeMiniSwap() {
           )}
           {walletReadError && (
             <p role="alert" className="text-xs text-loss">
-              Wallet token state could not be verified from NEAR Testnet RPC. Swaps are disabled;
-              no zero balance or missing registration is assumed.
+              Wallet token state could not be verified from NEAR Testnet RPC. Swaps are disabled; no
+              zero balance or missing registration is assumed.
             </p>
           )}
           {quoteError && <p className="text-xs text-loss">{quoteError}</p>}
 
           {!blocked && !reviewing && (
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={txBusy}>
               Review transaction
             </Button>
           )}
@@ -582,12 +606,17 @@ export function CoffeeMiniSwap() {
                   type="button"
                   className="flex-1"
                   onClick={() => void runSwap()}
-                  disabled={!hydrated}
+                  disabled={!hydrated || txBusy}
                 >
                   {tx.phase === "signing" ? <Loader2 className="animate-spin" /> : null}
                   Sign &amp; send swap
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setReviewing(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={txBusy}
+                  onClick={() => setReviewing(false)}
+                >
                   Cancel
                 </Button>
               </div>
@@ -629,6 +658,7 @@ export function CoffeeMiniSwap() {
                 variant="ghost"
                 onClick={refresh}
                 aria-label="Refresh live pool data"
+                disabled={txBusy}
               >
                 <RefreshCw className={poolLoading ? "animate-spin" : undefined} />
               </Button>

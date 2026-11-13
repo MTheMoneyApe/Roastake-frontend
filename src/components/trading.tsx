@@ -85,7 +85,7 @@ function PerpsNearExecutionBanner() {
             LIVE CONTRACT · {PERPS_CONTRACT_ID}
           </MaturityBadge>
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-foreground/90">
           {nearConnected && near.accountId ? (
             <>
               NEAR Testnet wallet{" "}
@@ -109,12 +109,12 @@ function PerpsNearExecutionBanner() {
           ) : (
             <>
               NEAR Testnet (<span className="font-mono">{PERPS_CONTRACT_ID}</span>) is the active
-              execution network for ROASTAKE Perpetuals. Connect Meteor or HOT Connect to deposit
-              Circle Testnet USDC and trade.
+              execution network for ROASTAKE Perpetuals. Connect a supported NEAR Testnet wallet to
+              deposit Circle Testnet USDC and trade.
             </>
           )}
         </p>
-        <p className="text-muted-foreground">
+        <p className="text-foreground/90">
           Operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has
           no monetary value. OutLayer benchmarks are a separate read-only reference.
         </p>
@@ -817,7 +817,7 @@ export function SpotMarketsPage() {
 export function MarketAnalyticsPage() {
   const s = useDemo();
   const oi = s.perpMarkets.map((m) => ({ name: m.id, value: Math.round(m.oi) }));
-  const vol = s.perpMarkets.map((m) => ({ m: m.id, vol: Math.round(m.vol / 1000) }));
+  const vol = s.perpMarkets.map((m) => ({ d: m.id, vol: Math.round(m.vol / 1000) }));
   return (
     <div className="space-y-6">
       <PageHeader

@@ -276,7 +276,10 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
                 <p className="text-xs text-muted-foreground num">
                   Circle Testnet USDC:{" "}
                   <strong className="text-foreground">
-                    {formatFixedPoint(nearPerpsTrader.data.circleUsdcBalanceUnits, 6, { maxFractionDigits: 4 })} USDC
+                    {formatFixedPoint(nearPerpsTrader.data.circleUsdcBalanceUnits, 6, {
+                      maxFractionDigits: 4,
+                    })}{" "}
+                    USDC
                   </strong>{" "}
                   · Perps Free Margin:{" "}
                   <strong className="text-foreground">
@@ -296,8 +299,11 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
         ) : (
           <div className="mt-3 space-y-2 rounded-md border border-dashed px-3.5 py-2.5 text-xs text-muted-foreground">
             <p>
-              Connect via <strong className="text-foreground">HOT Connect</strong> (`testnet` mode,
-              read-only identity). No access-key or on-chain transaction is submitted on connect.
+              Connect through the{" "}
+              <strong className="text-foreground">NEAR Testnet wallet selector</strong> powered by
+              @hot-labs/near-connect. Available providers depend on its current Testnet manifest;
+              HOT Wallet support is not implied. No access-key or on-chain transaction is submitted
+              on connect.
             </p>
             {near.availableWallets.length > 0 && (
               <div className="flex flex-wrap items-center gap-1.5 pt-1">
@@ -345,7 +351,10 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <EcosystemIcon ecosystem={acc.ecosystem} className="size-3.5 text-accent-foreground" />
+                      <EcosystemIcon
+                        ecosystem={acc.ecosystem}
+                        className="size-3.5 text-accent-foreground"
+                      />
                       <span className="font-semibold text-foreground">{acc.ecosystemLabel}</span>
                       <span className="text-muted-foreground">· {acc.providerName}</span>
                       {acc.isPrimaryProtocolNetwork && <Pill tone="gain">Primary Execution</Pill>}

@@ -63,6 +63,26 @@ afterEach(() => {
 });
 
 describe("Shared brand shells", () => {
+  it("keeps the demo cart reachable on mobile without adding a sixth primary link", () => {
+    window.innerWidth = 320;
+    render(
+      <PublicShell>
+        <h1>Marketplace</h1>
+      </PublicShell>,
+    );
+    const cart = screen.getByRole("link", { name: "Coffee cart" });
+    expect(cart).toHaveAttribute("href", "/cart");
+    let ancestor: HTMLElement | null = cart;
+    while (ancestor && ancestor.tagName !== "HEADER") {
+      expect(ancestor).not.toHaveClass("hidden");
+      ancestor = ancestor.parentElement;
+    }
+    expect(
+      within(screen.getByRole("navigation", { name: "Main navigation" })).getAllByRole("link", {
+        hidden: true,
+      }),
+    ).toHaveLength(5);
+  });
   it.each([
     {
       label: "public",
@@ -437,7 +457,12 @@ describe("Shared brand shells", () => {
   });
 
   it.each([
-    { path: "/app/perps/COL-G", scope: "live", text: /operator-controlled synthetic prices/ },
+    { path: "/app/perps/COL-G", scope: "demo", text: /Legacy browser-only simulated market/ },
+    {
+      path: "/app/perps/COFFEE-ARABICA-TESTNET-USD",
+      scope: "live",
+      text: /operator-controlled synthetic prices/,
+    },
     {
       path: "/app/swap",
       scope: "live",
@@ -533,7 +558,7 @@ describe("Shared brand shells", () => {
       "true",
     );
     const sidebar = screen.getByRole("navigation", { name: "Protocol sections" });
-    expect(within(sidebar).getByRole("link", { name: "Activity" })).toHaveAttribute(
+    expect(within(sidebar).getByRole("link", { name: /^Activity/ })).toHaveAttribute(
       "aria-current",
       "page",
     );
