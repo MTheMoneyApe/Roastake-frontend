@@ -19,7 +19,7 @@ const copy = {
     primary: "Launch App",
     secondary: "Open the documentation",
     foundation: "Rooted in the real world",
-    thesisKicker: "01 / The foundation",
+    thesisKicker: "The foundation",
     thesisTitle: "Coffee is more than a commodity.",
     thesisLead:
       "It is a daily ritual, a livelihood and a global economy. That real-world foundation comes first.",
@@ -43,7 +43,7 @@ const copy = {
         "Price volatility and supply shocks remain. Resilience is a thesis, never a promise of appreciation.",
       ],
     ],
-    layersKicker: "02 / From coffee to capital",
+    layersKicker: "From coffee to capital",
     layersTitle: "One economy. Three connected layers.",
     layersLead:
       "Physical coffee is the foundation. Digital assets are a proposed representation layer. Markets are the financial layer — not a substitute for the coffee behind them.",
@@ -66,7 +66,7 @@ const copy = {
         "OutLayer is a separate, read-only benchmark/oracle demo. It does not power Perps or verify physical coffee.",
       ],
     ],
-    exploreKicker: "03 / Product, with context",
+    exploreKicker: "Product, with context",
     exploreTitle: "What you can explore today.",
     exploreLead:
       "Three ways to test the financial mechanics. Then explore the illustrative coffee experience and the longer-term vision.",
@@ -101,7 +101,7 @@ const copy = {
     plannedNote:
       "Vaults, staking, lending, governance and other modules are design previews only, not operational financial services.",
     roadmapLink: "Explore the Roadmap",
-    capitalKicker: "04 / Future direction",
+    capitalKicker: "Future direction",
     capitalTitle: "Coffee + DeFi + Venture Capital.",
     capitalLead:
       "Capital should connect to the people and infrastructure that make the coffee economy work.",
@@ -109,7 +109,7 @@ const copy = {
       "Our longer-term vision brings producers, digital markets and coffee ventures into a connected ecosystem: financing infrastructure, supporting new businesses and exploring responsible liquidity models. Physical verification, legal frameworks and operating partners would need to come first.",
     capitalNote:
       "Roadmap only. No live investment product, managed fund, staking yield or promised return is offered.",
-    roadmapKicker: "05 / Build with clarity",
+    roadmapKicker: "Build with clarity",
     roadmapTitle: "Understand today. Shape what comes next.",
     roadmapText:
       "The Testnet foundation is available to explore. Physical integrations, asset backing and real settlement remain future work — without implied dates, partners or delivery promises.",
@@ -130,7 +130,7 @@ const copy = {
     primary: "Iniciar app",
     secondary: "Abrir documentación",
     foundation: "Con raíces en el mundo real",
-    thesisKicker: "01 / El fundamento",
+    thesisKicker: "El fundamento",
     thesisTitle: "El café es más que una materia prima.",
     thesisLead:
       "Es un ritual diario, un medio de vida y una economía global. Esa base real es lo primero.",
@@ -154,7 +154,7 @@ const copy = {
         "La volatilidad y las disrupciones de oferta persisten. La resiliencia es una tesis, nunca una promesa de revalorización.",
       ],
     ],
-    layersKicker: "02 / Del café al capital",
+    layersKicker: "Del café al capital",
     layersTitle: "Una economía. Tres capas conectadas.",
     layersLead:
       "El café físico es el fundamento. Los activos digitales son una capa de representación propuesta. Los mercados son la capa financiera, no un sustituto del café que habría detrás.",
@@ -177,7 +177,7 @@ const copy = {
         "OutLayer es una demo independiente de referencia/oráculo de solo lectura. No alimenta Perps ni verifica café físico.",
       ],
     ],
-    exploreKicker: "03 / Producto, con contexto",
+    exploreKicker: "Producto, con contexto",
     exploreTitle: "Lo que puedes explorar hoy.",
     exploreLead:
       "Tres formas de probar la mecánica financiera. Después, explora la experiencia ilustrativa del café y la visión a largo plazo.",
@@ -212,7 +212,7 @@ const copy = {
     plannedNote:
       "Vaults, staking, préstamos, gobernanza y otros módulos son solo vistas de diseño, no servicios financieros operativos.",
     roadmapLink: "Explorar la hoja de ruta",
-    capitalKicker: "04 / Dirección futura",
+    capitalKicker: "Dirección futura",
     capitalTitle: "Café + DeFi + Venture Capital.",
     capitalLead:
       "El capital debería conectar con las personas y la infraestructura que hacen funcionar la economía del café.",
@@ -220,7 +220,7 @@ const copy = {
       "Nuestra visión a largo plazo conecta productores, mercados digitales y proyectos de café: financiar infraestructura, apoyar nuevos negocios y explorar modelos responsables de liquidez. La verificación física, los marcos legales y los socios operativos tendrían que llegar primero.",
     capitalNote:
       "Solo hoja de ruta. No se ofrece un producto de inversión activo, fondo gestionado, rendimiento de staking ni retorno prometido.",
-    roadmapKicker: "05 / Construir con claridad",
+    roadmapKicker: "Construir con claridad",
     roadmapTitle: "Entiende el presente. Da forma al futuro.",
     roadmapText:
       "La base Testnet está disponible para explorar. Las integraciones físicas, el respaldo de activos y la liquidación real son trabajo futuro, sin fechas, socios ni promesas de entrega implícitos.",
@@ -341,7 +341,6 @@ export function LandingPage() {
               <li key={i}>
                 <article>
                   <p className="brand-eyebrow">
-                    <span aria-hidden="true">0{i + 1} / </span>
                     {i < 2 ? c.foundation : "NEAR Testnet"}
                   </p>
                   <h3>{title}</h3>
@@ -366,9 +365,6 @@ export function LandingPage() {
           <div className="landing-products">
             {c.products.map(([title, note, text], i) => (
               <article key={productRoutes[i]}>
-                <p className="landing-product-index" aria-hidden="true">
-                  0{i + 1}
-                </p>
                 <div>
                   <p className="brand-eyebrow">{note}</p>
                   <h3>
@@ -463,13 +459,6 @@ export function LandingPage() {
               <ArrowRight aria-hidden="true" />
             </Link>
           </article>
-        </Section>
-      </section>
-      <section className="brand-hero landing-closing" aria-labelledby="closing-title">
-        <Section>
-          <p className="landing-kicker text-hero-highlight">ROASTAKE</p>
-          <h2 id="closing-title">{c.closing}</h2>
-          {actions}
         </Section>
       </section>
     </div>
