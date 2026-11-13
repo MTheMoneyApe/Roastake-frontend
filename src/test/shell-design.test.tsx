@@ -299,9 +299,8 @@ describe("Shared brand shells", () => {
         .getAllByRole("link")
         .map((link) => link.textContent),
     ).toEqual(PUBLIC_NAV.map(({ label }) => label));
-    expect(within(nav).getByRole("link", { name: "Coffee Economy" })).toHaveAttribute(
+    expect(within(nav).getByRole("link", { name: "Launch App" })).not.toHaveAttribute(
       "aria-current",
-      "page",
     );
     width = 400;
     fireEvent(window, new Event("resize"));
@@ -408,7 +407,7 @@ describe("Shared brand shells", () => {
       target: { value: "es" },
     });
     expect(screen.getByRole("main")).toHaveAttribute("lang", "en");
-    expect(screen.getByRole("navigation", { name: "Explorar" })).toHaveTextContent("Documentación");
+    expect(screen.getByRole("navigation", { name: "Explorar" })).toHaveTextContent("Iniciar app");
     window.localStorage.removeItem("roastake-public-language");
   });
 
@@ -464,9 +463,9 @@ describe("Shared brand shells", () => {
   it("labels public generic module surfaces as roadmap previews and keeps the module content reachable", () => {
     location.pathname = "/subscriptions";
     render(
-      <LandingShell>
+      <PublicShell>
         <ModulePage path="/subscriptions" />
-      </LandingShell>,
+      </PublicShell>,
     );
     expect(screen.getByRole("complementary", { name: "Implementation status" })).toHaveAttribute(
       "data-scope",
