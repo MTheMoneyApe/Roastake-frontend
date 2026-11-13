@@ -16,8 +16,8 @@ const copy = {
     emphasis: "global coffee economy.",
     intro:
       "Coffee connects the world. We’re building a bridge from its real economy to digital assets and decentralized markets — starting on NEAR Testnet.",
-    primary: "Explore Testnet Markets",
-    secondary: "Read the Docs",
+    primary: "Launch App",
+    secondary: "Open the documentation",
     heroNote:
       "Testnet today. Physical integrations are future work. Test tokens have no monetary value; they do not represent ownership of coffee.",
     foundation: "Rooted in the real world",
@@ -129,8 +129,8 @@ const copy = {
     emphasis: "economía global del café.",
     intro:
       "El café conecta al mundo. Construimos un puente entre su economía real, los activos digitales y los mercados descentralizados — empezando en NEAR Testnet.",
-    primary: "Explorar mercados Testnet",
-    secondary: "Leer la documentación",
+    primary: "Iniciar app",
+    secondary: "Abrir documentación",
     heroNote:
       "Testnet hoy. Integraciones físicas a futuro. Los tokens de prueba no tienen valor monetario ni representan la propiedad de café.",
     foundation: "Con raíces en el mundo real",
@@ -263,14 +263,6 @@ export function LandingPage() {
           {c.primary}
           <ArrowRight aria-hidden="true" />
         </Link>
-      </Button>
-      <Button
-        size="lg"
-        variant="outline"
-        asChild
-        className="border-hero-foreground/60 bg-transparent text-hero-foreground hover:bg-hero-foreground/10 hover:text-hero-foreground"
-      >
-        <Link to="/app/docs">{c.secondary}</Link>
       </Button>
     </div>
   );
@@ -473,12 +465,10 @@ export function LandingPage() {
               <h3>{c.docsTitle}</h3>
               <p className="landing-small">{c.docsText}</p>
             </div>
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/app/docs">
-                {c.secondary}
-                <ArrowRight aria-hidden="true" />
-              </Link>
-            </Button>
+            <Link to="/app/docs" className="landing-text-link">
+              {c.secondary}
+              <ArrowRight aria-hidden="true" />
+            </Link>
           </article>
         </Section>
       </section>
