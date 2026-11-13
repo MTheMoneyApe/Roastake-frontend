@@ -118,7 +118,7 @@ export const APP_NAV: NavGroup[] = [
     ],
   },
   {
-    label: "Coffee Economy / Demo",
+    label: "Coffee Experience / Demo",
     description: SCOPE_LABELS.demo,
     groupBadge: { label: "DEMO", variant: "demo" },
     items: [
@@ -151,6 +151,8 @@ export const APP_NAV: NavGroup[] = [
         },
       },
       { to: "/app/multichain", label: "Multi-chain Overview", icon: Globe },
+      { to: "/cart", label: "Coffee Cart", icon: ShoppingBag },
+      { to: "/checkout", label: "Checkout", icon: Wallet },
     ],
   },
   {
@@ -194,11 +196,8 @@ export const ROADMAP_NAV: NavGroup = {
 
 // One concise information architecture for the public header and footer at every size.
 export const PUBLIC_NAV: NavItem[] = [
-  { to: "/", label: "Coffee Economy", icon: Coffee },
-  { to: "/app/perps", label: "Testnet Markets", icon: ChartCandlestick },
-  { to: "/app/assets", label: "Coffee Assets demo", icon: Wheat },
-  { to: "/roadmap", label: "Roadmap", icon: BookOpen },
-  { to: "/app/docs", label: "Documentation", icon: BookOpen },
+  // One public entry point opens the application; destinations live in its shared sidebar.
+  { to: "/app/perps", label: "Launch App", icon: ChartCandlestick },
 ];
 
 export const DOCUMENTATION_DESCRIPTION =
