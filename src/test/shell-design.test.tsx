@@ -3,10 +3,13 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ADMIN_NAV, AppShell, PublicShell, ROASTER_NAV } from "@/components/shell";
 import { ThemeProvider, THEME_STORAGE_KEY } from "@/components/theme-provider";
+import { PUBLIC_NAV, SCOPE_LABELS } from "@/lib/navigation";
+import { ModulePage } from "@/components/module-page";
 
 const location = vi.hoisted(() => ({ pathname: "/app/assets" }));
 
 vi.mock("@tanstack/react-router", () => ({
+  useParams: () => ({}),
   useRouterState: ({ select }: { select: (state: { location: typeof location }) => unknown }) =>
     select({ location }),
   Link: ({
@@ -27,8 +30,9 @@ vi.mock("@tanstack/react-router", () => ({
         to,
       )}
       onClick={(event) => {
-        event.preventDefault();
+        // Like TanStack Link, run the caller's handler before preventing SPA navigation.
         onClick?.(event);
+        event.preventDefault();
       }}
     >
       {children}
@@ -164,12 +168,12 @@ describe("Shared brand shells", () => {
       "page",
     );
     const quickNav = screen.getByRole("navigation", { name: "Quick sections" });
-    expect(within(quickNav).getByRole("link", { name: "Trade" })).toHaveAttribute(
+    expect(within(quickNav).getByRole("link", { name: "Testnet" })).toHaveAttribute(
       "aria-current",
       "page",
     );
     expect(quickNav.className).toContain("safe-area-inset-bottom");
-    const disclosure = screen.getByRole("button", { name: "Labs & Preview" });
+    const disclosure = screen.getByRole("button", { name: "Roadmap / Planned" });
     expect(disclosure).toHaveAttribute("aria-expanded", "false");
     const target = document.getElementById(disclosure.getAttribute("aria-controls")!);
     expect(target).toHaveAttribute("hidden");
@@ -218,9 +222,10 @@ describe("Shared brand shells", () => {
     }
     const desktopNav = screen.getByRole("navigation", { name: "Main navigation" });
     expect(desktopNav).toHaveClass("xl:flex");
-    const expectedLinks = within(desktopNav)
-      .getAllByRole("link")
-      .map((link) => link.getAttribute("href"));
+    for (const label of Object.values(SCOPE_LABELS)) {
+      expect(within(desktopNav).getByRole("button", { name: label })).toBeInTheDocument();
+    }
+    const expectedLinks = PUBLIC_NAV.flatMap((group) => group.items.map((item) => item.to));
     const trigger = screen.getByRole("button", { name: "Open navigation menu" });
     trigger.focus();
     fireEvent.click(trigger);
@@ -231,14 +236,128 @@ describe("Shared brand shells", () => {
       within(drawerNav)
         .getAllByRole("link")
         .map((link) => link.getAttribute("href")),
-    ).toEqual([...expectedLinks, "/orders"]);
-    expect(within(drawerNav).getByRole("link", { name: "Market" })).toHaveAttribute(
+    ).toEqual(expectedLinks);
+    expect(within(drawerNav).getByRole("link", { name: "Marketplace" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    fireEvent.click(within(drawerNav).getByRole("link", { name: "Coffee Assets" }));
+    fireEvent.click(within(drawerNav).getByRole("link", { name: "Asset Explorer" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();
+  });
+
+  it("opens the public desktop status dropdown and keeps its links scoped to the selected group", async () => {
+    render(
+      <PublicShell>
+        <h1>Home</h1>
+      </PublicShell>,
+    );
+    const desktop = screen.getByRole("navigation", { name: "Main navigation" });
+    fireEvent.keyDown(within(desktop).getByRole("button", { name: SCOPE_LABELS.live }), {
+      key: "Enter",
+    });
+    const menu = await screen.findByRole("menu");
+    expect(
+      within(menu)
+        .getAllByRole("menuitem")
+        .map((link) => link.getAttribute("href")),
+    ).toEqual(PUBLIC_NAV[0].items.map((item) => item.to));
+    expect(within(menu).getByRole("menuitem", { name: "RHEA Mini Swap" })).toHaveAttribute(
+      "href",
+      "/app/swap",
+    );
+    expect(within(menu).queryByText("Vaults")).not.toBeInTheDocument();
+    fireEvent.click(within(menu).getByRole("menuitem", { name: "OutLayer Oracle" }));
+    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+  });
+
+  it("audits footer destinations against the same public status groups", () => {
+    render(
+      <PublicShell>
+        <h1>Home</h1>
+      </PublicShell>,
+    );
+    const footer = screen.getByRole("contentinfo");
+    for (const label of Object.values(SCOPE_LABELS))
+      expect(within(footer).getByText(label)).toBeInTheDocument();
+    expect(
+      within(footer)
+        .getAllByRole("link")
+        .filter((link) => link.getAttribute("aria-label") !== "ROASTAKE home")
+        .map((link) => link.getAttribute("href")),
+    ).toEqual(PUBLIC_NAV.flatMap((group) => group.items.map((item) => item.to)));
+    expect(within(footer).getByText(/OutLayer oracle does not power Perps/)).toBeInTheDocument();
+  });
+
+  it.each([
+    { path: "/app/perps/COL-G", scope: "live", text: /operator-controlled synthetic prices/ },
+    {
+      path: "/app/swap",
+      scope: "live",
+      text: /real NEAR Testnet transactions using non-monetary test tokens/,
+    },
+    { path: "/app/oracle", scope: "live", text: /does not power Perps/ },
+    { path: "/app/assets/demo-lot", scope: "demo", text: /browser-only illustrations/ },
+    {
+      path: "/app/governance/proposals/preview",
+      scope: "planned",
+      text: /not deployed or operational/,
+    },
+  ])("discloses implementation status on the $path route surface", ({ path, scope, text }) => {
+    location.pathname = path;
+    render(
+      <AppShell>
+        <h1>Route content preserved</h1>
+      </AppShell>,
+    );
+    const notice = screen.getByRole("complementary", { name: "Implementation status" });
+    expect(notice).toHaveAttribute("data-scope", scope);
+    expect(within(notice).getByText(text)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Route content preserved" })).toBeInTheDocument();
+  });
+
+  it("labels public generic module surfaces as roadmap previews and keeps the module content reachable", () => {
+    location.pathname = "/subscriptions";
+    render(
+      <PublicShell>
+        <ModulePage path="/subscriptions" />
+      </PublicShell>,
+    );
+    expect(screen.getByRole("complementary", { name: "Implementation status" })).toHaveAttribute(
+      "data-scope",
+      "planned",
+    );
+    expect(screen.getByRole("heading", { name: "Subscriptions" })).toBeInTheDocument();
+    expect(screen.getByText("ROADMAP / PLANNED")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Explore the roadmap" })).toHaveAttribute(
+      "href",
+      "/roadmap",
+    );
+    expect(
+      screen.getByText(/No live smart contracts, deposits, yields, votes or transactions/),
+    ).toBeInTheDocument();
+  });
+
+  it("marks only the deepest planned destination current in the sidebar", () => {
+    location.pathname = "/app/governance/proposals/illustrative-preview";
+    render(
+      <AppShell>
+        <h1>Proposal preview</h1>
+      </AppShell>,
+    );
+    const sidebar = screen.getByRole("navigation", { name: "Protocol sections" });
+    expect(within(sidebar).getByRole("link", { name: "Governance Proposals" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(within(sidebar).getByRole("link", { name: "Governance" })).not.toHaveAttribute(
+      "aria-current",
+    );
+    const quick = screen.getByRole("navigation", { name: "Quick sections" });
+    expect(within(quick).getByRole("link", { name: "Roadmap" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   });
 
   it("opens the selected preview group without changing its hierarchy", () => {
@@ -248,7 +367,7 @@ describe("Shared brand shells", () => {
         <h1>Vaults</h1>
       </AppShell>,
     );
-    expect(screen.getByRole("button", { name: "Labs & Preview" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "Roadmap / Planned" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );

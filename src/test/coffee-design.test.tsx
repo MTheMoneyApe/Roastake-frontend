@@ -82,13 +82,13 @@ describe("shared coffee presentation and accessible controls", () => {
     expect(cards.length).toBe(getDemo().lots.length);
     for (const card of cards) {
       expect(card).toHaveClass("brand-surface", "min-w-0");
-      expect(card.firstElementChild).toHaveClass("flex-wrap");
+      expect(within(card).getByText(/ILLUSTRATIVE LOT · NOT VERIFIED/)).toBeInTheDocument();
       expect(
         within(card).getByRole("link", { name: getDemo().lots[cards.indexOf(card)].name }),
       ).toHaveClass("focus-visible:ring-2");
       for (const label of [
         "Token supply",
-        "Physical recorded",
+        "Illustrative physical quantity",
         "Encumbered",
         "Redemption reserves",
       ]) {
@@ -103,8 +103,12 @@ describe("shared coffee presentation and accessible controls", () => {
     const { container } = render(<Home />);
     expect(screen.getByRole("heading", { level: 1, name: "ROASTAKE" })).toBeInTheDocument();
     expect(container.querySelector(".dark")).toBeNull();
-    expect(screen.getByText(/Specialty Coffee × Decentralized Finance/).parentElement).toHaveClass(
-      "min-h-[min(78dvh,52rem)]",
+    expect(
+      screen.getByText(/Specialty Coffee × Decentralized Finance/).parentElement?.parentElement,
+    ).toHaveClass("md:min-h-[min(78dvh,52rem)]");
+    expect(container.querySelector('img[fetchpriority="high"]')).toHaveAttribute(
+      "loading",
+      "eager",
     );
     expect(screen.getByText(/not verified physical coffee or live commerce/)).toBeInTheDocument();
     expect(screen.getByText(/No Mainnet deployment, real-money trading/)).toBeInTheDocument();

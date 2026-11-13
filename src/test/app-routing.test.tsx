@@ -8,14 +8,11 @@ function collectRoutes(groups: typeof APP_NAV) {
 }
 
 describe("M04.6 navigation and application routing", () => {
-  it("preserves the exact NEAR-first APP_NAV group hierarchy and ordering", () => {
+  it("separates live Testnet, illustrative demos and planned modules in that order", () => {
     expect(APP_NAV.map((group) => group.label)).toEqual([
-      "Overview",
-      "Trade",
-      "Portfolio",
-      "Coffee",
-      "Labs & Preview",
-      "Protocol",
+      "Live on NEAR Testnet",
+      "Demo / Illustrative",
+      "Roadmap / Planned",
     ]);
 
     const flatPaths = collectRoutes(APP_NAV);
@@ -23,11 +20,14 @@ describe("M04.6 navigation and application routing", () => {
     expect(flatPaths.indexOf("/app/wallet")).toBeLessThan(flatPaths.indexOf("/market"));
     expect(flatPaths.indexOf("/app/assets")).toBeLessThan(flatPaths.indexOf("/app/vaults"));
     expect(flatPaths.indexOf("/app/vaults")).toBeLessThan(flatPaths.indexOf("/app/governance"));
-    expect(flatPaths.indexOf("/app/governance")).toBeLessThan(flatPaths.indexOf("/app/oracle"));
+    expect(flatPaths.indexOf("/app/oracle")).toBeLessThan(flatPaths.indexOf("/market"));
+    expect(flatPaths.indexOf("/app/swap")).toBeLessThan(flatPaths.indexOf("/app/vaults"));
 
-    // Secondary operational portals are removed from main APP_NAV sidebar.
-    expect(flatPaths).not.toContain("/admin");
-    expect(flatPaths).not.toContain("/roaster/dashboard");
+    // Generic operational portal previews are reachable, but belong only to the roadmap.
+    const planned = APP_NAV.find((group) => group.label === "Roadmap / Planned")!;
+    expect(planned.items.map((item) => item.to)).toEqual(
+      expect.arrayContaining(["/admin", "/roaster/dashboard"]),
+    );
   });
 
   it("resolves every navigation route across main nav, portals, and core app/coffee routes", () => {

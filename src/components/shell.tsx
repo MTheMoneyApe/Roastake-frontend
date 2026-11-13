@@ -1,35 +1,22 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
-  Activity,
   Bell,
   BookOpen,
-  Briefcase,
-  Building2,
   ChartCandlestick,
   Coffee,
-  Coins,
   Flame,
-  Gauge,
-  Globe,
-  Landmark,
   Layers,
   LayoutDashboard,
   Menu,
   Package,
   PieChart,
-  RefreshCw,
-  Repeat,
-  Scale,
   Settings,
-  ShieldAlert,
   ShoppingBag,
   Sparkles,
-  Sprout,
   Store,
   Truck,
   Users,
-  Vote,
   Wallet,
   Wheat,
 } from "lucide-react";
@@ -55,130 +42,28 @@ import type { Role } from "@/lib/demo/types";
 import { cn } from "@/lib/utils";
 import { WalletHubHeaderButton } from "@/components/wallet/wallet-hub";
 import { SimulatedDemoNetworkSelect } from "@/components/wallet/wallet-pages";
-import { DemoBadge, MaturityBadge, type MaturityVariant } from "./kit";
+import { DemoBadge, MaturityBadge } from "./kit";
 import { ThemeToggle } from "@/components/theme-provider";
 
-type NavBadge = { label: string; variant: MaturityVariant; title?: string };
-type Item = { to: string; label: string; icon: typeof Coffee; badge?: NavBadge };
-type Group = {
-  label: string;
-  groupBadge?: NavBadge;
-  items: Item[];
-  collapsible?: boolean;
-  defaultCollapsed?: boolean;
-};
-
-export const APP_NAV: Group[] = [
-  {
-    label: "Overview",
-    items: [{ to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard }],
-  },
-  {
-    label: "Trade",
-    items: [
-      {
-        to: "/app/perps",
-        label: "Perpetuals",
-        icon: ChartCandlestick,
-        badge: {
-          label: "TESTNET",
-          variant: "testnet",
-          title:
-            "Three registered NEAR Testnet markets (Arabica, Robusta & Gesha) on perps-v1.roastake-dev-mta.testnet; operator-controlled synthetic prices.",
-        },
-      },
-      { to: "/app/markets", label: "Spot Markets", icon: Gauge },
-      { to: "/app/positions", label: "Positions", icon: Layers },
-      { to: "/app/market-analytics", label: "Market Analytics", icon: PieChart },
-    ],
-  },
-  {
-    label: "Portfolio",
-    items: [
-      {
-        to: "/app/wallet",
-        label: "Wallet",
-        icon: Wallet,
-        badge: {
-          label: "TESTNET",
-          variant: "testnet",
-          title:
-            "Genuine wallet connections restricted to NEAR Testnet, EVM testnets, Solana Devnet and Hyperliquid Testnet; no Mainnet execution.",
-        },
-      },
-      { to: "/app/activity", label: "Activity", icon: RefreshCw },
-    ],
-  },
-  {
-    label: "Coffee",
-    items: [
-      {
-        to: "/market",
-        label: "Marketplace",
-        icon: ShoppingBag,
-        badge: { label: "DEMO", variant: "demo", title: "Simulated coffee marketplace" },
-      },
-      { to: "/orders", label: "Orders", icon: Truck },
-      { to: "/app/assets", label: "Asset Explorer", icon: Wheat },
-      { to: "/app/coffee-passport", label: "Coffee Passport", icon: BookOpen },
-      { to: "/app/roast", label: "Roasting Lab", icon: Flame },
-      { to: "/app/redeem", label: "Redeem", icon: Package },
-      { to: "/app/swap", label: "Swap", icon: Repeat },
-    ],
-  },
-  {
-    label: "Labs & Preview",
-    groupBadge: {
-      label: "PREVIEW",
-      variant: "preview",
-      title: "Planned modules - not yet deployed",
-    },
-    collapsible: true,
-    defaultCollapsed: true,
-    items: [
-      { to: "/app/vaults", label: "Vaults", icon: Landmark },
-      { to: "/app/staking", label: "Staking", icon: Coins },
-      { to: "/app/farming", label: "Farming", icon: Sprout },
-      { to: "/app/lending", label: "Lending", icon: Scale },
-      { to: "/app/borrowing", label: "Borrowing", icon: Wallet },
-      { to: "/app/governance", label: "Governance", icon: Vote },
-      { to: "/app/treasury", label: "Treasury", icon: Building2 },
-      { to: "/app/ventures", label: "Coffee Ventures", icon: Briefcase },
-      {
-        to: "/app/risk-center",
-        label: "Risk Center",
-        icon: ShieldAlert,
-        badge: { label: "PREVIEW", variant: "preview" },
-      },
-    ],
-  },
-  {
-    label: "Protocol",
-    items: [
-      {
-        to: "/app/oracle",
-        label: "Coffee Oracle",
-        icon: Activity,
-        badge: {
-          label: "TESTNET",
-          variant: "testnet",
-          title: "Live NEAR Testnet read-only oracle",
-        },
-      },
-      { to: "/app/multichain", label: "Multi-chain", icon: Globe },
-      { to: "/app/docs", label: "Documentation", icon: BookOpen },
-    ],
-  },
-];
+import {
+  APP_NAV,
+  PUBLIC_NAV,
+  SCOPE_LABELS,
+  SCOPE_DESCRIPTIONS,
+  getRouteScope,
+  getRouteScopeDescription,
+  type NavGroup as Group,
+} from "@/lib/navigation";
+export { APP_NAV } from "@/lib/navigation";
 
 export const ROASTER_NAV: Group[] = [
   {
     label: "Roaster Portal",
+    description: SCOPE_DESCRIPTIONS.planned,
     groupBadge: {
-      label: "PREVIEW",
+      label: "PLANNED",
       variant: "preview",
-      title:
-        "Preview screens only; no real roaster onboarding, inventory, storefront or payments are connected.",
+      title: SCOPE_DESCRIPTIONS.planned,
     },
     items: [
       ["dashboard", "Overview", LayoutDashboard],
@@ -222,11 +107,11 @@ export const ADMIN_SECTIONS: [string, string][] = [
 export const ADMIN_NAV: Group[] = [
   {
     label: "Admin",
+    description: SCOPE_DESCRIPTIONS.planned,
     groupBadge: {
-      label: "DEMO",
-      variant: "demo",
-      title:
-        "Local demonstration UI only; no production admin authorization or operational controls are connected.",
+      label: "PLANNED",
+      variant: "preview",
+      title: SCOPE_DESCRIPTIONS.planned,
     },
     items: [
       { to: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -369,7 +254,7 @@ function Profile() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs text-muted-foreground">
-          Portals (Preview)
+          Portals (Roadmap / Planned)
         </DropdownMenuLabel>
         <DropdownMenuItem asChild>
           <Link to="/roaster/$section" params={{ section: "dashboard" }}>
@@ -396,12 +281,12 @@ function Controls() {
   return (
     <div className="flex items-center gap-1.5">
       <Link
-        to="/app/multichain"
+        to="/app/perps"
         className="hidden items-center gap-1.5 rounded-full border border-primary/20 bg-accent px-2.5 py-1 text-[11px] font-medium text-accent-foreground transition-colors hover:bg-accent/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 2xl:inline-flex"
-        title="NEAR Testnet is ROASTAKE's primary execution network. Perpetuals, Oracle and RHEA Testnet swap integrations are deployed; prices and coffee inventory remain synthetic or simulated."
+        title="NEAR Testnet execution with non-monetary test tokens. Perps prices are operator-controlled and synthetic; OutLayer is separate and read-only."
       >
         <Sparkles className="size-3" aria-hidden="true" />
-        <span>NEAR Testnet · Primary Network</span>
+        <span>NEAR Testnet · Test tokens only</span>
       </Link>
       <ThemeToggle />
       <Notifications />
@@ -411,17 +296,13 @@ function Controls() {
   );
 }
 
-function NavList({
-  groups,
-  onNav,
-  showPortals = false,
-}: {
-  groups: Group[];
-  onNav?: () => void;
-  showPortals?: boolean;
-}) {
+function NavList({ groups, onNav }: { groups: Group[]; onNav?: () => void }) {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const navId = useId();
+  const activeTo = groups
+    .flatMap((group) => group.items)
+    .filter((item) => path === item.to || (item.to !== "/admin" && path.startsWith(item.to + "/")))
+    .sort((a, b) => b.to.length - a.to.length)[0]?.to;
   const [collapsed, setCollapsed] = useState<Set<string>>(
     () => new Set(groups.filter((g) => g.collapsible && g.defaultCollapsed).map((g) => g.label)),
   );
@@ -478,13 +359,18 @@ function NavList({
                 </MaturityBadge>
               )}
             </div>
+            {g.description && !isCollapsed && (
+              <p className="mb-2 px-3 text-[11px] leading-relaxed text-sidebar-foreground/80">
+                {g.description}
+              </p>
+            )}
             <ul
               id={`${navId}-group-${groupIndex}`}
               hidden={Boolean(isCollapsed)}
               className="space-y-0.5"
             >
               {g.items.map((i) => {
-                const active = path === i.to || (i.to !== "/admin" && path.startsWith(i.to + "/"));
+                const active = activeTo === i.to;
                 return (
                   <li key={i.to}>
                     <Link
@@ -509,6 +395,7 @@ function NavList({
                         <MaturityBadge
                           variant={i.badge.variant}
                           className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-accent-foreground"
+                          title={i.badge.title}
                           aria-label={i.badge.title}
                         >
                           {i.badge.label}
@@ -522,56 +409,9 @@ function NavList({
           </div>
         );
       })}
-      {showPortals && (
-        <div className="border-t border-sidebar-border pt-4">
-          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground">
-            Portals (Preview)
-          </p>
-          <ul className="space-y-0.5">
-            <li>
-              <Link
-                to="/roaster/$section"
-                params={{ section: "dashboard" }}
-                onClick={onNav}
-                className="flex min-h-9 items-center gap-2.5 rounded-md px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-              >
-                <Store className="size-4 shrink-0" aria-hidden="true" />
-                <span>Roaster Portal</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin"
-                onClick={onNav}
-                className="flex min-h-9 items-center gap-2.5 rounded-md px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-              >
-                <Settings className="size-4 shrink-0" aria-hidden="true" />
-                <span>Admin Console</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      )}
     </nav>
   );
 }
-
-const MOBILE_TRADE_PATHS = new Set([
-  "/app/perps",
-  "/app/markets",
-  "/app/positions",
-  "/app/market-analytics",
-]);
-const MOBILE_COFFEE_PATHS = new Set([
-  "/market",
-  "/orders",
-  "/app/assets",
-  "/app/coffee-passport",
-  "/app/roast",
-  "/app/redeem",
-  "/app/swap",
-]);
-const MOBILE_PORTFOLIO_PATHS = new Set(["/app/wallet", "/app/activity"]);
 
 export function AppShell({
   children,
@@ -588,38 +428,26 @@ export function AppShell({
   const isMainAppNav = nav === APP_NAV;
   const currentPage = nav
     .flatMap((group) => group.items)
-    .find((item) => path === item.to || (item.to !== "/admin" && path.startsWith(item.to + "/")));
+    .filter((item) => path === item.to || (item.to !== "/admin" && path.startsWith(item.to + "/")))
+    .sort((a, b) => b.to.length - a.to.length)[0];
   const workspaceLabel = isMainAppNav ? "Protocol App" : nav[0].label;
 
   const mobileItems = isMainAppNav
     ? [
         {
-          to: "/app/dashboard",
-          label: "Overview",
-          icon: LayoutDashboard,
-          active: path === "/app/dashboard",
-        },
-        {
           to: "/app/perps",
-          label: "Trade",
+          label: "Testnet",
           icon: ChartCandlestick,
-          active: path.startsWith("/app/perps") || MOBILE_TRADE_PATHS.has(path),
+          active: getRouteScope(path) === "live" && path !== "/app/wallet",
         },
+        { to: "/app/assets", label: "Demo", icon: Coffee, active: getRouteScope(path) === "demo" },
         {
-          to: "/app/assets",
-          label: "Coffee",
-          icon: Coffee,
-          active:
-            path.startsWith("/app/assets") ||
-            path.startsWith("/market") ||
-            MOBILE_COFFEE_PATHS.has(path),
+          to: "/roadmap",
+          label: "Roadmap",
+          icon: BookOpen,
+          active: getRouteScope(path) === "planned",
         },
-        {
-          to: "/app/wallet",
-          label: "Portfolio",
-          icon: Wallet,
-          active: MOBILE_PORTFOLIO_PATHS.has(path),
-        },
+        { to: "/app/wallet", label: "Wallet", icon: Wallet, active: path === "/app/wallet" },
       ]
     : nav[0].items.slice(0, 4).map((item) => ({
         to: item.to,
@@ -657,7 +485,7 @@ export function AppShell({
           <div className="mb-5 flex min-h-10 items-center pr-8">
             <Logo to={home} onNav={() => setOpen(false)} />
           </div>
-          <NavList groups={nav} showPortals={isMainAppNav} onNav={() => setOpen(false)} />
+          <NavList groups={nav} onNav={() => setOpen(false)} />
         </SheetContent>
         <div className="min-w-0 lg:pl-64">
           <header className="brand-header sticky top-0 z-20 backdrop-blur">
@@ -716,6 +544,7 @@ export function AppShell({
             tabIndex={-1}
             className="brand-page min-w-0 pb-[calc(6rem+env(safe-area-inset-bottom))] focus-visible:outline-none lg:pb-10"
           >
+            <ScopeNotice />
             {children}
           </main>
         </div>
@@ -758,14 +587,97 @@ export function AppShell({
   );
 }
 
-const PUBLIC_LINKS = [
-  ["/market", "Market"],
-  ["/roasters", "Roasters"],
-  ["/app/assets", "Coffee Assets"],
-  ["/app/coffee-passport", "Passport"],
-  ["/app/perps", "Perpetuals · Testnet"],
-  ["/app/dashboard", "Protocol App"],
-] as const;
+function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
+  const path = useRouterState({ select: (r) => r.location.pathname });
+  const scope = getRouteScope(path);
+  return (
+    <aside
+      aria-label="Implementation status"
+      data-scope={scope}
+      className={cn(
+        "mb-6 rounded-xl border bg-muted/50 px-4 py-3 text-sm",
+        publicPage && "brand-container mt-6",
+      )}
+    >
+      <p className="font-semibold">{SCOPE_LABELS[scope]}</p>
+      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+        {getRouteScopeDescription(path)}
+      </p>
+    </aside>
+  );
+}
+
+function PublicNavigation({ mobile = false, onNav }: { mobile?: boolean; onNav?: () => void }) {
+  const path = useRouterState({ select: (r) => r.location.pathname });
+  return (
+    <nav
+      aria-label="Main navigation"
+      className={mobile ? "space-y-6" : "hidden items-center gap-1 xl:flex"}
+    >
+      {PUBLIC_NAV.map((group) => {
+        const activeGroup = group.items.some(({ to }) => path === to || path.startsWith(to + "/"));
+        const links = group.items.map(({ to, label }) => {
+          const active = path === to || path.startsWith(to + "/");
+          const link = (
+            <Link
+              key={to}
+              to={to}
+              onClick={onNav}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex min-h-10 items-center rounded-md px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                active
+                  ? "bg-accent font-semibold text-accent-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              {label}
+            </Link>
+          );
+          return mobile ? (
+            link
+          ) : (
+            <DropdownMenuItem key={to} asChild>
+              {link}
+            </DropdownMenuItem>
+          );
+        });
+        if (mobile)
+          return (
+            <section key={group.label} aria-label={group.label}>
+              <h2 className="px-3 text-xs font-semibold">{group.label}</h2>
+              <p className="px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                {group.description}
+              </p>
+              {links}
+            </section>
+          );
+        return (
+          <DropdownMenu key={group.label}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn("gap-1.5 text-xs", activeGroup && "bg-accent text-accent-foreground")}
+              >
+                {group.label}
+                <span aria-hidden="true">⌄</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="max-h-[75vh] w-80 overflow-y-auto">
+              <DropdownMenuLabel className="whitespace-normal text-xs font-normal leading-relaxed text-muted-foreground">
+                {group.description}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {links}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function PublicShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const cart = useDemo((s) => s.cart.reduce((a, c) => a + c.qty, 0));
@@ -778,31 +690,15 @@ export function PublicShell({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <div className="border-b border-warning-foreground/30 bg-warning px-4 py-1.5 text-center text-[10px] font-medium leading-relaxed tracking-wide text-warning-foreground sm:text-[11px]">
-          ROASTAKE Testnet prototype · marketplace, coffee inventory, demo balances & yields are
-          simulated; Perps and RHEA swaps use NEAR Testnet transactions.
+          NEAR Testnet prototype · Perps prices are operator-controlled and synthetic; RHEA uses
+          non-monetary test tokens. Marketplace, coffee backing, balances &amp; yields are
+          illustrative.
         </div>
         <header className="brand-header sticky top-0 z-30 backdrop-blur">
           <div className="brand-container flex min-h-16 min-w-0 items-center justify-between gap-2 sm:gap-4">
             <div className="flex min-w-0 items-center gap-6">
               <Logo compact />
-              <nav aria-label="Main navigation" className="hidden items-center gap-4 xl:flex">
-                {PUBLIC_LINKS.map(([to, label]) => {
-                  const active = path === to || path.startsWith(to + "/");
-                  return (
-                    <Link
-                      key={to}
-                      to={to}
-                      aria-current={active ? "page" : undefined}
-                      className={cn(
-                        "whitespace-nowrap rounded-sm py-2 text-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        active ? "font-medium text-foreground" : "text-muted-foreground",
-                      )}
-                    >
-                      {label}
-                    </Link>
-                  );
-                })}
-              </nav>
+              <PublicNavigation />
             </div>
             <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
               <ThemeToggle />
@@ -845,29 +741,10 @@ export function PublicShell({ children }: { children: ReactNode }) {
           <div className="mb-8 pr-8">
             <Logo onNav={() => setOpen(false)} />
           </div>
-          <nav aria-label="Main navigation" className="space-y-1">
-            {[...PUBLIC_LINKS, ["/orders", "Orders"] as const].map(([to, label]) => {
-              const active = path === to || path.startsWith(to + "/");
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  onClick={() => setOpen(false)}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "flex min-h-11 items-center rounded-lg px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    active
-                      ? "bg-accent font-semibold text-accent-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
+          <PublicNavigation mobile onNav={() => setOpen(false)} />
         </SheetContent>
         <main id="main-content" tabIndex={-1} className="min-w-0 focus-visible:outline-none">
+          <ScopeNotice publicPage />
           {children}
         </main>
         <footer className="mt-20 bg-feature text-feature-foreground">
@@ -877,51 +754,25 @@ export function PublicShell({ children }: { children: ReactNode }) {
               <p className="mt-2 text-sm text-feature-muted">Roast. Stake. Repeat.</p>
               <p className="mt-4 text-xs text-feature-muted">
                 A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions
-                using non-monetary test tokens. Marketplace orders, inventory, coffee custody, demo
-                balances and yields are simulated; no verified physical backing, real shipments or
-                Mainnet deployment.
+                using non-monetary test tokens. Perps prices are operator-controlled and synthetic;
+                the separate read-only OutLayer oracle does not power Perps. Marketplace orders,
+                inventory, coffee custody, demo balances and yields are simulated; no verified
+                physical backing, real shipments or Mainnet deployment.
               </p>
             </div>
-            {[
-              [
-                "Shop",
-                [
-                  ["/market", "Marketplace"],
-                  ["/roasters", "Roasters"],
-                  ["/discovery-boxes", "Discovery boxes"],
-                  ["/subscriptions", "Subscriptions"],
-                  ["/wholesale", "Wholesale"],
-                ],
-              ],
-              [
-                "Protocol",
-                [
-                  ["/app/assets", "Coffee assets"],
-                  ["/app/vaults", "Vaults"],
-                  ["/app/perps", "Perpetuals"],
-                  ["/app/governance", "Governance"],
-                  ["/app/ventures", "Ventures"],
-                ],
-              ],
-              [
-                "Resources",
-                [
-                  ["/app/docs", "Documentation"],
-                  ["/app/risk-center", "Risk disclosures"],
-                  ["/roaster/dashboard", "Roaster portal (preview)"],
-                  ["/admin", "Admin console (preview)"],
-                ],
-              ],
-            ].map(([t, ls]) => (
-              <div key={t as string}>
+            {PUBLIC_NAV.map((group) => (
+              <div key={group.label}>
                 <p className="mb-3 text-xs uppercase tracking-wider text-feature-highlight">
-                  {t as string}
+                  {group.label}
+                </p>
+                <p className="mb-4 text-xs leading-relaxed text-feature-muted">
+                  {group.description}
                 </p>
                 <ul className="space-y-1.5 text-sm">
-                  {(ls as string[][]).map(([to, l]) => (
+                  {group.items.map(({ to, label }) => (
                     <li key={to}>
                       <Link to={to} className="text-feature-muted hover:text-feature-foreground">
-                        {l}
+                        {label}
                       </Link>
                     </li>
                   ))}

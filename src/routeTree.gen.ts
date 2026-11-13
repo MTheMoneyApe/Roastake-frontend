@@ -14,6 +14,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as DiscoveryBoxesRouteImport } from './routes/discovery-boxes'
 import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as WholesaleRouteImport } from './routes/wholesale'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -82,6 +83,11 @@ const DiscoveryBoxesRoute = DiscoveryBoxesRouteImport.update({
 const OrdersRoute = OrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubscriptionsRoute = SubscriptionsRouteImport.update({
@@ -313,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/discovery-boxes': typeof DiscoveryBoxesRoute
   '/orders': typeof OrdersRoute
+  '/roadmap': typeof RoadmapRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/wholesale': typeof WholesaleRoute
   '/admin/$section': typeof AdminSectionRoute
@@ -364,6 +371,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/discovery-boxes': typeof DiscoveryBoxesRoute
   '/orders': typeof OrdersRoute
+  '/roadmap': typeof RoadmapRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/wholesale': typeof WholesaleRoute
   '/admin/$section': typeof AdminSectionRoute
@@ -416,6 +424,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/discovery-boxes': typeof DiscoveryBoxesRoute
   '/orders': typeof OrdersRoute
+  '/roadmap': typeof RoadmapRoute
   '/subscriptions': typeof SubscriptionsRoute
   '/wholesale': typeof WholesaleRoute
   '/admin/$section': typeof AdminSectionRoute
@@ -469,6 +478,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/discovery-boxes'
     | '/orders'
+    | '/roadmap'
     | '/subscriptions'
     | '/wholesale'
     | '/admin/$section'
@@ -520,6 +530,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/discovery-boxes'
     | '/orders'
+    | '/roadmap'
     | '/subscriptions'
     | '/wholesale'
     | '/admin/$section'
@@ -571,6 +582,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/discovery-boxes'
     | '/orders'
+    | '/roadmap'
     | '/subscriptions'
     | '/wholesale'
     | '/admin/$section'
@@ -623,6 +635,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   DiscoveryBoxesRoute: typeof DiscoveryBoxesRoute
   OrdersRoute: typeof OrdersRoute
+  RoadmapRoute: typeof RoadmapRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
   WholesaleRoute: typeof WholesaleRoute
   AdminSectionRoute: typeof AdminSectionRoute
@@ -704,6 +717,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/subscriptions': {
@@ -1023,6 +1043,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   DiscoveryBoxesRoute: DiscoveryBoxesRoute,
   OrdersRoute: OrdersRoute,
+  RoadmapRoute: RoadmapRoute,
   SubscriptionsRoute: SubscriptionsRoute,
   WholesaleRoute: WholesaleRoute,
   AdminSectionRoute: AdminSectionRoute,

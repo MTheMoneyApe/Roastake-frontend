@@ -109,7 +109,9 @@ function SyntheticOracleBanner({
           {logicalId && logicalId !== marketId ? ` (logical ID ${logicalId})` : ""} uses an
           operator-controlled synthetic feed on{" "}
           <code className="font-mono">{PERPS_CONTRACT_ID}</code> (NEAR Testnet) —
-          <strong>not</strong> a decentralized spot oracle or live futures quote.
+          <strong>not</strong> a decentralized spot oracle or live futures quote. These are
+          operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has
+          no monetary value.
         </p>
         <p className="text-foreground/90">{oracleStatus.detail}</p>
       </AlertDescription>
@@ -326,6 +328,10 @@ function LiveMarketOpenOrderForm({
       }
     >
       <div className="space-y-4">
+        <p className="rounded border bg-muted/40 px-2.5 py-2 text-xs text-muted-foreground">
+          Orders use operator-controlled synthetic Testnet references, not live coffee quotes.
+          Testnet USDC has no monetary value.
+        </p>
         <div
           role="tablist"
           aria-label="Order direction"
@@ -514,7 +520,8 @@ function LiveMarketOpenOrderForm({
             <p className="rounded border bg-muted/40 px-2.5 py-2 text-[11px] text-muted-foreground">
               {TESTNET_NON_MONETARY_NOTICE} Settlement prices derive from{" "}
               <code className="font-mono">TESTNET_SANDBOX_FEED</code> on{" "}
-              <code className="font-mono">{marketEntry.marketId}</code>.
+              <code className="font-mono">{marketEntry.marketId}</code>. These are
+              operator-controlled synthetic Testnet references, not live coffee quotes.
             </p>
           </div>
           <DialogFooter className="gap-2">
@@ -539,7 +546,6 @@ export function ThreeMarketPerpsIndex() {
   );
   const refreshAll = useRefreshPerpsQueries(near.accountId);
   const [latestTx, setLatestTx] = useState<NearUserTxRecord | null>(null);
-
 
   const getRegisteredMarket = (marketId: string) =>
     protocol?.markets.includes(marketId) ? getMarketFromProtocolSnapshot(protocol, marketId) : null;
@@ -573,7 +579,13 @@ export function ThreeMarketPerpsIndex() {
           : error
             ? "UNVERIFIED"
             : "CHECKING RPC",
-      registryVariant: isRegistered ? "real" as const : protocol ? "preview" as const : error ? "demo" as const : "testnet" as const,
+      registryVariant: isRegistered
+        ? ("real" as const)
+        : protocol
+          ? ("preview" as const)
+          : error
+            ? ("demo" as const)
+            : ("testnet" as const),
     };
   });
   const registeredMarketCount = marketCatalogStates.filter((state) => state.isRegistered).length;
@@ -591,11 +603,15 @@ export function ThreeMarketPerpsIndex() {
       <PageHeader
         demo={false}
         title="Coffee Index Perpetuals"
-        subtitle="NEAR Testnet Perpetuals contract explorer. Market registration and oracle state are read from finalized chain data; all sandbox prices are operator-controlled synthetic Testnet values."
+        subtitle="NEAR Testnet Perpetuals contract explorer. Market registration and oracle state are read from finalized chain data. Prices are operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has no monetary value."
         actions={
           <div className="flex flex-wrap items-center gap-2">
-                        <MaturityBadge variant={protocol ? "testnet" : error ? "demo" : "preview"}>
-              {protocol ? `${registeredMarketCount}/3 REGISTERED` : error ? "RPC UNAVAILABLE" : "CHECKING RPC"}
+            <MaturityBadge variant={protocol ? "testnet" : error ? "demo" : "preview"}>
+              {protocol
+                ? `${registeredMarketCount}/3 REGISTERED`
+                : error
+                  ? "RPC UNAVAILABLE"
+                  : "CHECKING RPC"}
             </MaturityBadge>
             <Button type="button" size="sm" variant="outline" onClick={() => void refreshAll()}>
               <RefreshCw className="mr-1.5 size-3.5" aria-hidden="true" />
@@ -611,7 +627,7 @@ export function ThreeMarketPerpsIndex() {
           <AlertTitle className="text-xs font-semibold">NEAR Testnet RPC Unavailable</AlertTitle>
           <AlertDescription className="mt-1 flex flex-wrap items-center justify-between gap-2 text-xs">
             <span>
-              {error.message} Live contract balances and market quotes are omitted cleanly.
+              {error.message} Current contract balances and synthetic references are unavailable.
             </span>
             <Button
               type="button"
@@ -704,7 +720,14 @@ export function ThreeMarketPerpsIndex() {
 
         <div className="grid gap-4 lg:grid-cols-3">
           {marketCatalogStates.map(
-            ({ entry, market: m, oracleStatus: entryOracleStatus, isRegistered, registryLabel, registryVariant }) => {
+            ({
+              entry,
+              market: m,
+              oracleStatus: entryOracleStatus,
+              isRegistered,
+              registryLabel,
+              registryVariant,
+            }) => {
               return (
                 <Panel
                   key={entry.urlSlug}
@@ -797,7 +820,10 @@ export function ThreeMarketPerpsIndex() {
                           ]}
                         />
                       )}
-                      <p className="text-[11px] text-muted-foreground">{entry.oracleNote}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Operator-controlled synthetic Testnet reference, not live coffee quotes.
+                        Testnet USDC has no monetary value. {entry.oracleNote}
+                      </p>
                     </div>
 
                     <Link
@@ -917,7 +943,13 @@ export function PerpsLiveMarketView({
       : protocolError
         ? "UNVERIFIED"
         : "CHECKING RPC";
-  const registryVariant = isRegistered ? "real" as const : protocol ? "preview" as const : protocolError ? "demo" as const : "testnet" as const;
+  const registryVariant = isRegistered
+    ? ("real" as const)
+    : protocol
+      ? ("preview" as const)
+      : protocolError
+        ? ("demo" as const)
+        : ("testnet" as const);
   const oracleStatus = evaluatePerpsOracleStatus(market, protocol?.blockTimestampSec ?? null);
 
   return (
@@ -930,7 +962,7 @@ export function PerpsLiveMarketView({
           marketEntry.logicalId !== marketEntry.marketId
             ? ` (logical ID ${marketEntry.logicalId})`
             : ""
-        } · NEAR Testnet Perpetuals Terminal`}
+        } · NEAR Testnet Perpetuals Terminal. Operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has no monetary value.`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <MaturityBadge variant={registryVariant}>{registryLabel}</MaturityBadge>
@@ -980,9 +1012,17 @@ export function PerpsLiveMarketView({
                 : "Unavailable"
           }
           sub={
-            oracleStatus.observedAtSec
-              ? `Seq #${oracleStatus.sequence ?? 0} · Age ${oracleStatus.ageSec ?? 0}s / ${oracleStatus.maxAgeSec}s`
-              : "No tick recorded"
+            <>
+              <span className="block">
+                Operator-controlled synthetic Testnet reference · not live coffee quotes.
+              </span>
+              <span className="block">Testnet USDC has no monetary value.</span>
+              <span className="block">
+                {oracleStatus.observedAtSec
+                  ? `Seq #${oracleStatus.sequence ?? 0} · Age ${oracleStatus.ageSec ?? 0}s / ${oracleStatus.maxAgeSec}s`
+                  : "No tick recorded"}
+              </span>
+            </>
           }
         />
         <Stat
@@ -1053,13 +1093,17 @@ export function PerpsLiveMarketView({
               <p className="text-xs text-muted-foreground">
                 Market <code className="font-mono">{marketEntry.marketId}</code> is not registered
                 on <code className="font-mono">{PERPS_CONTRACT_ID}</code>; order placement is
-                disabled until on-chain registration is verified.
+                disabled until on-chain registration is verified. Prices use operator-controlled
+                synthetic Testnet references, not live coffee quotes. Testnet USDC has no monetary
+                value.
               </p>
             </Panel>
           ) : (
             <Panel title="Open Position Order">
               <p className="text-xs text-muted-foreground">
-                Waiting for live market parameters from NEAR Testnet RPC...
+                Waiting for finalized market parameters from NEAR Testnet RPC. Prices use
+                operator-controlled synthetic Testnet references, not live coffee quotes. Testnet
+                USDC has no monetary value.
               </p>
             </Panel>
           )}

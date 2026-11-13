@@ -437,7 +437,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
       title={
         <span className="flex flex-wrap items-center gap-2">
           <LineChart className="size-4 text-primary" aria-hidden="true" />
-          <span>Verified On-Chain Oracle Chart · {targetMarketId}</span>
+          <span>Verified On-Chain Synthetic Reference Chart · {targetMarketId}</span>
         </span>
       }
       actions={
@@ -447,6 +447,11 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
       }
     >
       <div className="space-y-4">
+        <p className="rounded border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+          Operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has
+          no monetary value. Receipt verification does not verify market prices; it confirms
+          finalized Testnet events only. This chart is independent from OutLayer benchmarks.
+        </p>
         <ArabicaMarketChartToolbar
           status={status}
           snapshot={effectiveSnapshot}

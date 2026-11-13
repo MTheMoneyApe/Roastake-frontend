@@ -43,7 +43,11 @@ import {
   toIsoUtc,
 } from "@/lib/oracle/format";
 import { useOracleSnapshot } from "@/lib/oracle/queries";
-import { MARKET_ARABICA_PERPS_ID, MARKET_ARABICA_URL_SLUG, PERPS_CONTRACT_ID } from "@/lib/perps/config";
+import {
+  MARKET_ARABICA_PERPS_ID,
+  MARKET_ARABICA_URL_SLUG,
+  PERPS_CONTRACT_ID,
+} from "@/lib/perps/config";
 import { evaluatePerpsOracleStatus, formatUsdE8 } from "@/lib/perps/math";
 import { usePerpsProtocolSnapshot } from "@/lib/perps/queries";
 import type {
@@ -147,7 +151,7 @@ function TimestampDisplay({
 }
 
 /**
- * Self-contained live read-only NEAR Testnet Oracle card for the main dashboard.
+ * Self-contained read-only NEAR Testnet Oracle card for the main dashboard.
  * Completely independent from `useDemo()` simulated balances, lots, and positions.
  */
 export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contractId?: string }) {
@@ -157,6 +161,8 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
 
   const imfState = snapshot?.marketStates[MARKET_IMF_ARABICA];
   const geshaState = snapshot?.marketStates[MARKET_GESHA_DEMO];
+  const imfClass = classifyDataClass(imfState?.observation?.data_class);
+  const geshaClass = classifyDataClass(geshaState?.observation?.data_class);
   const imfFreshness =
     imfState && nowSec !== null
       ? evaluateFreshness(imfState.observation, imfState.config, nowSec)
@@ -209,6 +215,12 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
       </header>
 
       <div className="space-y-4 p-4 sm:p-5">
+        <p className="text-xs text-muted-foreground">
+          OutLayer read-only contract observations, independent from Perps and its execution feed.
+          Historical benchmarks and synthetic fixtures are not live coffee quotes; inspect the
+          recorded data class, source and observation time below. Refreshing RPC is not a new market
+          observation.
+        </p>
         {query.isPending && (
           <div
             className="grid gap-3 @lg:grid-cols-2"
@@ -226,8 +238,8 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
             <AlertDescription className="space-y-2">
               <p className="text-xs">{query.error.message}</p>
               <p className="text-xs text-muted-foreground">
-                Live oracle prices cannot be verified without RPC connectivity. No fallback or
-                simulated price is displayed.
+                Current stored observations cannot be verified without RPC connectivity. No fallback
+                or simulated price is displayed.
               </p>
             </AlertDescription>
           </Alert>
@@ -243,7 +255,9 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
                     <span className="font-mono text-xs font-semibold text-foreground">
                       {MARKET_IMF_ARABICA}
                     </span>
-                    <Pill tone="info">Monthly Public Benchmark</Pill>
+                    <Pill tone={imfClass.badgeTone}>
+                      {imfState?.observation ? imfClass.shortLabel : "No stored observation"}
+                    </Pill>
                   </div>
 
                   {imfState?.observation ? (
@@ -276,9 +290,13 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
                   <div className="flex justify-between gap-2">
                     <dt className="text-muted-foreground">Source</dt>
                     <dd className="num text-right">
-                      {imfState?.observation
-                        ? `${imfState.observation.source} (IMF PCPS)`
-                        : "Unavailable (no stored observation)"}
+                      {imfState?.observation?.source ?? "Unavailable (no stored observation)"}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-muted-foreground">Data class</dt>
+                    <dd className="num text-right">
+                      {imfState?.observation?.data_class ?? "Unavailable"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-2">
@@ -303,7 +321,9 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
                     <span className="font-mono text-xs font-semibold text-foreground">
                       {MARKET_GESHA_DEMO}
                     </span>
-                    <Pill tone="warn">Synthetic Demo Fixture</Pill>
+                    <Pill tone={geshaClass.badgeTone}>
+                      {geshaState?.observation ? geshaClass.label : "No stored observation"}
+                    </Pill>
                   </div>
 
                   {geshaState?.observation ? (
@@ -316,6 +336,11 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
                         )}
                       </p>
                       <Pill tone="warn">Not a market quote</Pill>
+                      <FreshnessBadge
+                        observation={geshaState.observation}
+                        config={geshaState.config}
+                        nowSec={nowSec}
+                      />
                     </div>
                   ) : (
                     <div className="flex flex-wrap items-center justify-between gap-2 py-1">
@@ -330,12 +355,30 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
                 <dl className="mt-3 space-y-1 border-t pt-2.5 text-xs">
                   <div className="flex justify-between gap-2">
                     <dt className="text-muted-foreground">Worker mode</dt>
-                    <dd className="num">{geshaState?.config?.worker_mode ?? "fixture"}</dd>
+                    <dd className="num">{geshaState?.config?.worker_mode ?? "Unavailable"}</dd>
                   </div>
                   <div className="flex justify-between gap-2">
                     <dt className="text-muted-foreground">Data class</dt>
                     <dd className="num">
-                      {geshaState?.observation?.data_class ?? "SYNTHETIC_DEMO (untriggered)"}
+                      {geshaState?.observation?.data_class ?? "Unavailable (untriggered)"}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-muted-foreground">Source</dt>
+                    <dd className="num text-right">
+                      {geshaState?.observation?.source ?? "Unavailable"}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-muted-foreground">Observed</dt>
+                    <dd className="text-right">
+                      <TimestampDisplay epochSec={geshaState?.observation?.observed_at_sec} />
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <dt className="text-muted-foreground">Stored on-chain</dt>
+                    <dd className="text-right">
+                      <TimestampDisplay epochSec={geshaState?.observation?.stored_at_sec} />
                     </dd>
                   </div>
                   <div className="flex justify-between gap-2">
@@ -343,7 +386,7 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
                     <dd className="num">
                       {geshaState?.config
                         ? formatAgeDuration(geshaState.config.max_price_age_sec)
-                        : "1 hr"}
+                        : "Unavailable"}
                     </dd>
                   </div>
                 </dl>
@@ -399,14 +442,7 @@ function MarketSummaryCard({
   onSelect: () => void;
   nowSec: number | null;
 }) {
-  const cls = classifyDataClass(
-    observation?.data_class ??
-      (config?.worker_mode === "fixture"
-        ? "SYNTHETIC_DEMO"
-        : config?.worker_mode === "public_benchmark"
-          ? "PUBLIC_BENCHMARK_MONTHLY"
-          : undefined),
-  );
+  const cls = classifyDataClass(observation?.data_class);
   const freshness = evaluateFreshness(
     observation,
     config,
@@ -653,14 +689,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
   const activeState = snapshot?.marketStates[activeSymbol];
   const activeConfig = activeState?.config ?? null;
   const activeObs = activeState?.observation ?? null;
-  const activeClass = classifyDataClass(
-    activeObs?.data_class ??
-      (activeConfig?.worker_mode === "fixture"
-        ? "SYNTHETIC_DEMO"
-        : activeConfig?.worker_mode === "public_benchmark"
-          ? "PUBLIC_BENCHMARK_MONTHLY"
-          : undefined),
-  );
+  const activeClass = classifyDataClass(activeObs?.data_class);
   const activeFreshness =
     snapshot && nowSec !== null
       ? evaluateFreshness(activeObs, activeConfig, nowSec)
@@ -677,7 +706,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
         title="Coffee Oracle"
         demo={false}
         crumbs={[{ label: "Dashboard", to: "/app/dashboard" }, { label: "Coffee Oracle" }]}
-        subtitle={`Live read-only NEAR Testnet oracle view for ${contractId} backed by OutLayer (${OUTLAYER_CONTRACT_ID}). No transactions or simulated wallet state are executed here.`}
+        subtitle={`Read-only NEAR Testnet oracle view for ${contractId} backed by OutLayer (${OUTLAYER_CONTRACT_ID}), independent from Perps and its execution feed. Historical benchmarks and synthetic fixtures are not live coffee quotes. No transactions or simulated wallet state are executed here.`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Pill tone="gain">Network: {NEAR_TESTNET_NETWORK_ID}</Pill>
@@ -720,7 +749,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
       </div>
 
       {query.isPending && (
-        <div className="space-y-4" aria-label="Loading live oracle contract data">
+        <div className="space-y-4" aria-label="Loading read-only oracle contract data">
           <div className="grid gap-4 md:grid-cols-2">
             <Skeleton className="h-56 w-full rounded-lg" />
             <Skeleton className="h-56 w-full rounded-lg" />
@@ -836,7 +865,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
                   [
                     "Source count",
                     <span key="cnt" className="num text-xs">
-                      {activeObs ? activeObs.source_count : (activeConfig?.min_source_count ?? "—")}
+                      {activeObs ? activeObs.source_count : "Unavailable (no stored observation)"}
                     </span>,
                   ],
                   [
@@ -1001,26 +1030,43 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
               return (
                 <div className="space-y-3 text-xs">
                   <p className="text-muted-foreground">
-                    Live coffee Perpetuals execution on <code className="font-mono">{PERPS_CONTRACT_ID}</code>{" "}
-                    (<code className="font-mono">{MARKET_ARABICA_PERPS_ID}</code>) is decoupled from
+                    NEAR Testnet Perpetuals execution on{" "}
+                    <code className="font-mono">{PERPS_CONTRACT_ID}</code> (
+                    <code className="font-mono">{MARKET_ARABICA_PERPS_ID}</code>) is decoupled from
                     the monthly IMF public benchmark above and runs on{" "}
                     <strong className="text-foreground">TESTNET_SANDBOX_FEED</strong> with a{" "}
-                    {status.maxAgeSec}s maximum age policy.
+                    {status.maxAgeSec}s maximum age policy. These are operator-controlled synthetic
+                    Testnet references, not live coffee quotes. Testnet USDC has no monetary value;
+                    OutLayer observations do not price or settle these positions.
                   </p>
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div className="rounded border p-3">
-                      <div className="text-[11px] text-muted-foreground">Synthetic Reference Price</div>
+                      <div className="text-[11px] text-muted-foreground">
+                        Synthetic Reference Price
+                      </div>
                       <div className="num mt-1 text-base font-semibold">
                         {status.priceE8 ? `${formatUsdE8(status.priceE8)}/kg` : "Unavailable"}
                       </div>
                     </div>
                     <div className="rounded border p-3">
-                      <div className="text-[11px] text-muted-foreground">Policy Status (Max {status.maxAgeSec}s)</div>
+                      <div className="text-[11px] text-muted-foreground">
+                        Policy Status (Max {status.maxAgeSec}s)
+                      </div>
                       <div className="mt-1 flex items-center gap-1.5 font-semibold">
-                        <Pill tone={status.isValidForOpen ? "gain" : status.status === "STALE" ? "warn" : "loss"}>
+                        <Pill
+                          tone={
+                            status.isValidForOpen
+                              ? "gain"
+                              : status.status === "STALE"
+                                ? "warn"
+                                : "loss"
+                          }
+                        >
                           {status.status}
                         </Pill>
-                        {status.ageSec !== null && <span className="num text-muted-foreground">({status.ageSec}s old)</span>}
+                        {status.ageSec !== null && (
+                          <span className="num text-muted-foreground">({status.ageSec}s old)</span>
+                        )}
                       </div>
                     </div>
                     <div className="rounded border p-3">
