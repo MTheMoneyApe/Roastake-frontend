@@ -423,158 +423,16 @@ function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
   );
 }
 
-const publicSpanishLabels: Record<string, string> = {
-  "/app/perps": "Iniciar app",
-};
-
-function positionPublicMenu(menu: HTMLElement | null, trigger: HTMLElement | null) {
-  if (!menu || !trigger) return;
-  const top = trigger.getBoundingClientRect().bottom + 8;
-  menu.style.top = `${top}px`;
-  menu.style.maxHeight = `${Math.max(44, window.innerHeight - top - 16)}px`;
-}
-
 function PublicNavigation() {
   const { language } = useLandingLanguage();
-  const path = useRouterState({ select: (r) => r.location.pathname });
-  const id = useId();
-  const nav = useRef<HTMLElement>(null);
-  const list = useRef<HTMLUListElement>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
-  const [wide, setWide] = useState(false);
-  const [open, setOpen] = useState(false);
-  // Hydrate the same hidden fallback that the server rendered before enhancing it.
-  const [nativePopover, setNativePopover] = useState(false);
-  useEffect(() => {
-    setNativePopover("showPopover" in HTMLElement.prototype);
-  }, []);
-
-  useEffect(() => {
-    const menu = list.current;
-    const row = nav.current?.parentElement;
-    if (!menu || !row) return;
-    let lastWidth = 0;
-    let inline = false;
-    const measure = () => {
-      const rowStyle = getComputedStyle(row);
-      const width =
-        row.clientWidth -
-        (parseFloat(rowStyle.paddingLeft) || 0) -
-        (parseFloat(rowStyle.paddingRight) || 0);
-      if (!width || (!inline && width <= lastWidth)) return;
-      lastWidth = width;
-      const wasOpen = nativePopover && menu.matches(":popover-open");
-      const wasHidden = menu.hidden;
-      // A hidden fallback has zero width; measure the actual links, then restore it.
-      menu.hidden = false;
-      menu.removeAttribute("popover");
-      menu.style.cssText =
-        "display:flex;position:static;flex-direction:row;column-gap:0.25rem;width:max-content;max-width:none;max-height:none;padding:0;border:0";
-      const gap = parseFloat(rowStyle.columnGap) || 0;
-      const siblings = Array.from(row.children).filter((child) => child !== nav.current);
-      const occupied = siblings.reduce(
-        (sum, child) => sum + Math.max(child.scrollWidth, child.getBoundingClientRect().width),
-        0,
-      );
-      inline = menu.scrollWidth + occupied + gap * siblings.length <= width;
-      menu.style.cssText = "";
-      menu.hidden = wasHidden;
-      if (!inline) {
-        menu.setAttribute("popover", "auto");
-        if (wasOpen) {
-          positionPublicMenu(menu, trigger.current);
-          menu.showPopover();
-        }
-      } else {
-        setOpen(false);
-      }
-      setWide(inline);
-    };
-    measure();
-    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
-    observer?.observe(row);
-    observer?.observe(menu);
-    window.addEventListener("resize", measure);
-    return () => {
-      observer?.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [nativePopover, language]);
-
-  const close = () => {
-    if (!wide && nativePopover) list.current?.hidePopover();
-    setOpen(false);
-  };
-
   return (
-    <nav
-      ref={nav}
-      aria-label="Main navigation"
-      className="order-last basis-full shrink-0 sm:order-none sm:basis-auto"
-    >
-      <Button
-        ref={trigger}
-        type="button"
-        variant="ghost"
-        className={wide ? "hidden" : "min-h-11 gap-2"}
-        popoverTarget={id}
-        aria-controls={id}
-        aria-expanded={open}
-        onClick={() => {
-          if (!nativePopover) {
-            positionPublicMenu(list.current, trigger.current);
-            setOpen((value) => !value);
-          }
-        }}
+    <nav aria-label="Main navigation" className="shrink-0">
+      <Link
+        to="/app/perps"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-primary bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
-        <Menu className="size-4" aria-hidden="true" />
-        <span>{language === "es" ? "Menú" : "Menu"}</span>
-      </Button>
-      <ul
-        ref={list}
-        id={id}
-        popover={wide ? undefined : "auto"}
-        hidden={!wide && !nativePopover && !open}
-        onToggle={(event) => {
-          if (event.newState === "open") positionPublicMenu(list.current, trigger.current);
-          setOpen(event.newState === "open");
-        }}
-        onKeyDown={(event) => {
-          if (!nativePopover && event.key === "Escape") {
-            close();
-            trigger.current?.focus();
-          }
-        }}
-        className={cn(
-          "text-foreground",
-          wide
-            ? "flex items-center gap-1"
-            : "fixed inset-auto right-4 top-32 m-0 max-h-[calc(100dvh-9rem)] w-72 max-w-[calc(100dvw-2rem)] space-y-1 overflow-y-auto rounded-xl border bg-card p-2 shadow-lg",
-        )}
-      >
-        {PUBLIC_NAV.map(({ to, label }) => {
-          const active = path === to || (to !== "/" && path.startsWith(to + "/"));
-          return (
-            <li key={to}>
-              <Link
-                to={to}
-                onClick={close}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex min-h-11 items-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring forced-colors:focus-visible:outline",
-                  to === "/app/perps"
-                    ? "border border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground"
-                    : active
-                      ? "border-b-2 border-primary bg-accent font-semibold text-accent-foreground forced-colors:border-[Highlight]"
-                      : "border-b-2 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-              >
-                {language === "es" ? publicSpanishLabels[to] : label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+        {language === "es" ? "Iniciar app" : "Launch App"}
+      </Link>
     </nav>
   );
 }
