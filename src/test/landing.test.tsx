@@ -185,7 +185,8 @@ describe("ROASTAKE bilingual editorial landing", () => {
       screen
         .getAllByRole("link", { name: cta })
         .forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
-      expect(container.querySelectorAll("h2")).toHaveLength(6);\n      expect(container).toHaveTextContent(language === "es" ? "La capa financiera para la economía global del café." : "The financial layer for the global coffee economy.");
+      expect(container.querySelectorAll("h2")).toHaveLength(6);
+      expect(container).toHaveTextContent(language === "es" ? "La capa financiera para la economía global del café." : "The financial layer for the global coffee economy.");
       expect(container.querySelector("#ecosystem-layers ol")?.children).toHaveLength(3);
       expect(container.querySelector("#coffee-capital")).toHaveTextContent(
         language === "es"
