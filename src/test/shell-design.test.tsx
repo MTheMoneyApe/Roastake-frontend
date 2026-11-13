@@ -1,4 +1,6 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ADMIN_NAV, AppShell, PublicShell, ROASTER_NAV } from "@/components/shell";
@@ -275,6 +277,65 @@ describe("Shared brand shells", () => {
         .map((link) => link.getAttribute("href")),
     ).toEqual(PUBLIC_NAV.map(({ to }) => to));
     expect(screen.getAllByRole("navigation", { name: "Main navigation" })).toHaveLength(1);
+  });
+
+  it("hydrates a 390px public header with a visible trigger and measurable native-popover links", async () => {
+    location.pathname = "/";
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(390);
+    // Hidden server markup has no intrinsic width, just as in a real browser.
+    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      return this.hasAttribute("hidden") ? 0 : 650;
+    });
+    const view = (
+      <PublicShell>
+        <h1>Home</h1>
+      </PublicShell>
+    );
+    const host = document.createElement("div");
+    host.innerHTML = renderToString(view);
+    document.body.append(host);
+    const nativeDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "showPopover");
+    Object.defineProperty(HTMLElement.prototype, "showPopover", {
+      configurable: true,
+      value: vi.fn(),
+    });
+    const matches = HTMLElement.prototype.matches;
+    vi.spyOn(HTMLElement.prototype, "matches").mockImplementation(function (
+      this: HTMLElement,
+      selector,
+    ) {
+      return selector === ":popover-open" ? false : matches.call(this, selector);
+    });
+    const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+    let root: ReturnType<typeof hydrateRoot> | undefined;
+    try {
+      await act(async () => {
+        root = hydrateRoot(host, view);
+      });
+      const nav = within(host).getByRole("navigation", { name: "Main navigation" });
+      const trigger = within(nav).getByRole("button", { name: "Menu" });
+      expect(trigger).not.toHaveClass("hidden");
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+      const list = document.getElementById(trigger.getAttribute("aria-controls")!)!;
+      expect(list).toHaveAttribute("popover", "auto");
+      expect(list).not.toHaveAttribute("hidden");
+      expect(
+        within(nav)
+          .getAllByRole("link")
+          .map((link) => link.getAttribute("href")),
+      ).toEqual(PUBLIC_NAV.map(({ to }) => to));
+      expect(errors).not.toHaveBeenCalled();
+    } finally {
+      await act(async () => {
+        root?.unmount();
+      });
+      host.remove();
+      if (nativeDescriptor)
+        Object.defineProperty(HTMLElement.prototype, "showPopover", nativeDescriptor);
+      else Reflect.deleteProperty(HTMLElement.prototype, "showPopover");
+    }
   });
 
   it("audits footer destinations against the same public status groups", () => {

@@ -535,8 +535,11 @@ function PublicNavigation() {
   const trigger = useRef<HTMLButtonElement>(null);
   const [wide, setWide] = useState(false);
   const [open, setOpen] = useState(false);
-  const nativePopover =
-    typeof HTMLElement !== "undefined" && "showPopover" in HTMLElement.prototype;
+  // Hydrate the same hidden fallback that the server rendered before enhancing it.
+  const [nativePopover, setNativePopover] = useState(false);
+  useEffect(() => {
+    setNativePopover("showPopover" in HTMLElement.prototype);
+  }, []);
 
   useEffect(() => {
     const menu = list.current;
@@ -553,6 +556,9 @@ function PublicNavigation() {
       if (!width || (!inline && width <= lastWidth)) return;
       lastWidth = width;
       const wasOpen = nativePopover && menu.matches(":popover-open");
+      const wasHidden = menu.hidden;
+      // A hidden fallback has zero width; measure the actual links, then restore it.
+      menu.hidden = false;
       menu.removeAttribute("popover");
       menu.style.cssText =
         "display:flex;position:static;flex-direction:row;column-gap:0.25rem;width:max-content;max-width:none;max-height:none;padding:0;border:0";
@@ -564,6 +570,7 @@ function PublicNavigation() {
       );
       inline = menu.scrollWidth + occupied + gap * siblings.length <= width;
       menu.style.cssText = "";
+      menu.hidden = wasHidden;
       if (!inline) {
         menu.setAttribute("popover", "auto");
         if (wasOpen) menu.showPopover();
