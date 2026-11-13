@@ -424,11 +424,7 @@ function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
 }
 
 const publicSpanishLabels: Record<string, string> = {
-  "/": "Economía del café",
-  "/app/perps": "Mercados Testnet",
-  "/app/assets": "Activos de café demo",
-  "/roadmap": "Hoja de ruta",
-  "/app/docs": "Documentación",
+  "/app/perps": "Iniciar app",
 };
 
 function positionPublicMenu(menu: HTMLElement | null, trigger: HTMLElement | null) {
