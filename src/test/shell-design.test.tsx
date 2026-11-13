@@ -253,7 +253,11 @@ describe("Shared brand shells", () => {
   it("reuses exactly the same public link tree when the header no longer fits", () => {
     let width = 1600;
     vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(() => width);
-    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockReturnValue(650);
+    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      return this.tagName === "UL" ? 650 : 150;
+    });
     location.pathname = "/";
     render(
       <PublicShell>
@@ -281,6 +285,23 @@ describe("Shared brand shells", () => {
         .map((link) => link.getAttribute("href")),
     ).toEqual(PUBLIC_NAV.map(({ to }) => to));
     expect(screen.getAllByRole("navigation", { name: "Main navigation" })).toHaveLength(1);
+  });
+
+  it("collapses before header actions overflow at laptop widths even when flex items shrink", () => {
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      return this.tagName === "UL" ? 650 : this.tagName === "A" ? 140 : 350;
+    });
+    // JSDOM bounding boxes are zero; scrollWidth models intrinsic action widths.
+    render(
+      <PublicShell>
+        <h1>Home</h1>
+      </PublicShell>,
+    );
+    const nav = screen.getByRole("navigation", { name: "Main navigation" });
+    expect(within(nav).getByRole("button", { name: "Menu" })).not.toHaveClass("hidden");
   });
 
   it.each([320, 390])(

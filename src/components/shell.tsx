@@ -582,7 +582,7 @@ function PublicNavigation() {
       const gap = parseFloat(rowStyle.columnGap) || 0;
       const siblings = Array.from(row.children).filter((child) => child !== nav.current);
       const occupied = siblings.reduce(
-        (sum, child) => sum + child.getBoundingClientRect().width,
+        (sum, child) => sum + Math.max(child.scrollWidth, child.getBoundingClientRect().width),
         0,
       );
       inline = menu.scrollWidth + occupied + gap * siblings.length <= width;
@@ -714,7 +714,7 @@ function PublicShellContent({ children }: { children: ReactNode }) {
         <div className="brand-container flex min-h-16 min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 py-2 sm:flex-nowrap sm:gap-4 sm:py-0">
           <Logo compact />
           <PublicNavigation />
-          <div className="flex min-w-0 items-center gap-1 sm:gap-1.5">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
             <select
               aria-label="Language / Idioma"
               value={language}
