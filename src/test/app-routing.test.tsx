@@ -12,7 +12,7 @@ describe("M04.6 navigation and application routing", () => {
   it("prioritizes testnet markets, coffee demos and workspace before roadmap and docs", () => {
     expect(APP_NAV.map((group) => group.label)).toEqual([
       "Markets / Testnet",
-      "Coffee Economy / Demo",
+      "Coffee Experience / Demo",
       "Demo Workspace",
       "Roadmap",
       "Documentation",
