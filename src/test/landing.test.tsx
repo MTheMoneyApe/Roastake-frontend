@@ -142,7 +142,9 @@ describe("ROASTAKE bilingual editorial landing", () => {
     expect(oracle).toHaveTextContent(/read.only/);
     expect(oracle).toHaveTextContent(/Does not power Perps/);
     expect(oracle).toHaveTextContent(/or verify coffee, custody or backing/);
-    expect(container).toHaveTextContent(/Browser.only examples. No verified inventory/);\n    expect(container).not.toHaveTextContent(/Testnet today. Physical integrations are future work/);\n    expect(container).not.toHaveTextContent(/NEAR Testnet prototype · Perps uses/);
+    expect(container).toHaveTextContent(/Browser.only examples. No verified inventory/);
+    expect(container).not.toHaveTextContent(/Testnet today. Physical integrations are future work/);
+    expect(container).not.toHaveTextContent(/NEAR Testnet prototype · Perps uses/);
     expect(container.querySelector("#coffee-capital")).toHaveTextContent(
       /No live investment product/,
     );
