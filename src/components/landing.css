@@ -182,12 +182,6 @@
   border-block-start: 1px solid var(--border);
   padding-block: 2rem;
 }
-.landing-product-index {
-  color: var(--highlight);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.8;
-}
 .landing-products h3 {
   margin-block-end: 0.75rem;
   font-size: 1.75rem;
@@ -272,13 +266,6 @@
   block-size: auto;
   min-block-size: 3rem;
   padding-block: 0.75rem;
-}
-.landing-closing {
-  padding-block: var(--landing-space);
-}
-.landing-closing h2 {
-  max-inline-size: 23ch;
-  font-size: clamp(2.25rem, 1.5rem + 3.5vw, 4.5rem);
 }
 @media (max-width: 359px) {
   .landing-actions {
