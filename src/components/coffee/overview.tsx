@@ -160,6 +160,9 @@ export function Dashboard() {
                   <span>3-Market Hub</span>
                 </Link>
               </Button>
+              <Button asChild variant="outline" className="gap-1.5">
+                <Link to="/app/multichain">Network overview</Link>
+              </Button>
               <Button
                 type="button"
                 variant="outline"
