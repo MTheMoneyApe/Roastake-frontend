@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import { PublicShell, Section } from "@/components/shell";
+import { AppShell, Section } from "@/components/shell";
 import { MaturityBadge, PageHeader } from "@/components/kit";
 import { APP_NAV, ROADMAP_NAV, SCOPE_DESCRIPTIONS, SCOPE_LABELS } from "@/lib/navigation";
 import { seo } from "@/lib/seo";
@@ -94,8 +94,8 @@ export function RoadmapPage() {
 
 function Page() {
   return (
-    <PublicShell>
+    <AppShell>
       <RoadmapPage />
-    </PublicShell>
+    </AppShell>
   );
 }
