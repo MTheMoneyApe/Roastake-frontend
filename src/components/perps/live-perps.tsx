@@ -109,8 +109,7 @@ function SyntheticOracleBanner({
           {logicalId && logicalId !== marketId ? ` (logical ID ${logicalId})` : ""} uses an
           operator-controlled synthetic feed on{" "}
           <code className="font-mono">{PERPS_CONTRACT_ID}</code> (NEAR Testnet) —
-          <strong>not</strong> a decentralized spot oracle or live futures quote. These are
-          operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has
+          <strong>not</strong> a decentralized spot oracle or live futures quote. Testnet USDC has
           no monetary value.
         </p>
         <p className="text-foreground/90">{oracleStatus.detail}</p>
