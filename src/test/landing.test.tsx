@@ -237,7 +237,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
         <LanguageHarness />
       </LandingLanguageProvider>,
     );
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("global coffee economy");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("REAL COFFEE. NEW FINANCIAL POSSIBILITIES.");
     first.unmount();
     const read = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("blocked");
@@ -257,7 +257,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
       </LandingLanguageProvider>,
     );
     fireEvent.click(screen.getByRole("button", { name: "Switch language" }));
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("economía global del café");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CAFÉ REAL. NUEVAS POSIBILIDADES FINANCIERAS.");
   });
 
   it("preserves the shared theme while language changes", () => {
