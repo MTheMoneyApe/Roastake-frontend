@@ -52,13 +52,16 @@ The user’s physical Android/Brave capture exposed a gap in the earlier landing
 
 Removed the `Profile` component and its role/reset/link dropdown from the shared application header entirely, not hidden behind another button or moved elsewhere. Also removed the header’s simulated notifications popover so it cannot create another demo overlay. Real wallet hub, theme control, accessible navigation drawer, all routes, demo store and Perps logic are unchanged. Public ES/EN content is unchanged; existing internal pages retain their English language boundary.
 
+Post-publication viewport inspection also found the long live-contract badge expanding the 320px page to 370px. The badge now wraps within its available width; wallet UI coverage asserts its wrapping classes. No contract identifier or wallet logic changed.
+
 Regression coverage renders `/app/perps` with 320/390/430/1440px viewport values, asserts no profile/role/notification trigger or header command menu, preserves wallet/theme controls, opens the navigation drawer, confirms the Perps link, and checks Escape/focus restoration. These are jsdom structural/interaction checks, not CSS viewport proof. Before the fix, 5 shell assertions failed; after it, all 30 shell tests passed.
 
 Current correction checks on Reason Cloud:
 - `bun x tsc --noEmit`: PASS.
 - `bun run test`: PASS, 220 tests / 25 files.
 - `bun run build`: PASS; existing bundling/externalization/Nitro warnings remain.
-- `bun x eslint src/components/shell.tsx src/test/shell-design.test.tsx`: PASS, 0 errors / 4 existing Fast Refresh warnings.
+- `bun x eslint src/components/shell.tsx src/components/trading.tsx src/test/shell-design.test.tsx src/test/wallet-ui.test.tsx`: PASS, 0 errors / 4 existing Fast Refresh warnings.
+- `git diff --check`: PASS.
 - Rendered post-publication checks and screenshots are recorded in the PR follow-up; physical Android/Brave retesting is not claimed.
 
 ## Limits

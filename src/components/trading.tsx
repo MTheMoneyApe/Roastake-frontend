@@ -75,10 +75,15 @@ function PerpsNearExecutionBanner() {
       aria-label="NEAR Perpetuals execution context"
       className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gain/40 bg-forest/20 px-4 py-3 text-xs"
     >
-      <div className="space-y-1">
+      <div className="min-w-0 space-y-1">
         <div className="flex flex-wrap items-center gap-2">
           <Pill tone="gain">Primary Execution Network: NEAR Testnet</Pill>
-          <MaturityBadge variant="testnet">LIVE CONTRACT · {PERPS_CONTRACT_ID}</MaturityBadge>
+          <MaturityBadge
+            variant="testnet"
+            className="max-w-full whitespace-normal leading-relaxed [overflow-wrap:anywhere]"
+          >
+            LIVE CONTRACT · {PERPS_CONTRACT_ID}
+          </MaturityBadge>
         </div>
         <p className="text-muted-foreground">
           {nearConnected && near.accountId ? (
