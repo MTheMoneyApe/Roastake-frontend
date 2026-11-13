@@ -2,6 +2,8 @@
 // Copyright © 2026 @MTheMoneyApe. All rights reserved.
 
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { flushSync } from "react-dom";
 import {
   Activity,
   AlertTriangle,
@@ -129,7 +131,13 @@ const SECONDARY_TABS: { id: Exclude<WalletEcosystem, "near">; label: string; tag
   { id: "hyperliquid", label: "Hyperliquid Core", tag: "Venue API" },
 ];
 
-export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
+export function WalletHubPanels({
+  compact = false,
+  onConnectNear,
+}: {
+  compact?: boolean;
+  onConnectNear?: (walletId?: string) => void;
+}) {
   const {
     hydrated,
     primaryProtocolNetwork,
@@ -232,7 +240,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
               <Button
                 type="button"
                 size="sm"
-                onClick={() => connectNear()}
+                onClick={() => (onConnectNear ?? connectNear)()}
                 disabled={!hydrated || near.status === "connecting"}
                 className="min-h-9 gap-1.5"
               >
@@ -315,7 +323,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
                     size="sm"
                     variant="outline"
                     className="h-7 px-2 text-[11px]"
-                    onClick={() => connectNear(w.id)}
+                    onClick={() => (onConnectNear ?? connectNear)(w.id)}
                   >
                     {w.name}
                   </Button>
@@ -830,7 +838,23 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
 
 /** Accessible Radix Modal hosting the Unified Wallet Hub from header triggers. */
 export function WalletHubDialog() {
-  const { isHubOpen, openHub, closeHub } = useWalletHub();
+  const { isHubOpen, openHub, closeHub, connectNear } = useWalletHub();
+  const [isNearHandoff, setIsNearHandoff] = useState(false);
+
+  async function handOffNearConnection(walletId?: string) {
+    // near-connect portals its selector/provider UI directly into document.body.
+    // Fully unmount Radix (including its exit animation) before opening that UI:
+    // otherwise Dialog's pointer lock and focus trap make provider cards inert.
+    flushSync(() => setIsNearHandoff(true));
+    try {
+      await connectNear(walletId);
+    } finally {
+      // Restore the hub to show either the connected account or explicit error.
+      setIsNearHandoff(false);
+    }
+  }
+
+  if (isNearHandoff) return null;
 
   return (
     <Dialog open={isHubOpen} onOpenChange={(next) => (next ? openHub() : closeHub())}>
@@ -845,7 +869,7 @@ export function WalletHubDialog() {
             Solana Devnet, and Hyperliquid Testnet Core without touching simulated demo balances.
           </DialogDescription>
         </DialogHeader>
-        <WalletHubPanels compact />
+        <WalletHubPanels compact onConnectNear={handOffNearConnection} />
       </DialogContent>
     </Dialog>
   );

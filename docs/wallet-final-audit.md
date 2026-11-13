@@ -53,6 +53,16 @@ An existing React `act(...)` warning was observed in the Perps Judges Walkthroug
 - Live RPC availability, actual balances, contract deployments, current pool liquidity, external manifest freshness/fallback parity, and deployed frontend SHA are outside these mocked checks.
 - No OutLayer job or TEE attestation was executed or independently verified.
 
+## Wallet selector incident — inert provider cards
+
+Reproduced on the existing PR Preview: header Wallet Hub → Connect NEAR Wallet → Meteor card. The selector is the real `@hot-labs/near-connect` 0.12.0 DOM, not an image or placeholder. Its `NearWalletsPopup` registers a click handler on `.connect-item[data-type="meteor-wallet"]` and appends the popup outside Radix DialogContent.
+
+Before repair, `getComputedStyle(document.body).pointerEvents` and Meteor card pointer events were `none`. Hit-testing the card center (604, 112 in the desktop capture) returned the underlying Radix description, not Meteor. Touch could not select it. The parent modal's pointer lock/focus trap remained active. The standalone `/app/wallet` flow had `auto` pointer events and a Meteor hit; a real mouse click dismissed the chooser and created the provider sandbox iframe. No wallet was authenticated and no transaction was requested.
+
+Repair: WalletHubDialog synchronously unmounts the Radix modal before invoking the NEAR selector or direct discovered-provider connection; it restores the hub after completion/cancellation so account/error state stays visible. No global CSS override, dependency, provider, network, header/profile, contract or financial logic changes. The standalone WalletHubPanels path is preserved.
+
+Two regression cases (generic selector and direct Meteor handoff) failed before repair because Radix was still mounted. After repair, all 20 wallet/UI/SSR tests pass, including modal removal, pointer-lock release, click/touch-event compatibility activation and visible rejection after returning to the hub. Real browser click/touch hit-testing is separate evidence, not inferred from jsdom. TypeScript, build, scoped ESLint and diff check pass. Browser post-publication evidence and deployment identity are recorded in the PR follow-up; authenticated provider round-trip and physical Android/Brave remain unverified.
+
 ## Safe manual checks for Marco (no transaction required)
 
 1. Use a dedicated named `.testnet` account and only non-monetary Testnet assets. Open Wallet Hub in the intended desktop and mobile browser. Confirm Testnet and demo-balance separation before connecting.

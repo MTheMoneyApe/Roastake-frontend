@@ -188,14 +188,18 @@ function makeWagmiConfig(defaultConnected = false) {
 
 function renderWithWalletProviders(
   ui: ReactNode,
-  opts?: { nearInitialAccount?: string; evmConnected?: boolean },
+  opts?: {
+    nearInitialAccount?: string;
+    evmConnected?: boolean;
+    nearAdapterFactory?: () => NearAdapterPort;
+  },
 ) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
       <WalletInfrastructureProvider
         wagmiConfig={makeWagmiConfig(Boolean(opts?.evmConnected))}
-        nearAdapterFactory={makeNearFactory(opts?.nearInitialAccount)}
+        nearAdapterFactory={opts?.nearAdapterFactory ?? makeNearFactory(opts?.nearInitialAccount)}
       >
         {ui}
       </WalletInfrastructureProvider>
@@ -214,6 +218,63 @@ afterEach(() => {
 });
 
 describe("Wallet Hub UI, Perps NEAR-First Gating & Demo Isolation", () => {
+  it.each(["selector", "direct Meteor"])(
+    "releases modal pointer/focus locks before %s handoff and restores errors",
+    async (entry) => {
+      let modalAtConnect = true;
+      let pointerAtConnect = "";
+      let selected = false;
+      const factory = (): NearAdapterPort => ({
+        initialize: async () => ({
+          wallets: [{ id: "meteor-wallet", name: "Meteor Wallet", supportsTestnet: true }],
+          existing: null,
+        }),
+        connect: async () => {
+          modalAtConnect = Boolean(document.querySelector('[role="dialog"]'));
+          pointerAtConnect = document.body.style.pointerEvents;
+          // Model the SDK's body-level portal, outside Radix DialogContent.
+          return new Promise((_, reject) => {
+            const option = document.createElement("button");
+            option.textContent = "External Meteor option";
+            option.onclick = () => {
+              selected = true;
+              option.remove();
+              reject(new Error("User rejected"));
+            };
+            document.body.append(option);
+          });
+        },
+        disconnect: async () => {},
+        dispose: () => {},
+      });
+      renderWithWalletProviders(
+        <>
+          <WalletHubHeaderButton />
+          <WalletHubDialog />
+        </>,
+        { nearAdapterFactory: factory },
+      );
+      fireEvent.click(screen.getByRole("button", { name: /Open multichain wallet hub/i }));
+      const launch = await screen.findByRole("button", {
+        name: entry === "selector" ? "Connect NEAR Wallet" : "Meteor Wallet",
+      });
+      fireEvent.click(launch);
+      const external = await screen.findByRole("button", { name: "External Meteor option" });
+      expect(modalAtConnect).toBe(false);
+      expect(pointerAtConnect).not.toBe("none");
+      // Touch produces a compatibility click; real hit-testing is checked in Chrome too.
+      if (entry === "direct Meteor") {
+        fireEvent.touchStart(external);
+        fireEvent.touchEnd(external);
+      }
+      fireEvent.click(external);
+      expect(selected).toBe(true);
+      expect(await screen.findByRole("dialog")).toBeVisible();
+      expect(
+        await screen.findByText("Connection or network request rejected by user."),
+      ).toBeVisible();
+    },
+  );
   it("opens unified Wallet Hub from header without exposing simulated demo dollars as wallet balance", async () => {
     renderWithWalletProviders(
       <>
