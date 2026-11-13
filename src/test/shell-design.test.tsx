@@ -369,6 +369,21 @@ describe("Shared brand shells", () => {
     },
   );
 
+  it("keeps existing English page content correctly marked when public chrome is Spanish", () => {
+    location.pathname = "/market";
+    render(
+      <PublicShell>
+        <h1>Marketplace</h1>
+      </PublicShell>,
+    );
+    fireEvent.change(screen.getByRole("combobox", { name: "Language / Idioma" }), {
+      target: { value: "es" },
+    });
+    expect(screen.getByRole("main")).toHaveAttribute("lang", "en");
+    expect(screen.getByRole("navigation", { name: "Explorar" })).toHaveTextContent("Documentación");
+    window.localStorage.removeItem("roastake-public-language");
+  });
+
   it("audits footer destinations against the same public status groups", () => {
     render(
       <PublicShell>

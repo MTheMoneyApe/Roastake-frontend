@@ -19,7 +19,7 @@ const copy = {
     primary: "Explore Testnet Markets",
     secondary: "Read the Docs",
     heroNote:
-      "Testnet today. Physical integrations tomorrow. Test tokens have no monetary value; they do not represent ownership of coffee.",
+      "Testnet today. Physical integrations are future work. Test tokens have no monetary value; they do not represent ownership of coffee.",
     foundation: "Rooted in the real world",
     thesisKicker: "01 / The foundation",
     thesisTitle: "Coffee is more than a commodity.",

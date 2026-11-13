@@ -745,7 +745,12 @@ function PublicShellContent({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main id="main-content" tabIndex={-1} className="min-w-0 focus-visible:outline-none">
+      <main
+        lang={path === "/" ? language : "en"}
+        id="main-content"
+        tabIndex={-1}
+        className="min-w-0 focus-visible:outline-none"
+      >
         {path !== "/" && (
           <div lang="en">
             <ScopeNotice publicPage />
