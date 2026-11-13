@@ -75,7 +75,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
     render(<LandingPage />);
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-      "The financial layer for the global coffee economy.",
+      "ROASTAKE / REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
     );
     expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
       "Coffee is more than a commodity.",
@@ -134,7 +134,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
     const perps = screen.getByRole("link", { name: "Coffee Perpetuals" }).closest("article")!;
     expect(perps).toHaveTextContent(/operator.controlled synthetic Testnet/i);
     expect(perps).toHaveTextContent(/not live coffee exchange quotations/);
-    expect(perps).toHaveTextContent(/no monetary value/);
+    expect(perps).not.toHaveTextContent(/no monetary value/);
     const swap = screen.getByRole("link", { name: "RHEA Mini Swap" }).closest("article")!;
     expect(swap).toHaveTextContent(/Actual NEAR Testnet swaps/);
     expect(swap).toHaveTextContent(/not physical coffee transactions/);
@@ -142,7 +142,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
     expect(oracle).toHaveTextContent(/read.only/);
     expect(oracle).toHaveTextContent(/Does not power Perps/);
     expect(oracle).toHaveTextContent(/or verify coffee, custody or backing/);
-    expect(container).toHaveTextContent(/Browser.only examples. No verified inventory/);
+    expect(container).toHaveTextContent(/Browser.only examples. No verified inventory/);\n    expect(container).not.toHaveTextContent(/Testnet today. Physical integrations are future work/);\n    expect(container).not.toHaveTextContent(/NEAR Testnet prototype · Perps uses/);
     expect(container.querySelector("#coffee-capital")).toHaveTextContent(
       /No live investment product/,
     );
@@ -179,13 +179,13 @@ describe("ROASTAKE bilingual editorial landing", () => {
       );
       expect(container.querySelector(".landing")).toHaveAttribute("lang", language);
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        language === "es" ? "economía global del café" : "global coffee economy",
+        language === "es" ? "CAFÉ REAL. NUEVAS POSIBILIDADES FINANCIERAS." : "REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
       );
       const cta = language === "es" ? "Iniciar app" : "Launch App";
       screen
         .getAllByRole("link", { name: cta })
         .forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
-      expect(container.querySelectorAll("h2")).toHaveLength(6);
+      expect(container.querySelectorAll("h2")).toHaveLength(6);\n      expect(container).toHaveTextContent(language === "es" ? "La capa financiera para la economía global del café." : "The financial layer for the global coffee economy.");
       expect(container.querySelector("#ecosystem-layers ol")?.children).toHaveLength(3);
       expect(container.querySelector("#coffee-capital")).toHaveTextContent(
         language === "es"
@@ -213,7 +213,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
     const first = render(page);
     const select = screen.getByRole("combobox", { name: "Language / Idioma" });
     fireEvent.change(select, { target: { value: "es" } });
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("economía global del café");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("CAFÉ REAL. NUEVAS POSIBILIDADES FINANCIERAS.");
     expect(screen.getByRole("navigation", { name: "Explorar" })).toHaveTextContent("Iniciar app");
     expect(localStorage.getItem(LANDING_LANGUAGE_KEY)).toBe("es");
     const header = document.querySelector("header")!;
@@ -227,7 +227,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
     fireEvent.change(screen.getByRole("combobox", { name: "Language / Idioma" }), {
       target: { value: "en" },
     });
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("global coffee economy");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("REAL COFFEE. NEW FINANCIAL POSSIBILITIES.");
   });
 
   it("defaults safely for invalid or blocked storage and does not read preferences during SSR", () => {
