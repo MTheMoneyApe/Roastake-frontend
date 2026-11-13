@@ -550,7 +550,7 @@ function LandingShellContent({ children }: { children: ReactNode }) {
                     to={to}
                     className="inline-flex min-h-11 items-center rounded-sm text-feature-muted hover:text-feature-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   >
-                    {es ? publicSpanishLabels[to] : label}
+                    {es ? "Iniciar app" : label}
                   </Link>
                 </li>
               ))}
