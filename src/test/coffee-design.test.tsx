@@ -103,7 +103,7 @@ describe("shared coffee presentation and accessible controls", () => {
     const { container } = render(<Home />);
     const heading = screen.getByRole("heading", {
       level: 1,
-      name: "Coffee is more than a commodity. It’s a global market.",
+      name: "The financial layer for the global coffee economy.",
     });
     expect(container.querySelector(".dark")).toBeNull();
     expect(heading.closest("section")).toHaveClass("brand-hero", "landing-hero");
@@ -112,12 +112,12 @@ describe("shared coffee presentation and accessible controls", () => {
       "eager",
     );
     expect(
-      screen.getByText(/No physical backing, independent certification or real redemption/),
+      screen.getByText(/No verified inventory, backing, custody, certification, payments/),
     ).toBeInTheDocument();
     expect(screen.getByText(/Test USDC has no monetary value/)).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Independent and separate from Perpetuals: it is not its execution-price feed/,
+        /Does not power Perps, provide its execution prices or verify coffee, custody or backing/,
       ),
     ).toBeInTheDocument();
   });

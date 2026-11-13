@@ -25,6 +25,7 @@ export function CoffeePhoto({
   priority = false,
   sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
   caption = true,
+  alt,
 }: {
   photo: CoffeePhotoId;
   className?: string;
@@ -32,6 +33,8 @@ export function CoffeePhoto({
   sizes?: string;
   /** Only omit when an adjacent visible caption already identifies the illustration. */
   caption?: boolean;
+  /** Localized description for editorial surfaces; default metadata remains unchanged. */
+  alt?: string;
 }) {
   // Key the inner component so an error on one subject doesn't hide the next subject.
   return (
@@ -42,6 +45,7 @@ export function CoffeePhoto({
       priority={priority}
       sizes={sizes}
       caption={caption}
+      alt={alt}
     />
   );
 }
@@ -52,8 +56,10 @@ function Photo({
   priority,
   sizes,
   caption,
+  alt,
 }: Required<Pick<Parameters<typeof CoffeePhoto>[0], "photo" | "priority" | "sizes" | "caption">> & {
   className?: string;
+  alt?: string;
 }) {
   const [failed, setFailed] = useState(false);
   const metadata = COFFEE_PHOTOS[photo];
@@ -64,7 +70,7 @@ function Photo({
           <div
             className="absolute inset-0 flex flex-col items-center justify-center gap-3 border border-border p-4 text-center text-muted-foreground"
             role="img"
-            aria-label={`${metadata.subject} illustration; photograph unavailable`}
+            aria-label={alt ?? `${metadata.subject} illustration; photograph unavailable`}
           >
             <Coffee className="size-12 text-highlight" aria-hidden="true" />
             <span className="font-display text-lg">{metadata.subject}</span>
@@ -79,7 +85,7 @@ function Photo({
             sizes={sizes}
             width={1600}
             height={1200}
-            alt={metadata.alt}
+            alt={alt ?? metadata.alt}
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : undefined}
             decoding="async"

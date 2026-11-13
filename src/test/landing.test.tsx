@@ -1,8 +1,14 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LandingPage } from "@/components/landing-page";
+import {
+  LandingLanguageProvider,
+  LANDING_LANGUAGE_KEY,
+  useLandingLanguage,
+} from "@/components/landing-language";
 import { PublicShell } from "@/components/shell";
 import { ThemeProvider, THEME_STORAGE_KEY } from "@/components/theme-provider";
 
@@ -14,21 +20,13 @@ vi.mock("@tanstack/react-router", () => ({
   }) => select({ location: { pathname: "/" } }),
   Link: ({
     to,
-    params,
     children,
     onClick,
     ...props
-  }: AnchorHTMLAttributes<HTMLAnchorElement> & {
-    to: string;
-    params?: Record<string, string>;
-    children?: ReactNode;
-  }) => (
+  }: AnchorHTMLAttributes<HTMLAnchorElement> & { to: string; children?: ReactNode }) => (
     <a
       {...props}
-      href={Object.entries(params ?? {}).reduce(
-        (path, [key, value]) => path.replace(`$${key}`, value),
-        to,
-      )}
+      href={to}
       onClick={(event) => {
         onClick?.(event);
         event.preventDefault();
@@ -38,7 +36,6 @@ vi.mock("@tanstack/react-router", () => ({
     </a>
   ),
 }));
-
 vi.mock("@/components/wallet/wallet-hub", () => ({
   WalletHubHeaderButton: () => <button type="button">Connect Wallet</button>,
 }));
@@ -46,227 +43,233 @@ vi.mock("@/components/wallet/wallet-pages", () => ({
   SimulatedDemoNetworkSelect: () => <select aria-label="Demo network" />,
 }));
 
-const sectionTitles = [
-  "An essential commodity. A complex global market.",
-  "From the ground to a global market.",
-  "One economy. Three connected layers.",
-  "Explore the ecosystem.",
-  "Built around coffee. Not the other way around.",
-  "A foundation, then the full value chain.",
-  "The future of coffee is more than a cup.",
-];
-
-const destinations = [
-  "/app/perps",
-  "/app/swap",
-  "/app/oracle",
-  "/market",
-  "/app/assets",
-  "/app/coffee-passport",
-  "/app/roast",
-  "/app/redeem",
-  "/roadmap",
-  "/app/docs",
-];
-
+function LanguageHarness() {
+  const { language, setLanguage } = useLandingLanguage();
+  return (
+    <>
+      <button onClick={() => setLanguage(language === "en" ? "es" : "en")}>Switch language</button>
+      <LandingPage />
+    </>
+  );
+}
+const page = (
+  <ThemeProvider>
+    <PublicShell>
+      <LandingPage />
+    </PublicShell>
+  </ThemeProvider>
+);
 beforeEach(() => {
-  localStorage.removeItem(THEME_STORAGE_KEY);
+  localStorage.clear();
   document.documentElement.classList.remove("dark");
-  document.documentElement.dataset.theme = "light";
-  document.documentElement.style.colorScheme = "light";
 });
 afterEach(() => {
   cleanup();
-  localStorage.removeItem(THEME_STORAGE_KEY);
-  document.documentElement.classList.remove("dark");
-  document.documentElement.removeAttribute("data-theme");
-  document.documentElement.style.removeProperty("color-scheme");
+  localStorage.clear();
   vi.restoreAllMocks();
+  document.documentElement.classList.remove("dark");
 });
 
-describe("ROASTAKE editorial landing page", () => {
-  it("has the requested single English H1 and ordered, meaningful section outline", () => {
+describe("ROASTAKE bilingual editorial landing", () => {
+  it("explains the thesis in one H1 and ordered sections without skipping heading levels", () => {
     render(<LandingPage />);
-    const headings = screen.getAllByRole("heading");
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
-    expect(headings[0]).toHaveAccessibleName(
-      "Coffee is more than a commodity. It’s a global market.",
+    expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
+      "The financial layer for the global coffee economy.",
     );
-    expect(headings[0].tagName).toBe("H1");
-    expect(
-      screen
-        .getAllByRole("heading", { level: 2 })
-        .map((heading) => heading.textContent?.replace(/\s+/g, " ").trim()),
-    ).toEqual(sectionTitles);
-    for (let index = 1; index < headings.length; index += 1) {
-      const previousLevel = Number(headings[index - 1].tagName.slice(1));
-      const currentLevel = Number(headings[index].tagName.slice(1));
-      expect(currentLevel, headings[index].textContent ?? "heading").toBeLessThanOrEqual(
-        previousLevel + 1,
-      );
-    }
-  });
-
-  it("repeats both explicit navigation CTAs at the introduction and closing", () => {
-    render(<LandingPage />);
-    for (const [label, href] of [
-      ["Explore the ecosystem", "/app/perps"],
-      ["Read the documentation", "/app/docs"],
-    ]) {
-      const links = screen.getAllByRole("link", { name: label });
-      expect(links).toHaveLength(2);
-      for (const link of links) {
-        expect(link).toHaveAttribute("href", href);
-        expect(link).not.toHaveAttribute("aria-disabled", "true");
-      }
-    }
-  });
-
-  it("presents Grow, Verify, Tokenize, Trade and Redeem as five ordered process steps", () => {
-    render(<LandingPage />);
-    const grow = screen.getByRole("heading", { name: "Grow" });
-    const process = grow.closest("ol");
-    expect(process).not.toBeNull();
-    const steps = within(process!).getAllByRole("listitem");
-    expect(steps).toHaveLength(5);
-    expect(steps.map((step) => within(step).getByRole("heading").textContent)).toEqual([
-      "Grow",
-      "Verify",
-      "Tokenize",
-      "Trade",
-      "Redeem",
+    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
+      "Coffee is more than a commodity.",
+      "One economy. Three connected layers.",
+      "What you can explore today.",
+      "Coffee + DeFi + Venture Capital.",
+      "Understand today. Shape what comes next.",
+      "Real coffee. Clear boundaries. A new financial direction.",
     ]);
+    const headings = screen.getAllByRole("heading");
+    headings
+      .slice(1)
+      .forEach((h, i) =>
+        expect(Number(h.tagName.slice(1))).toBeLessThanOrEqual(
+          Number(headings[i].tagName.slice(1)) + 1,
+        ),
+      );
   });
 
-  it("links every ecosystem destination to an existing route instead of placeholder actions", () => {
+  it("keeps explicit working CTA routes at the hero and closing", () => {
     render(<LandingPage />);
+    const markets = screen.getAllByRole("link", { name: "Explore Testnet Markets" });
+    expect(markets).toHaveLength(2);
+    markets.forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
+    const docs = screen.getAllByRole("link", { name: "Read the Docs" });
+    expect(docs).toHaveLength(3);
+    docs.forEach((link) => expect(link).toHaveAttribute("href", "/app/docs"));
     const links = screen.getAllByRole("link");
-    for (const destination of destinations) {
-      const matches = links.filter((link) => link.getAttribute("href") === destination);
-      expect(matches.length, destination).toBeGreaterThan(0);
-      for (const link of matches) expect(link).toHaveAccessibleName();
-    }
-    for (const link of links) {
-      const href = link.getAttribute("href");
-      expect(href).not.toBeNull();
-      expect(href).not.toMatch(/^(?:javascript:|$)/i);
-      if (href?.startsWith("#")) {
-        expect(document.getElementById(href.slice(1))).not.toBeNull();
-      }
-      expect(link).not.toHaveAttribute("aria-disabled", "true");
-    }
-  });
-
-  it("states the synthetic, operator-controlled and non-monetary Perps limitations", () => {
-    render(<LandingPage />);
-    const perps = screen.getByRole("link", { name: /Coffee Perpetuals/i }).closest("article");
-    expect(perps).not.toBeNull();
-    expect(perps).toHaveTextContent(/Testnet/i);
-    expect(perps).toHaveTextContent(/operator.controlled/i);
-    expect(perps).toHaveTextContent(/synthetic/i);
-    expect(perps).toHaveTextContent(/no monetary value/i);
-    expect(perps).toHaveTextContent(/not live coffee/i);
-  });
-
-  it("keeps the read-only OutLayer Oracle independent from Perps", () => {
-    render(<LandingPage />);
-    const oracle = screen.getByRole("link", { name: /OutLayer Oracle/i }).closest("article");
-    expect(oracle).not.toBeNull();
-    expect(oracle).toHaveTextContent(/read.only/i);
-    expect(oracle).toHaveTextContent(/independent|separate/i);
-    expect(oracle).toHaveTextContent(/Perps|Perpetuals/i);
-    expect(oracle).toHaveTextContent(
-      /does not (?:power|supply|feed|provide)[^.]*Perps|not [^.]*execution.price/i,
+    for (const to of [
+      "/app/perps",
+      "/app/swap",
+      "/app/oracle",
+      "/market",
+      "/app/assets",
+      "/app/coffee-passport",
+      "/app/roast",
+      "/app/redeem",
+      "/roadmap",
+      "/app/docs",
+    ])
+      expect(links.some((link) => link.getAttribute("href") === to)).toBe(true);
+    links.forEach((link) => {
+      expect(link).toHaveAccessibleName();
+      expect(link.getAttribute("href")).not.toMatch(/^(?:javascript:|$)/i);
+    });
+    expect(readFileSync("src/routes/index.tsx", "utf8")).toContain(
+      'href: "https://roastake.vercel.app/"',
     );
   });
 
-  it("labels marketplace, provenance and redemption as illustrative rather than live physical commerce", () => {
+  it("groups live Testnet products, illustrative demos and planned services with canonical labels", () => {
     const { container } = render(<LandingPage />);
-    expect(container).toHaveTextContent(/marketplace/i);
-    expect(container).toHaveTextContent(/provenance|passport/i);
-    expect(container).toHaveTextContent(/redemption|redeem/i);
-    expect(container).toHaveTextContent(/illustrative|simulated/i);
+    expect(screen.getAllByText("Live on NEAR Testnet")).toHaveLength(4);
+    expect(screen.getByText("Demo / Illustrative")).toBeInTheDocument();
+    expect(screen.getAllByText("Roadmap / Planned")).toHaveLength(2);
+    const perps = screen.getByRole("link", { name: "Coffee Perpetuals" }).closest("article")!;
+    expect(perps).toHaveTextContent(/operator.controlled synthetic Testnet/i);
+    expect(perps).toHaveTextContent(/not live coffee exchange quotations/);
+    expect(perps).toHaveTextContent(/no monetary value/);
+    const swap = screen.getByRole("link", { name: "RHEA Mini Swap" }).closest("article")!;
+    expect(swap).toHaveTextContent(/Actual NEAR Testnet swaps/);
+    expect(swap).toHaveTextContent(/not physical coffee transactions/);
+    const oracle = screen.getByRole("link", { name: "OutLayer Oracle" }).closest("article")!;
+    expect(oracle).toHaveTextContent(/read.only/);
+    expect(oracle).toHaveTextContent(/Does not power Perps/);
+    expect(oracle).toHaveTextContent(/or verify coffee, custody or backing/);
+    expect(container).toHaveTextContent(/Browser.only examples. No verified inventory/);
+    expect(container.querySelector("#coffee-capital")).toHaveTextContent(
+      /No live investment product/,
+    );
+  });
+
+  it("keeps physical backing and mass-loss semantics proposed, with a nuanced risk thesis", () => {
+    const { container } = render(<LandingPage />);
+    const assets = screen
+      .getByRole("heading", { name: "Coffee Asset Economy" })
+      .closest("article")!;
+    expect(assets).toHaveTextContent(/GCT/);
+    expect(assets).toHaveTextContent(/RCT/);
+    expect(assets).toHaveTextContent(/1 token = 1 kg is a proposed accounting model/);
+    expect(assets).toHaveTextContent(
+      /not a currently backed, custodied, physically verified or redeemable asset/,
+    );
+    expect(assets).toHaveTextContent(/Roasting loses mass/);
+    expect(assets).toHaveTextContent(/not 1:1/);
+    expect(assets).toHaveTextContent(/Yield, loss and fees/);
     expect(container).toHaveTextContent(
-      /no (?:verified )?physical (?:coffee )?(?:backing|custody)|not verified physical coffee/i,
+      /not crisis.proof, a guaranteed hedge or an uncorrelated asset/,
     );
-    expect(container).toHaveTextContent(
-      /no (?:real |live )?(?:coffee )?(?:orders|checkout|shipments)|not (?:a )?live (?:commerce|shop)|not live physical commerce/i,
-    );
+    expect(container).toHaveTextContent(/Prices can fall/);
   });
 
-  it("keeps the one-kilogram and roasting ratios explicitly proposed, not live backing or conversion", () => {
-    render(<LandingPage />);
-    const protocol = screen
-      .getByRole("heading", { name: "Coffee Asset Protocol" })
-      .closest("article");
-    expect(protocol).not.toBeNull();
-    expect(protocol).toHaveTextContent(/1\s*token\s*=\s*1\s*kg/i);
-    expect(protocol).toHaveTextContent(/1\s*:\s*0\.9/);
-    expect(protocol).toHaveTextContent(/proposed/i);
-    expect(protocol).toHaveTextContent(
-      /not [^.]*verified[^.]*currently redeemable|not [^.]*live backing/i,
-    );
-    expect(protocol).toHaveTextContent(
-      /not [^.]*operating physical process|not [^.]*live conversion/i,
-    );
-  });
-
-  it("uses a priority local hero photo with dimensions and lazy-loads below-fold photography", () => {
-    const { container } = render(<LandingPage />);
-    const images = Array.from(container.querySelectorAll("img"));
-    expect(images.length).toBeGreaterThan(1);
-    const [hero, ...belowFold] = images;
-    expect(hero).toHaveAttribute("loading", "eager");
-    expect(hero).toHaveAttribute("fetchpriority", "high");
-    for (const image of images) {
-      expect(image.getAttribute("src")).toMatch(/^\/images\/.+\.(?:webp|avif|png|jpe?g)$/);
-      expect(Number(image.getAttribute("width"))).toBeGreaterThan(0);
-      expect(Number(image.getAttribute("height"))).toBeGreaterThan(0);
-      expect(image).toHaveAccessibleName();
-    }
-    for (const image of belowFold) {
-      expect(image).toHaveAttribute("loading", "lazy");
-      expect(image).not.toHaveAttribute("fetchpriority", "high");
-    }
-  });
-
-  it("retains the current English document default without introducing a locale selector", () => {
-    const { container } = render(<LandingPage />);
-    expect(readFileSync("src/routes/__root.tsx", "utf8")).toMatch(/<html\s+lang="en"/);
-    expect(container.querySelector('[lang]:not([lang="en"])')).not.toBeInTheDocument();
-    expect(screen.queryByRole("combobox", { name: /language|locale/i })).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /change language|select language|locale/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("uses the existing public-shell theme control and preserves its choice after a reload-like remount", () => {
-    const page = (
-      <ThemeProvider>
-        <PublicShell>
+  it.each(["en", "es"])(
+    "has complete %s narrative, valid CTA destinations and localized photo descriptions",
+    (language) => {
+      if (language === "es") localStorage.setItem(LANDING_LANGUAGE_KEY, "es");
+      const { container } = render(
+        <LandingLanguageProvider>
           <LandingPage />
-        </PublicShell>
-      </ThemeProvider>
-    );
+        </LandingLanguageProvider>,
+      );
+      expect(container.querySelector(".landing")).toHaveAttribute("lang", language);
+      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+        language === "es" ? "economía global del café" : "global coffee economy",
+      );
+      const cta = language === "es" ? "Explorar mercados Testnet" : "Explore Testnet Markets";
+      screen
+        .getAllByRole("link", { name: cta })
+        .forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
+      expect(container.querySelectorAll("h2")).toHaveLength(6);
+      expect(container.querySelector("#ecosystem-layers ol")?.children).toHaveLength(3);
+      expect(container.querySelector("#coffee-capital")).toHaveTextContent(
+        language === "es"
+          ? /No se ofrece un producto de inversión activo/
+          : /No live investment product/,
+      );
+      const images = Array.from(container.querySelectorAll("img"));
+      expect(images).toHaveLength(2);
+      expect(images[0]).toHaveAttribute("loading", "eager");
+      expect(images[0]).toHaveAttribute("fetchpriority", "high");
+      expect(images[1]).toHaveAttribute("loading", "lazy");
+      images.forEach((img) => {
+        expect(img.getAttribute("src")).toMatch(/^\/images\/.+\.webp$/);
+        expect(img).toHaveAttribute("srcset");
+        expect(img).toHaveAttribute("sizes");
+        expect(Number(img.getAttribute("width"))).toBeGreaterThan(0);
+        expect(Number(img.getAttribute("height"))).toBeGreaterThan(0);
+        expect(img).toHaveAccessibleName();
+      });
+      expect(images[0].alt).toContain(language === "es" ? "caficultor" : "grower");
+    },
+  );
+
+  it("switches the public header, footer and landing together and remembers ES after remount", () => {
     const first = render(page);
-    expect(screen.getAllByRole("main")).toHaveLength(1);
+    const select = screen.getByRole("combobox", { name: "Language / Idioma" });
+    fireEvent.change(select, { target: { value: "es" } });
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("economía global del café");
+    expect(screen.getByRole("navigation", { name: "Explorar" })).toHaveTextContent("Documentación");
+    expect(localStorage.getItem(LANDING_LANGUAGE_KEY)).toBe("es");
+    const header = document.querySelector("header")!;
+    expect(header).not.toHaveTextContent(/Demo Explorer/);
+    expect(
+      within(header).queryByRole("button", { name: /User|Roaster|Admin/ }),
+    ).not.toBeInTheDocument();
+    first.unmount();
+    render(page);
+    expect(screen.getByRole("combobox", { name: "Language / Idioma" })).toHaveValue("es");
+    fireEvent.change(screen.getByRole("combobox", { name: "Language / Idioma" }), {
+      target: { value: "en" },
+    });
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("global coffee economy");
+  });
+
+  it("defaults safely for invalid or blocked storage and does not read preferences during SSR", () => {
+    localStorage.setItem(LANDING_LANGUAGE_KEY, "fr");
+    const first = render(
+      <LandingLanguageProvider>
+        <LanguageHarness />
+      </LandingLanguageProvider>,
+    );
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("global coffee economy");
+    first.unmount();
+    const read = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    renderToString(
+      <LandingLanguageProvider>
+        <LandingPage />
+      </LandingLanguageProvider>,
+    );
+    expect(read).not.toHaveBeenCalled();
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    render(
+      <LandingLanguageProvider>
+        <LanguageHarness />
+      </LandingLanguageProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Switch language" }));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("economía global del café");
+  });
+
+  it("preserves the shared theme while language changes", () => {
+    render(page);
     const toggle = screen.getByRole("button", { name: "Night mode" });
-    expect(toggle).toHaveAttribute("aria-pressed", "false");
     fireEvent.click(toggle);
-    expect(toggle).toHaveAttribute("aria-pressed", "true");
     expect(document.documentElement).toHaveClass("dark");
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe("dark");
-    first.unmount();
-    document.documentElement.classList.remove("dark");
-    document.documentElement.dataset.theme = "light";
-    render(page);
-    expect(document.documentElement).toHaveClass("dark");
-    expect(screen.getByRole("button", { name: "Night mode" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
-      "Coffee is more than a commodity. It’s a global market.",
-    );
+    fireEvent.change(screen.getByRole("combobox", { name: "Language / Idioma" }), {
+      target: { value: "es" },
+    });
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getAllByRole("main")).toHaveLength(1);
   });
 });

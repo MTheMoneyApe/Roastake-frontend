@@ -4,11 +4,13 @@ import { LandingPage } from "@/components/landing-page";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () =>
-    seo(
-      "ROASTAKE | The Real Coffee Economy",
-      "A new financial layer for the real coffee economy. Explore NEAR Testnet markets and the vision connecting physical coffee, digital assets and decentralized finance.",
+  head: () => ({
+    ...seo(
+      "The Financial Layer for the Global Coffee Economy",
+      "Coffee first. Explore ROASTAKE’s NEAR Testnet markets, illustrative coffee assets and roadmap for connecting the real coffee economy to decentralized finance.",
     ),
+    links: [{ rel: "canonical", href: "https://roastake.vercel.app/" }],
+  }),
   component: Home,
 });
 

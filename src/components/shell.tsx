@@ -41,6 +41,7 @@ import { WalletHubHeaderButton } from "@/components/wallet/wallet-hub";
 import { SimulatedDemoNetworkSelect } from "@/components/wallet/wallet-pages";
 import { DemoBadge, MaturityBadge } from "./kit";
 import { ThemeToggle } from "@/components/theme-provider";
+import { LandingLanguageProvider, useLandingLanguage } from "@/components/landing-language";
 
 import {
   APP_NAV,
@@ -527,7 +528,16 @@ function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
   );
 }
 
+const publicSpanishLabels: Record<string, string> = {
+  "/": "Economía del café",
+  "/app/perps": "Mercados Testnet",
+  "/app/assets": "Activos de café demo",
+  "/roadmap": "Hoja de ruta",
+  "/app/docs": "Documentación",
+};
+
 function PublicNavigation() {
+  const { language } = useLandingLanguage();
   const path = useRouterState({ select: (r) => r.location.pathname });
   const id = useId();
   const nav = useRef<HTMLElement>(null);
@@ -588,7 +598,7 @@ function PublicNavigation() {
       observer?.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [nativePopover]);
+  }, [nativePopover, language]);
 
   const close = () => {
     if (!wide && nativePopover) list.current?.hidePopover();
@@ -596,7 +606,11 @@ function PublicNavigation() {
   };
 
   return (
-    <nav ref={nav} aria-label="Main navigation" className="shrink-0">
+    <nav
+      ref={nav}
+      aria-label="Main navigation"
+      className="order-last basis-full shrink-0 sm:order-none sm:basis-auto"
+    >
       <Button
         ref={trigger}
         type="button"
@@ -610,7 +624,7 @@ function PublicNavigation() {
         }}
       >
         <Menu className="size-4" aria-hidden="true" />
-        <span>Menu</span>
+        <span>{language === "es" ? "Menú" : "Menu"}</span>
       </Button>
       <ul
         ref={list}
@@ -646,7 +660,7 @@ function PublicNavigation() {
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                {label}
+                {language === "es" ? publicSpanishLabels[to] : label}
               </Link>
             </li>
           );
@@ -657,69 +671,99 @@ function PublicNavigation() {
 }
 
 export function PublicShell({ children }: { children: ReactNode }) {
+  return (
+    <LandingLanguageProvider>
+      <PublicShellContent>{children}</PublicShellContent>
+    </LandingLanguageProvider>
+  );
+}
+
+function PublicShellContent({ children }: { children: ReactNode }) {
+  const { language, setLanguage } = useLandingLanguage();
+  const path = useRouterState({ select: (r) => r.location.pathname });
+  const es = language === "es";
   const cart = useDemo((s) => s.cart.reduce((a, c) => a + c.qty, 0));
   const h = useHydrated();
   return (
-    <div className="min-h-screen min-w-0 bg-background text-foreground">
+    <div lang={language} className="min-h-screen min-w-0 bg-background text-foreground">
       <a href="#main-content" className="brand-skip-link">
-        Skip to content
+        {es ? "Saltar al contenido" : "Skip to content"}
       </a>
-      <div className="border-b border-warning-foreground/30 bg-warning px-4 py-1.5 text-center text-[10px] font-medium leading-relaxed tracking-wide text-warning-foreground sm:text-[11px]">
-        NEAR Testnet prototype · Perps prices are operator-controlled and synthetic; RHEA uses
-        non-monetary test tokens. Marketplace, coffee backing, balances &amp; yields are
-        illustrative.
+      <div className="border-b border-warning-foreground/30 bg-warning px-4 py-1.5 text-center text-[11px] font-medium leading-relaxed tracking-wide text-warning-foreground">
+        {es
+          ? "Prototipo NEAR Testnet · Perps usa precios sintéticos de operador. RHEA usa tokens de prueba sin valor monetario. La experiencia de café es ilustrativa."
+          : "NEAR Testnet prototype · Perps uses operator-controlled synthetic prices. RHEA uses non-monetary test tokens. The coffee experience is illustrative."}
       </div>
       <header className="brand-header sticky top-0 z-30 backdrop-blur">
-        <div className="brand-container flex min-h-16 min-w-0 items-center justify-between gap-2 sm:gap-4">
+        <div className="brand-container flex min-h-16 min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 py-2 sm:flex-nowrap sm:gap-4 sm:py-0">
           <Logo compact />
           <PublicNavigation />
-          <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
+          <div className="flex min-w-0 items-center gap-1 sm:gap-1.5">
+            <select
+              aria-label="Language / Idioma"
+              value={language}
+              onChange={(event) => setLanguage(event.target.value === "es" ? "es" : "en")}
+              className="min-h-11 rounded-md border border-border bg-background px-2 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <option value="en" lang="en">
+                EN
+              </option>
+              <option value="es" lang="es">
+                ES
+              </option>
+            </select>
             <ThemeToggle />
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/cart" aria-label="Coffee cart" className="gap-2">
-                <ShoppingBag />
-                {h && cart > 0 && (
-                  <span className="num rounded-full bg-highlight px-1.5 text-[11px] text-highlight-foreground">
-                    {cart}
-                  </span>
-                )}
-              </Link>
-            </Button>
-            <div className="hidden sm:block">
-              <Notifications />
+            <div className="hidden sm:flex sm:items-center sm:gap-1.5">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/cart" aria-label="Coffee cart" className="gap-2">
+                  <ShoppingBag />
+                  {h && cart > 0 && (
+                    <span className="num rounded-full bg-highlight px-1.5 text-[11px] text-highlight-foreground">
+                      {cart}
+                    </span>
+                  )}
+                </Link>
+              </Button>
+              <WalletButton />
             </div>
-            <WalletButton />
-            <Profile />
           </div>
         </div>
       </header>
       <main id="main-content" tabIndex={-1} className="min-w-0 focus-visible:outline-none">
-        <ScopeNotice publicPage />
+        {path !== "/" && (
+          <div lang="en">
+            <ScopeNotice publicPage />
+          </div>
+        )}
         {children}
       </main>
       <footer className="mt-20 bg-feature text-feature-foreground">
         <div className="brand-container grid gap-8 py-14 md:grid-cols-2">
           <div>
             <Logo />
-            <p className="mt-2 text-sm text-feature-muted">Roast. Stake. Repeat.</p>
-            <p className="mt-4 text-xs text-feature-muted">
-              A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions
-              using non-monetary test tokens. Perps prices are operator-controlled and synthetic;
-              the separate read-only OutLayer oracle does not power Perps. Marketplace orders,
-              inventory, coffee custody, demo balances and yields are simulated; no verified
-              physical backing, real shipments or Mainnet deployment.
+            <p className="mt-2 text-sm text-feature-muted">
+              {es
+                ? "La infraestructura financiera para la economía real del café."
+                : "The financial infrastructure for the real coffee economy."}
+            </p>
+            <p className="mt-4 text-xs leading-relaxed text-feature-muted">
+              {es
+                ? "Solo NEAR Testnet. Tokens sin valor monetario, precios sintéticos y demos ilustrativas. El oráculo OutLayer es independiente y no alimenta Perps. Sin respaldo físico verificado, envíos reales ni productos de inversión activos."
+                : "NEAR Testnet only. Non-monetary test tokens, synthetic prices and illustrative demos. The separate read-only OutLayer oracle does not power Perps. No verified physical backing, real shipments or live investment products."}
             </p>
           </div>
-          <nav aria-label="Explore">
-            <p className="mb-3 text-xs uppercase tracking-wider text-feature-highlight">Explore</p>
+          <nav aria-label={es ? "Explorar" : "Explore"}>
+            <p className="mb-3 text-xs uppercase tracking-wider text-feature-highlight">
+              {es ? "Explorar" : "Explore"}
+            </p>
             <ul className="space-y-1.5 text-sm">
               {PUBLIC_NAV.map(({ to, label }) => (
                 <li key={to}>
                   <Link
                     to={to}
-                    className="rounded-sm text-feature-muted hover:text-feature-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    className="inline-flex min-h-11 items-center rounded-sm text-feature-muted hover:text-feature-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   >
-                    {label}
+                    {es ? publicSpanishLabels[to] : label}
                   </Link>
                 </li>
               ))}
