@@ -9,7 +9,7 @@ import {
   LANDING_LANGUAGE_KEY,
   useLandingLanguage,
 } from "@/components/landing-language";
-import { PublicShell } from "@/components/shell";
+import { LandingShell } from "@/components/shell";
 import { ThemeProvider, THEME_STORAGE_KEY } from "@/components/theme-provider";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -54,9 +54,9 @@ function LanguageHarness() {
 }
 const page = (
   <ThemeProvider>
-    <PublicShell>
+    <LandingShell>
       <LandingPage />
-    </PublicShell>
+    </LandingShell>
   </ThemeProvider>
 );
 beforeEach(() => {
@@ -97,10 +97,10 @@ describe("ROASTAKE bilingual editorial landing", () => {
 
   it("keeps explicit working CTA routes at the hero and closing", () => {
     render(<LandingPage />);
-    const markets = screen.getAllByRole("link", { name: "Explore Testnet Markets" });
+    const markets = screen.getAllByRole("link", { name: "Launch App" });
     expect(markets).toHaveLength(2);
     markets.forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
-    const docs = screen.getAllByRole("link", { name: "Read the Docs" });
+    const docs = screen.getAllByRole("link", { name: "Open the documentation" });
     expect(docs).toHaveLength(3);
     docs.forEach((link) => expect(link).toHaveAttribute("href", "/app/docs"));
     const links = screen.getAllByRole("link");
@@ -181,7 +181,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
         language === "es" ? "economía global del café" : "global coffee economy",
       );
-      const cta = language === "es" ? "Explorar mercados Testnet" : "Explore Testnet Markets";
+      const cta = language === "es" ? "Iniciar app" : "Launch App";
       screen
         .getAllByRole("link", { name: cta })
         .forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
@@ -214,7 +214,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
     const select = screen.getByRole("combobox", { name: "Language / Idioma" });
     fireEvent.change(select, { target: { value: "es" } });
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("economía global del café");
-    expect(screen.getByRole("navigation", { name: "Explorar" })).toHaveTextContent("Documentación");
+    expect(screen.getByRole("navigation", { name: "Explorar" })).toHaveTextContent("Iniciar app");
     expect(localStorage.getItem(LANDING_LANGUAGE_KEY)).toBe("es");
     const header = document.querySelector("header")!;
     expect(header).not.toHaveTextContent(/Demo Explorer/);
