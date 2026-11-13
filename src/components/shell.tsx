@@ -298,7 +298,7 @@ function NavList({ groups, onNav }: { groups: Group[]; onNav?: () => void }) {
 export function AppShell({
   children,
   nav = APP_NAV,
-  home = "/app/dashboard",
+  home = "/",
 }: {
   children: ReactNode;
   nav?: Group[];
@@ -311,7 +311,7 @@ export function AppShell({
     .flatMap((group) => group.items)
     .filter((item) => path === item.to || (item.to !== "/admin" && path.startsWith(item.to + "/")))
     .sort((a, b) => b.to.length - a.to.length)[0];
-  const workspaceLabel = nav === APP_NAV ? "Protocol App" : nav[0].label;
+  const workspaceLabel = nav === APP_NAV ? "ROASTAKE" : nav[0].label;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -565,10 +565,12 @@ function PublicNavigation() {
                 onClick={close}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-11 items-center whitespace-nowrap rounded-md border-b-2 border-transparent px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring forced-colors:focus-visible:outline",
-                  active
-                    ? "border-primary bg-accent font-semibold text-accent-foreground forced-colors:border-[Highlight]"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  "flex min-h-11 items-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring forced-colors:focus-visible:outline",
+                  to === "/app/perps"
+                    ? "border border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:text-primary-foreground"
+                    : active
+                      ? "border-b-2 border-primary bg-accent font-semibold text-accent-foreground forced-colors:border-[Highlight]"
+                      : "border-b-2 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 {language === "es" ? publicSpanishLabels[to] : label}
@@ -581,15 +583,24 @@ function PublicNavigation() {
   );
 }
 
+/**
+ * All non-landing public routes use the same application shell and sidebar as Perps.
+ * Keep this compatibility export so existing route modules inherit the shared layout.
+ */
 export function PublicShell({ children }: { children: ReactNode }) {
+  return <AppShell>{children}</AppShell>;
+}
+
+/** The Coffee Economy landing is the only route with its own editorial shell. */
+export function LandingShell({ children }: { children: ReactNode }) {
   return (
     <LandingLanguageProvider>
-      <PublicShellContent>{children}</PublicShellContent>
+      <LandingShellContent>{children}</LandingShellContent>
     </LandingLanguageProvider>
   );
 }
 
-function PublicShellContent({ children }: { children: ReactNode }) {
+function LandingShellContent({ children }: { children: ReactNode }) {
   const { language, setLanguage } = useLandingLanguage();
   const path = useRouterState({ select: (r) => r.location.pathname });
   const es = language === "es";
