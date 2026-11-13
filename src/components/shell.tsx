@@ -1,7 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
-  Bell,
   Coffee,
   Flame,
   Layers,
@@ -18,15 +17,6 @@ import {
   Wheat,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -34,12 +24,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { demo, useDemo } from "@/lib/demo/store";
-import type { Role } from "@/lib/demo/types";
+import { useDemo } from "@/lib/demo/store";
 import { cn } from "@/lib/utils";
 import { WalletHubHeaderButton } from "@/components/wallet/wallet-hub";
 import { SimulatedDemoNetworkSelect } from "@/components/wallet/wallet-pages";
-import { DemoBadge, MaturityBadge } from "./kit";
+import { MaturityBadge } from "./kit";
 import { ThemeToggle } from "@/components/theme-provider";
 import { LandingLanguageProvider, useLandingLanguage } from "@/components/landing-language";
 
@@ -163,103 +152,11 @@ export function NetworkSelect() {
   return <SimulatedDemoNetworkSelect className="w-[158px]" />;
 }
 
-function Notifications() {
-  const s = useDemo();
-  const unread = s.notifications.filter((n) => !n.read).length;
-  return (
-    <Popover onOpenChange={(o) => !o && unread && demo.readAll()}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
-          <Bell />
-          {unread > 0 && (
-            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-copper" />
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 p-0">
-        <div className="border-b px-4 py-2.5 text-sm font-semibold">
-          Notifications <DemoBadge className="ml-1" />
-        </div>
-        <ul className="max-h-80 overflow-y-auto">
-          {s.notifications.length === 0 && (
-            <li className="p-4 text-sm text-muted-foreground">No notifications</li>
-          )}
-          {s.notifications.slice(0, 12).map((n) => (
-            <li
-              key={n.id}
-              className={cn(
-                "border-b px-4 py-2.5 text-sm last:border-0",
-                !n.read && "bg-accent/40",
-              )}
-            >
-              <p>{n.text}</p>
-              <p className="text-xs text-muted-foreground">{n.date}</p>
-            </li>
-          ))}
-        </ul>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
 export function WalletButton() {
   return (
     <div className="max-[400px]:[&_button]:size-10 max-[400px]:[&_button]:p-0 max-[400px]:[&_button>span.font-mono]:hidden">
       <WalletHubHeaderButton />
     </div>
-  );
-}
-
-function Profile() {
-  const s = useDemo();
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-2 px-1.5 sm:px-3"
-          aria-label="Open profile and demo role menu"
-        >
-          <span className="grid size-7 place-items-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
-            {s.account[0]}
-            {s.account.split(" ")[1]?.[0]}
-          </span>
-          <span className="hidden text-xs lg:inline">{s.role}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>{s.account}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel className="text-xs text-muted-foreground">
-          Demo role view
-        </DropdownMenuLabel>
-        {(["User", "Roaster", "Treasury Manager", "Admin"] as Role[]).map((r) => (
-          <DropdownMenuItem key={r} onClick={() => demo.setRole(r)}>
-            {r === s.role ? "● " : ""}
-            {r}
-          </DropdownMenuItem>
-        ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/app/wallet">Multichain Wallet &amp; Demo</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/orders">My orders</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/app/activity">Activity</Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/roadmap">Roadmap / Planned portals</Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => demo.reset()} className="text-loss">
-          Reset demo data
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 
@@ -274,9 +171,7 @@ function Controls() {
         <span>NEAR Testnet · Test tokens only</span>
       </span>
       <ThemeToggle />
-      <Notifications />
       <WalletButton />
-      <Profile />
     </div>
   );
 }
@@ -489,7 +384,7 @@ export function AppShell({
                   )}
                 </nav>
               </div>
-              <div className="shrink-0 [&_button[aria-haspopup='menu']]:px-1.5 sm:[&_button[aria-haspopup='menu']]:px-3 [&_button[aria-label='Notifications']]:hidden sm:[&_button[aria-label='Notifications']]:inline-flex">
+              <div className="shrink-0">
                 <Controls />
               </div>
             </div>

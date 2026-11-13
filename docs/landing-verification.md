@@ -15,7 +15,7 @@ Production was not updated by this work. Only the normal branch Preview build ru
 - Narrative: real coffee/risk thesis → three connected layers → products by maturity → coffee/DeFi/venture capital roadmap → roadmap/docs.
 - Truth boundaries: synthetic operator-controlled Perps prices; non-monetary RHEA Testnet swaps; independent read-only OutLayer, not Perps pricing or physical verification. Demo assets/commerce and future investment services are not live physical or investment products. Proposed kilogram convention and non-1:1 roasting with separate yield/loss/fees.
 - Complete new narrative in EN/ES, persisted public language selector, translated public header/footer, localized editorial photo descriptions. Existing English route content keeps `lang=en` when public navigation is Spanish.
-- Five public links remain one semantic responsive tree. Profile/role/demo controls remain in the application, not the public header. Existing routes preserved.
+- Five public links remain one semantic responsive tree. The Android/Brave follow-up below removes profile/role/demo controls from the application header too. Existing routes preserved.
 - Local licensed WebP photos retain responsive srcsets, explicit dimensions, eager/high-priority hero and lazy below-fold imagery. Existing logo, fonts, palette and theme preserved; reduced-motion and visible-focus rules retained.
 
 ## Guidance
@@ -45,6 +45,21 @@ Tests cover section/heading order, both languages, language preference persisten
 - Hero primary CTA actually rendered `/app/perps` with the Coffee Index Perpetuals heading; secondary rendered `/app/docs` with ROASTAKE Documentation. Both had no mobile horizontal overflow.
 - `/market` rendered its real heading, a usable translated public header and no mobile horizontal overflow. Existing internal pages remain English, not translated by the landing selector.
 - Preference persisted after a full Preview reload.
+
+## Android/Brave application-header correction
+
+The user’s physical Android/Brave capture exposed a gap in the earlier landing-focused emulation: the application header still had a demo avatar dropdown on `/app/perps`. It was not the public landing navigation. Reproduced on the existing Preview at 390×844 by activating `Open profile and demo role menu`: the 224×394px overlay started at y=52 and covered the Testnet notice and Perps content.
+
+Removed the `Profile` component and its role/reset/link dropdown from the shared application header entirely, not hidden behind another button or moved elsewhere. Also removed the header’s simulated notifications popover so it cannot create another demo overlay. Real wallet hub, theme control, accessible navigation drawer, all routes, demo store and Perps logic are unchanged. Public ES/EN content is unchanged; existing internal pages retain their English language boundary.
+
+Regression coverage renders `/app/perps` with 320/390/430/1440px viewport values, asserts no profile/role/notification trigger or header command menu, preserves wallet/theme controls, opens the navigation drawer, confirms the Perps link, and checks Escape/focus restoration. These are jsdom structural/interaction checks, not CSS viewport proof. Before the fix, 5 shell assertions failed; after it, all 30 shell tests passed.
+
+Current correction checks on Reason Cloud:
+- `bun x tsc --noEmit`: PASS.
+- `bun run test`: PASS, 220 tests / 25 files.
+- `bun run build`: PASS; existing bundling/externalization/Nitro warnings remain.
+- `bun x eslint src/components/shell.tsx src/test/shell-design.test.tsx`: PASS, 0 errors / 4 existing Fast Refresh warnings.
+- Rendered post-publication checks and screenshots are recorded in the PR follow-up; physical Android/Brave retesting is not claimed.
 
 ## Limits
 

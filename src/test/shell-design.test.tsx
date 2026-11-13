@@ -129,12 +129,48 @@ describe("Shared brand shells", () => {
     for (const logo of screen.getAllByRole("link", { name: "ROASTAKE home" })) {
       expect(logo).toHaveAttribute("href", "/app/dashboard");
     }
-    expect(screen.getByRole("button", { name: "Notifications" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Notifications" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Connect Wallet" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Open profile and demo role menu" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: "Open profile and demo role menu" }),
+    ).not.toBeInTheDocument();
   });
+
+  it.each([320, 390, 430, 1440])(
+    "keeps demo role tools out of the Perps header and mobile drawer at %ipx",
+    async (width) => {
+      vi.stubGlobal("innerWidth", width);
+      location.pathname = "/app/perps";
+      try {
+        const { container } = render(
+          <AppShell>
+            <h1>Coffee Index Perpetuals</h1>
+          </AppShell>,
+        );
+        const header = container.querySelector("header")!;
+        expect(within(header).getByRole("button", { name: "Connect Wallet" })).toBeInTheDocument();
+        expect(within(header).getByRole("button", { name: "Night mode" })).toBeInTheDocument();
+        expect(
+          within(header).queryByRole("button", { name: /profile|role|notification/i }),
+        ).toBeNull();
+        expect(header.querySelector('[aria-haspopup="menu"]')).toBeNull();
+        expect(header).not.toHaveTextContent(/Demo Explorer|Demo role view|Reset demo data/);
+        fireEvent.click(within(header).getByRole("button", { name: "Open menu" }));
+        const drawer = await screen.findByRole("dialog", { name: "Protocol sections" });
+        expect(drawer).not.toHaveTextContent(/Demo Explorer|Demo role view|Reset demo data/);
+        expect(within(drawer).getByRole("link", { name: /^Perpetuals/ })).toHaveAttribute(
+          "href",
+          "/app/perps",
+        );
+        fireEvent.keyDown(drawer, { key: "Escape", code: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+        expect(within(header).getByRole("button", { name: "Open menu" })).toHaveFocus();
+        expect(screen.getByRole("heading", { name: "Coffee Index Perpetuals" })).toBeVisible();
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    },
+  );
 
   it.each([
     {
