@@ -102,24 +102,20 @@ describe("Implementation-status navigation", () => {
     expect(APP_NAV.map(({ label }) => label)).toEqual([
       "Markets / Testnet",
       "Coffee Experience / Demo",
-      "Demo Workspace",
+      "Workspace",
       "Roadmap",
       "Documentation",
     ]);
     expect(APP_NAV[0].items).toHaveLength(5);
     expect(APP_NAV[1].items).toHaveLength(5);
     expect(APP_NAV[2]).toMatchObject({ collapsible: true, defaultCollapsed: true });
-    expect(APP_NAV[2].items.map(({ to }) => to)).toEqual(
-      expect.arrayContaining([
-        "/app/dashboard",
-        "/orders",
-        "/roasters",
-        "/app/market-analytics",
-        "/app/activity",
-        "/app/markets",
-        "/app/multichain",
-      ]),
-    );
+    expect(APP_NAV[2].items.map(({ to, label }) => ({ to, label }))).toEqual([
+      { to: "/app/dashboard", label: "Dashboard" },
+      { to: "/app/markets", label: "Markets" },
+      { to: "/roasters", label: "Roaster Profiles" },
+      { to: "/cart", label: "Coffee Cart" },
+      { to: "/app/activity", label: "Orders & Activity" },
+    ]);
     expect(APP_NAV.at(-1)).toMatchObject({
       standalone: true,
       items: [{ to: "/app/docs", label: "Documentation" }],
