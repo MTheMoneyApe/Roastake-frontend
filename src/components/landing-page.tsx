@@ -18,8 +18,6 @@ const copy = {
       "Coffee connects the world. We’re building a bridge from its real economy to digital assets and decentralized markets — starting on NEAR Testnet.",
     primary: "Launch App",
     secondary: "Open the documentation",
-    heroNote:
-      "Testnet today. Physical integrations are future work. Test tokens have no monetary value; they do not represent ownership of coffee.",
     foundation: "Rooted in the real world",
     thesisKicker: "01 / The foundation",
     thesisTitle: "Coffee is more than a commodity.",
@@ -64,7 +62,7 @@ const copy = {
       [
         "Financial Layer",
         "Live on NEAR Testnet",
-        "Perpetuals use operator-controlled synthetic reference prices, not real coffee spot quotes. RHEA Mini Swap executes Testnet transactions through pools using non-monetary test tokens, not purchases of physical coffee.",
+        "Perpetuals use operator-controlled synthetic reference prices, not real coffee spot quotes. RHEA Mini Swap executes NEAR Testnet transactions through pools; it does not represent purchases of physical coffee.",
         "OutLayer is a separate, read-only benchmark/oracle demo. It does not power Perps or verify physical coffee.",
       ],
     ],
@@ -76,12 +74,12 @@ const copy = {
       [
         "Coffee Perpetuals",
         "Synthetic markets / test USDC",
-        "Operator-controlled synthetic Testnet price references, not live coffee exchange quotations. Test USDC has no monetary value.",
+        "Operator-controlled synthetic Testnet price references, not live coffee exchange quotations.",
       ],
       [
         "RHEA Mini Swap",
         "Test tokens / on-chain pools",
-        "Actual NEAR Testnet swaps, subject to pool liquidity and wallet availability. Non-monetary test tokens, not physical coffee transactions.",
+        "Actual NEAR Testnet swaps, subject to pool liquidity and wallet availability; not physical coffee transactions.",
       ],
       [
         "OutLayer Oracle",
@@ -131,8 +129,6 @@ const copy = {
       "El café conecta al mundo. Construimos un puente entre su economía real, los activos digitales y los mercados descentralizados — empezando en NEAR Testnet.",
     primary: "Iniciar app",
     secondary: "Abrir documentación",
-    heroNote:
-      "Testnet hoy. Integraciones físicas a futuro. Los tokens de prueba no tienen valor monetario ni representan la propiedad de café.",
     foundation: "Con raíces en el mundo real",
     thesisKicker: "01 / El fundamento",
     thesisTitle: "El café es más que una materia prima.",
@@ -189,12 +185,12 @@ const copy = {
       [
         "Coffee Perpetuals",
         "Mercados sintéticos / USDC de prueba",
-        "Referencias sintéticas Testnet controladas por un operador, no cotizaciones reales de bolsas de café. El USDC de prueba no tiene valor monetario.",
+        "Referencias sintéticas Testnet controladas por un operador, no cotizaciones reales de bolsas de café.",
       ],
       [
         "RHEA Mini Swap",
         "Tokens de prueba / pools on-chain",
-        "Swaps reales en NEAR Testnet, sujetos a la liquidez del pool y la disponibilidad de la wallet. Tokens sin valor monetario, no transacciones de café físico.",
+        "Swaps reales en NEAR Testnet, sujetos a la liquidez del pool y la disponibilidad de la wallet; no son transacciones de café físico.",
       ],
       [
         "OutLayer Oracle",
@@ -271,13 +267,10 @@ export function LandingPage() {
       <section className="brand-hero landing-hero" aria-labelledby="landing-title">
         <Section className="landing-hero-grid">
           <div className="landing-hero-copy">
-            <p className="landing-kicker text-hero-highlight">{c.kicker}</p>
-            <h1 id="landing-title">
-              {c.headline} <em>{c.emphasis}</em>
-            </h1>
-            <p className="landing-hero-intro text-hero-muted">{c.intro}</p>
+            <h1 id="landing-title" className="landing-brand-title text-hero-highlight">{c.kicker}</h1>
+            <p className="landing-hero-intro text-hero-muted">{c.headline} {c.emphasis}</p>
+            <p className="landing-hero-description text-hero-muted">{c.intro}</p>
             {actions}
-            <p className="landing-maturity text-hero-muted">{c.heroNote}</p>
           </div>
           <div>
             <CoffeePhoto
