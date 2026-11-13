@@ -134,7 +134,7 @@ describe("Implementation-status navigation", () => {
     ]);
   });
 
-  it("uses only five public destinations in a stable order", () => {
+  it("uses one Launch App destination in a stable order", () => {
     expect(PUBLIC_NAV.map(({ to, label }) => ({ to, label }))).toEqual([
       { to: "/app/perps", label: "Launch App" },
     ]);
