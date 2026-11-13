@@ -101,17 +101,24 @@ describe("shared coffee presentation and accessible controls", () => {
 
   it("retains the public hero and Testnet/demo boundaries without forcing a dark section", () => {
     const { container } = render(<Home />);
-    expect(screen.getByRole("heading", { level: 1, name: "ROASTAKE" })).toBeInTheDocument();
+    const heading = screen.getByRole("heading", {
+      level: 1,
+      name: "Coffee is more than a commodity. It’s a global market.",
+    });
     expect(container.querySelector(".dark")).toBeNull();
-    expect(
-      screen.getByText(/Specialty Coffee × Decentralized Finance/).parentElement?.parentElement,
-    ).toHaveClass("md:min-h-[min(78dvh,52rem)]");
+    expect(heading.closest("section")).toHaveClass("brand-hero", "landing-hero");
     expect(container.querySelector('img[fetchpriority="high"]')).toHaveAttribute(
       "loading",
       "eager",
     );
-    expect(screen.getByText(/not verified physical coffee or live commerce/)).toBeInTheDocument();
-    expect(screen.getByText(/No Mainnet deployment, real-money trading/)).toBeInTheDocument();
-    expect(screen.getByText(/It does not supply prices to Perps/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/No physical backing, independent certification or real redemption/),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Test USDC has no monetary value/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Independent and separate from Perpetuals: it is not its execution-price feed/,
+      ),
+    ).toBeInTheDocument();
   });
 });
