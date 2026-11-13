@@ -345,7 +345,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <EcosystemIcon ecosystem={acc.ecosystem} className="size-3.5 text-sage" />
+                      <EcosystemIcon ecosystem={acc.ecosystem} className="size-3.5 text-accent-foreground" />
                       <span className="font-semibold text-foreground">{acc.ecosystemLabel}</span>
                       <span className="text-muted-foreground">· {acc.providerName}</span>
                       {acc.isPrimaryProtocolNetwork && <Pill tone="gain">Primary Execution</Pill>}
@@ -721,7 +721,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
               <div className="space-y-3 rounded-md border bg-background/50 p-3 text-xs">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <Link2 className="size-3.5 text-brass" aria-hidden="true" />
+                    <Link2 className="size-3.5 text-highlight" aria-hidden="true" />
                     <span className="font-mono font-semibold">
                       {hyperliquid.associatedEvmAddress}
                     </span>

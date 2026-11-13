@@ -1,26 +1,47 @@
 // SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
 // Copyright © 2026 @MTheMoneyApe. All rights reserved.
 
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PerpsMarketChart } from "@/components/perps/market-chart";
 
 const chartMocks = vi.hoisted(() => {
   const setData = vi.fn();
-  const addSeries = vi.fn(() => ({ setData }));
+  const applySeriesOptions = vi.fn();
+  const applyChartOptions = vi.fn();
+  const fitContent = vi.fn();
+  const remove = vi.fn();
+  const setMarkers = vi.fn();
+  const addSeries = vi.fn(() => ({ setData, applyOptions: applySeriesOptions }));
   const createChart = vi.fn(() => ({
     addSeries,
-    timeScale: () => ({ fitContent: vi.fn() }),
+    applyOptions: applyChartOptions,
+    timeScale: () => ({ fitContent }),
     subscribeCrosshairMove: vi.fn(),
-    remove: vi.fn(),
+    remove,
   }));
-  const createSeriesMarkers = vi.fn(() => ({ setMarkers: vi.fn(), detach: vi.fn() }));
-  return { createChart, addSeries, setData, createSeriesMarkers, history: vi.fn() };
+  const createSeriesMarkers = vi.fn(() => ({ setMarkers, detach: vi.fn() }));
+  return {
+    createChart,
+    addSeries,
+    setData,
+    createSeriesMarkers,
+    applyChartOptions,
+    applySeriesOptions,
+    fitContent,
+    remove,
+    setMarkers,
+    history: vi.fn(),
+  };
 });
 
 vi.mock("@/lib/perps/queries", () => ({ usePerpsMarketHistory: chartMocks.history }));
 vi.mock("@/components/perps/market-chart-toolbar", () => ({
-  ArabicaMarketChartToolbar: () => null,
+  ArabicaMarketChartToolbar: ({
+    onTimeframeChange,
+  }: {
+    onTimeframeChange: (value: "1m") => void;
+  }) => <button onClick={() => onTimeframeChange("1m")}>Show one-minute candles</button>,
 }));
 vi.mock("lightweight-charts", () => ({
   createChart: chartMocks.createChart,
@@ -62,10 +83,163 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  document.documentElement.classList.remove("dark");
   vi.restoreAllMocks();
 });
 
 describe("market chart shared theme", () => {
+  it.each(["Line", "Candlestick"])(
+    "updates %s colors in place on root theme changes without resetting data or viewport",
+    async (seriesType) => {
+      const day = {
+        "--card": [250, 248, 239, 255],
+        "--foreground": [40, 48, 43, 255],
+        "--border": [214, 212, 197, 255],
+        "--gain": [20, 115, 65, 255],
+        "--loss": [166, 46, 33, 255],
+        "--warning-foreground": [111, 68, 23, 255],
+      };
+      const night = {
+        "--card": [30, 37, 33, 255],
+        "--foreground": [235, 236, 230, 255],
+        "--border": [58, 68, 61, 255],
+        "--gain": [115, 190, 142, 255],
+        "--loss": [230, 118, 97, 255],
+        "--warning-foreground": [211, 183, 129, 255],
+      };
+      const colors = new Map(
+        [...Object.values(day), ...Object.values(night)].map((channels) => [
+          `rgb(${channels.slice(0, 3).join(", ")})`,
+          channels,
+        ]),
+      );
+      vi.spyOn(window, "getComputedStyle").mockImplementation(
+        () =>
+          ({
+            getPropertyValue: (token: keyof typeof day) => {
+              const theme = document.documentElement.classList.contains("dark") ? night : day;
+              return token in theme ? `rgb(${theme[token].slice(0, 3).join(", ")})` : "";
+            },
+          }) as unknown as CSSStyleDeclaration,
+      );
+      const context = {
+        fillStyle: "",
+        clearRect: vi.fn(),
+        fillRect: vi.fn(),
+        getImageData: () => ({ data: colors.get(context.fillStyle) }),
+      };
+      vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(
+        context as unknown as CanvasRenderingContext2D,
+      );
+      setHistory({
+        data: {
+          observations: [observation],
+          latestObservation: observation,
+          tradeMarkers: ["LONG_OPEN", "SHORT_OPEN", "CLOSE"].map((kind, index) => ({
+            kind,
+            positionId: index + 1,
+            timestampSec: observation.timestampSec,
+            anchorTimeSec: observation.timestampSec,
+            anchorSequence: 1,
+            txHash: `verified-${kind}`,
+            explorerUrl: `https://example.com/${kind}`,
+            execPriceE8: "500000000",
+            feeE8: "0",
+          })),
+          referenceNowSec: observation.timestampSec,
+          latestAgeSec: 0,
+          isStale: false,
+          candleAvailability: {
+            "1m": {
+              available: true,
+              candles: [
+                {
+                  time: observation.timestampSec,
+                  open: 5,
+                  high: 6,
+                  low: 4,
+                  close: 5.5,
+                  sampleCount: 2,
+                },
+              ],
+            },
+          },
+        },
+      });
+      const view = render(<PerpsMarketChart market={null} />);
+      await waitFor(() => expect(chartMocks.createChart).toHaveBeenCalledOnce());
+      const initialChartCount = seriesType === "Candlestick" ? 2 : 1;
+      if (seriesType === "Candlestick") {
+        fireEvent.click(screen.getByRole("button", { name: "Show one-minute candles" }));
+        await waitFor(() =>
+          expect(chartMocks.createChart).toHaveBeenCalledTimes(initialChartCount),
+        );
+      }
+      expect(chartMocks.addSeries).toHaveBeenLastCalledWith(seriesType, expect.anything());
+      expect(chartMocks.setData).toHaveBeenCalledTimes(initialChartCount);
+      expect(chartMocks.fitContent).toHaveBeenCalledTimes(initialChartCount);
+
+      await act(async () => {
+        document.documentElement.classList.add("dark");
+      });
+      await waitFor(() =>
+        expect(chartMocks.applyChartOptions).toHaveBeenCalledWith(
+          expect.objectContaining({
+            layout: {
+              background: { type: "solid", color: "rgba(30, 37, 33, 1)" },
+              textColor: "rgba(235, 236, 230, 1)",
+            },
+            grid: {
+              vertLines: { color: "rgba(58, 68, 61, 1)" },
+              horzLines: { color: "rgba(58, 68, 61, 1)" },
+            },
+            rightPriceScale: { borderColor: "rgba(58, 68, 61, 1)" },
+            timeScale: { borderColor: "rgba(58, 68, 61, 1)" },
+          }),
+        ),
+      );
+      expect(chartMocks.applySeriesOptions).toHaveBeenLastCalledWith(
+        seriesType === "Line"
+          ? { color: "rgba(115, 190, 142, 1)" }
+          : {
+              upColor: "rgba(115, 190, 142, 1)",
+              downColor: "rgba(230, 118, 97, 1)",
+              wickUpColor: "rgba(115, 190, 142, 1)",
+              wickDownColor: "rgba(230, 118, 97, 1)",
+            },
+      );
+      expect(chartMocks.setMarkers).toHaveBeenLastCalledWith([
+        expect.objectContaining({ color: "rgba(115, 190, 142, 1)", text: "LONG OPEN #1" }),
+        expect.objectContaining({ color: "rgba(230, 118, 97, 1)", text: "SHORT OPEN #2" }),
+        expect.objectContaining({ color: "rgba(211, 183, 129, 1)", text: "CLOSE #3" }),
+      ]);
+      await act(async () => {
+        document.documentElement.classList.remove("dark");
+      });
+      await waitFor(() =>
+        expect(chartMocks.applySeriesOptions).toHaveBeenLastCalledWith(
+          seriesType === "Line"
+            ? { color: "rgba(20, 115, 65, 1)" }
+            : {
+                upColor: "rgba(20, 115, 65, 1)",
+                downColor: "rgba(166, 46, 33, 1)",
+                wickUpColor: "rgba(20, 115, 65, 1)",
+                wickDownColor: "rgba(166, 46, 33, 1)",
+              },
+        ),
+      );
+      expect(chartMocks.createChart).toHaveBeenCalledTimes(initialChartCount);
+      expect(chartMocks.setData).toHaveBeenCalledTimes(initialChartCount);
+      expect(chartMocks.fitContent).toHaveBeenCalledTimes(initialChartCount);
+      expect(chartMocks.remove).toHaveBeenCalledTimes(initialChartCount - 1);
+      view.unmount();
+      chartMocks.applyChartOptions.mockClear();
+      await act(async () => {
+        document.documentElement.classList.add("dark");
+      });
+      expect(chartMocks.applyChartOptions).not.toHaveBeenCalled();
+    },
+  );
   it("keeps loading status readable on the shared card surface", () => {
     setHistory({ isLoading: true });
     render(<PerpsMarketChart market={null} />);

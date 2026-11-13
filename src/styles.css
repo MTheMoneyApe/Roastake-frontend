@@ -2,7 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(:root.dark, :root.dark *));
 
 /*
  * Design system definition.
@@ -10,11 +10,11 @@
  * The @theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
  *
- * The :root and .dark blocks define the actual color values using oklch.
+ * The :root and :root.dark blocks define the actual color values using oklch.
  * All colors MUST use oklch format.
  *
  * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 1. Add the variable to :root (light value) and :root.dark (night value)
  * 2. Register it in @theme inline as --color-<name>: var(--<name>)
  */
 
@@ -44,6 +44,8 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-input-foreground: var(--input-foreground);
+  --color-overlay: var(--overlay);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
@@ -63,6 +65,8 @@
   --color-highlight-foreground: var(--highlight-foreground);
   --color-gain: var(--gain);
   --color-loss: var(--loss);
+  --color-gain-foreground: var(--gain-foreground);
+  --color-loss-foreground: var(--loss-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-forest: var(--forest);
@@ -74,12 +78,25 @@
   --color-copper: var(--copper);
   --color-brass: var(--brass);
   --color-charcoal: var(--charcoal);
+  --color-feature: var(--feature);
+  --color-feature-foreground: var(--feature-foreground);
+  --color-feature-muted: var(--feature-muted);
+  --color-feature-highlight: var(--feature-highlight);
+  --color-hero: var(--hero);
+  --color-hero-foreground: var(--hero-foreground);
+  --color-hero-muted: var(--hero-muted);
+  --color-hero-highlight: var(--hero-highlight);
+  --color-hero-action: var(--hero-action);
+  --color-hero-action-foreground: var(--hero-action-foreground);
+  --color-hero-action-hover: var(--hero-action-hover);
   --font-display: "Fraunces", Georgia, serif;
   --font-sans: "DM Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {
+  /* Light is deliberate even when the operating system prefers dark. */
+  color-scheme: light;
   --radius: 0.625rem;
   --content-width: 80rem;
   --page-gutter: clamp(1rem, 2.5vw, 2rem);
@@ -99,6 +116,8 @@
   --charcoal: oklch(0.27 0.015 155);
   --gain: oklch(0.44 0.1 155);
   --loss: oklch(0.5 0.16 30);
+  --gain-foreground: var(--cream);
+  --loss-foreground: var(--cream);
   --warning: oklch(0.93 0.04 80);
   --warning-foreground: oklch(0.43 0.08 65);
 
@@ -119,7 +138,9 @@
   --destructive: var(--loss);
   --destructive-foreground: var(--cream);
   --border: oklch(0.87 0.02 90);
-  --input: oklch(0.87 0.02 90);
+  --input: oklch(0.59 0.025 150);
+  --input-foreground: var(--foreground);
+  --overlay: var(--charcoal);
   --ring: var(--forest);
   --highlight: var(--copper);
   --highlight-foreground: var(--cream);
@@ -136,15 +157,29 @@
   --sidebar-accent-foreground: var(--cream);
   --sidebar-border: oklch(0.42 0.04 165);
   --sidebar-ring: var(--sage);
-  --gradient-hero: linear-gradient(180deg, color-mix(in oklab, var(--charcoal) 10%, transparent), color-mix(in oklab, var(--charcoal) 85%, transparent));
+  /* Intentional forest feature bands retain their own accessible pairs. */
+  --feature: var(--forest);
+  --feature-foreground: var(--cream);
+  --feature-muted: var(--mint);
+  --feature-highlight: var(--brass);
+  --hero: var(--forest);
+  --hero-foreground: var(--cream);
+  --hero-muted: var(--mint);
+  --hero-highlight: var(--brass);
+  --hero-action: var(--cream);
+  --hero-action-foreground: var(--forest);
+  --hero-action-hover: var(--parchment);
+  --gradient-hero: linear-gradient(180deg, color-mix(in oklab, var(--overlay) 10%, transparent), color-mix(in oklab, var(--overlay) 85%, transparent));
   --gradient-brand: linear-gradient(135deg, var(--forest), var(--deep-sage));
   --shadow-soft: 0 2px 8px -4px color-mix(in oklab, var(--espresso) 15%, transparent);
 }
 
-.dark {
+:root.dark {
   color-scheme: dark;
   --copper: oklch(0.76 0.08 55);
   --chart-1: var(--sage);
+  --chart-4: oklch(0.8 0.05 135);
+  --chart-5: oklch(0.72 0.07 65);
   --warning: oklch(0.3 0.035 80);
   --warning-foreground: oklch(0.82 0.08 80);
   --background: oklch(0.205 0.014 160);
@@ -161,15 +196,19 @@
   --muted-foreground: oklch(0.7 0.025 140);
   --accent: oklch(0.32 0.03 165);
   --accent-foreground: var(--mint);
-  --destructive: oklch(0.65 0.16 30);
-  --destructive-foreground: var(--cream);
+  --destructive: oklch(0.72 0.14 30);
+  --destructive-foreground: var(--charcoal);
   --border: oklch(0.33 0.018 160);
-  --input: oklch(0.35 0.018 160);
+  --input: oklch(0.57 0.025 150);
+  --input-foreground: var(--foreground);
+  --overlay: oklch(0.12 0.012 160);
   --ring: var(--sage);
   --highlight: var(--copper);
-  --highlight-foreground: var(--cream);
+  --highlight-foreground: var(--charcoal);
   --gain: oklch(0.74 0.13 155);
-  --loss: oklch(0.68 0.16 30);
+  --loss: oklch(0.72 0.14 30);
+  --gain-foreground: var(--charcoal);
+  --loss-foreground: var(--charcoal);
   --sidebar: oklch(0.18 0.014 160);
   --sidebar-foreground: oklch(0.85 0.02 135);
   --sidebar-primary: var(--brass);
@@ -177,6 +216,19 @@
   --sidebar-accent: oklch(0.27 0.025 165);
   --sidebar-accent-foreground: var(--cream);
   --sidebar-border: oklch(0.28 0.016 160);
+  --feature: oklch(0.24 0.025 170);
+  --feature-foreground: var(--cream);
+  --feature-muted: oklch(0.82 0.025 135);
+  --feature-highlight: oklch(0.78 0.08 80);
+  --hero: oklch(0.18 0.025 170);
+  --hero-foreground: var(--cream);
+  --hero-muted: oklch(0.86 0.025 135);
+  --hero-highlight: oklch(0.78 0.08 80);
+  --hero-action: var(--mint);
+  --hero-action-foreground: var(--charcoal);
+  --hero-action-hover: var(--cream);
+  --gradient-brand: linear-gradient(135deg, var(--feature), var(--background));
+  --shadow-soft: 0 2px 8px -4px color-mix(in oklab, var(--overlay) 55%, transparent);
 }
 
 @layer base {
@@ -191,7 +243,7 @@
 }
 
 @layer base {
-  html { color-scheme: light; scroll-padding-top: calc(var(--header-height) + 1rem); }
+  html { scroll-padding-top: calc(var(--header-height) + 1rem); }
   body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
   h1, h2, h3 { text-wrap: balance; }
@@ -224,6 +276,16 @@
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(12px);
   }
+  .brand-feature {
+    background: var(--feature);
+    color: var(--feature-foreground);
+    --ring: var(--feature-highlight);
+  }
+  .brand-hero {
+    background: var(--hero);
+    color: var(--hero-foreground);
+    --ring: var(--hero-highlight);
+  }
   .brand-surface {
     min-width: 0;
     border: 1px solid var(--border);
@@ -250,7 +312,7 @@
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--copper);
+    color: var(--highlight);
   }
   .brand-skip-link {
     position: fixed;
@@ -271,6 +333,46 @@
       min-width: 2.75rem;
     }
   }
+}
+
+/* near-connect 0.12 injects an unlayered dark-only stylesheet. Scope these
+ * higher-specificity color overrides to its host, never wallet iframe contents. */
+:root .hot-connector-popup { color: var(--popover-foreground); }
+:root .hot-connector-popup * { color: inherit; font-family: var(--font-sans); }
+:root .hot-connector-popup .modal-container {
+  background: color-mix(in oklab, var(--overlay) 65%, transparent);
+}
+:root .hot-connector-popup .modal-content {
+  background: var(--popover);
+  border-color: var(--border);
+  box-shadow: var(--shadow-soft);
+}
+:root .hot-connector-popup .modal-body { background: var(--muted); }
+:root .hot-connector-popup :is(.modal-header p, .modal-body p, .connect-item p, .footer) {
+  color: var(--popover-foreground);
+}
+:root .hot-connector-popup :is(.get-wallet-link, .connect-item-info .wallet-address) {
+  color: var(--muted-foreground);
+}
+:root .hot-connector-popup :is(.modal-header button:hover, .connect-item:hover) {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+:root .hot-connector-popup .get-wallet-link:hover { color: var(--foreground); }
+:root .hot-connector-popup .modal-body textarea {
+  background: var(--card);
+  border-color: var(--input);
+  color: var(--foreground);
+}
+:root .hot-connector-popup .modal-body button {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+:root .hot-connector-popup .modal-header path { stroke: currentColor; }
+:root .hot-connector-popup .modal-header circle { fill: currentColor; }
+:root .hot-connector-popup :is(button, textarea, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
 }
 
 @utility num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }

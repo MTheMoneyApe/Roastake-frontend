@@ -18,6 +18,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { WalletHubDialog } from "@/components/wallet/wallet-hub";
 import { WalletInfrastructureProvider } from "@/lib/wallet/provider";
+import { ThemeProvider, THEME_INIT_SCRIPT } from "@/components/theme-provider";
 
 function NotFoundComponent() {
   return (
@@ -106,12 +107,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="color-scheme" content="light" suppressHydrationWarning />
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body>
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
         <Scripts />
       </body>
     </html>

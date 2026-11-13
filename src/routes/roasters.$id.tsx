@@ -16,10 +16,10 @@ export const Route = createFileRoute("/roasters/$id")({
     const items = s.products.filter((p) => p.roasterId === r.id && p.status === "Live");
     return (
       <PublicShell>
-        <div className="relative isolate">
+        <div className="brand-hero relative isolate">
           <div className="absolute inset-0 -z-10 h-full w-full bg-muted" aria-hidden="true" />
-          <div className="absolute inset-0 -z-10 bg-forest/80" />
-          <Section className="py-20 text-cream"><p className="text-xs uppercase tracking-widest text-brass">{r.city}, {r.country}</p><h1 className="brand-page-title mt-2">{r.name}</h1><p className="mt-4 max-w-xl text-cream/85">{r.story}</p></Section>
+          <div className="absolute inset-0 -z-10 bg-hero" />
+          <Section className="py-20 text-hero-foreground"><p className="text-xs uppercase tracking-widest text-hero-highlight">{r.city}, {r.country}</p><h1 className="brand-page-title mt-2">{r.name}</h1><p className="mt-4 max-w-xl text-hero-muted">{r.story}</p></Section>
         </div>
         <Section className="grid gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_280px]">
           <div className="min-w-0"><h2 className="brand-section-title">Catalogue</h2>{items.length ? <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{items.map((p) => <ProductCard key={p.id} p={p} />)}</div> : <Empty text="No live products yet." />}</div>

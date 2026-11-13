@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ADMIN_NAV, AppShell, PublicShell, ROASTER_NAV } from "@/components/shell";
+import { ThemeProvider, THEME_STORAGE_KEY } from "@/components/theme-provider";
 
 const location = vi.hoisted(() => ({ pathname: "/app/assets" }));
 
@@ -44,10 +45,61 @@ vi.mock("@/components/wallet/wallet-pages", () => ({
 
 beforeEach(() => {
   location.pathname = "/app/assets";
+  window.localStorage.removeItem(THEME_STORAGE_KEY);
+  document.documentElement.classList.remove("dark");
+  document.documentElement.dataset.theme = "light";
 });
 afterEach(cleanup);
 
 describe("Shared brand shells", () => {
+  it.each([
+    {
+      label: "public",
+      shell: (
+        <PublicShell>
+          <h1>Marketplace</h1>
+        </PublicShell>
+      ),
+    },
+    {
+      label: "protocol",
+      shell: (
+        <AppShell>
+          <h1>Protocol</h1>
+        </AppShell>
+      ),
+    },
+    {
+      label: "admin",
+      shell: (
+        <AppShell nav={ADMIN_NAV} home="/admin">
+          <h1>Admin</h1>
+        </AppShell>
+      ),
+    },
+    {
+      label: "roaster",
+      shell: (
+        <AppShell nav={ROASTER_NAV} home="/roaster/dashboard">
+          <h1>Roaster</h1>
+        </AppShell>
+      ),
+    },
+  ])("exposes one consistent header theme control in the $label shell", ({ shell }) => {
+    const { container } = render(<ThemeProvider>{shell}</ThemeProvider>);
+    const header = container.querySelector("header")!;
+    const toggle = within(header).getByRole("button", { name: "Night mode" });
+    expect(toggle).toHaveAttribute("aria-pressed", "false");
+    expect(toggle).not.toHaveClass("hidden");
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
+    expect(document.documentElement).toHaveClass("dark");
+    expect(container.querySelector(".dark")).not.toBeInTheDocument();
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-pressed", "false");
+    expect(document.documentElement).not.toHaveClass("dark");
+  });
+
   it("defaults the protocol app to the public light palette and shared content geometry", () => {
     const { container } = render(
       <AppShell>

@@ -16,45 +16,45 @@ function Home() {
   const s = useDemo();
   return (
     <PublicShell>
-      <section className="relative isolate overflow-hidden">
-        <div className="absolute inset-0 -z-10 h-full w-full bg-forest" aria-hidden="true" />
+      <section className="brand-hero relative isolate overflow-hidden">
+        <div className="absolute inset-0 -z-10 h-full w-full bg-hero" aria-hidden="true" />
         <div className="bg-hero-fade absolute inset-0 -z-10" />
-        <Section className="flex min-h-[min(78dvh,52rem)] flex-col justify-end pb-12 pt-20 text-cream sm:pb-16 sm:pt-32">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-brass">Specialty Coffee × Decentralized Finance</p>
+        <Section className="flex min-h-[min(78dvh,52rem)] flex-col justify-end pb-12 pt-20 text-hero-foreground sm:pb-16 sm:pt-32">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-hero-highlight">Specialty Coffee × Decentralized Finance</p>
           <h1 className="max-w-4xl text-5xl font-medium leading-[1.02] md:text-7xl">ROASTAKE</h1>
-          <p className="mt-6 max-w-2xl text-lg text-cream/85">NEAR Testnet coffee perpetuals and RHEA swaps, with a separate read-only OutLayer Oracle. The coffee marketplace, lot inventory and provenance screens are illustrative demos — not verified physical coffee or live commerce.</p>
+          <p className="mt-6 max-w-2xl text-lg text-hero-muted">NEAR Testnet coffee perpetuals and RHEA swaps, with a separate read-only OutLayer Oracle. The coffee marketplace, lot inventory and provenance screens are illustrative demos — not verified physical coffee or live commerce.</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button size="lg" asChild className="bg-cream text-forest hover:bg-parchment"><Link to="/app/perps">Explore Perpetuals <ArrowRight /></Link></Button>
-            <Button size="lg" variant="outline" asChild className="border-cream/50 bg-transparent text-cream hover:bg-cream/10 hover:text-cream"><Link to="/app/dashboard">Protocol overview</Link></Button>
+            <Button size="lg" asChild className="bg-hero-action text-hero-action-foreground hover:bg-hero-action-hover"><Link to="/app/perps">Explore Perpetuals <ArrowRight /></Link></Button>
+            <Button size="lg" variant="outline" asChild className="border-hero-foreground/60 bg-transparent text-hero-foreground hover:bg-hero-foreground/10 hover:text-hero-foreground"><Link to="/app/dashboard">Protocol overview</Link></Button>
           </div>
         </Section>
       </section>
 
-      <div className="border-b bg-forest text-mint">
+      <div className="brand-feature border-b">
         <Section className="grid gap-6 py-8 md:grid-cols-3">
           <article className="space-y-2">
-            <p className="font-mono text-[11px] uppercase tracking-widest text-brass">NEAR TESTNET · PERPS</p>
-            <h2 className="font-display text-2xl text-cream">Three configured markets</h2>
-            <p className="text-sm text-mint/75">Arabica, Robusta and Gesha on the NEAR Testnet Perpetuals contract. Prices are operator-controlled synthetic references; Testnet USDC has no monetary value.</p>
-            <Link to="/app/perps" className="inline-flex items-center gap-1 text-sm text-cream underline-offset-4 hover:underline">Open Perpetuals <ArrowRight className="size-3.5" /></Link>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-feature-highlight">NEAR TESTNET · PERPS</p>
+            <h2 className="font-display text-2xl text-feature-foreground">Three configured markets</h2>
+            <p className="text-sm text-feature-muted">Arabica, Robusta and Gesha on the NEAR Testnet Perpetuals contract. Prices are operator-controlled synthetic references; Testnet USDC has no monetary value.</p>
+            <Link to="/app/perps" className="inline-flex items-center gap-1 text-sm text-feature-foreground underline-offset-4 hover:underline">Open Perpetuals <ArrowRight className="size-3.5" /></Link>
           </article>
-          <article className="space-y-2 md:border-x md:border-mint/15 md:px-6">
-            <p className="font-mono text-[11px] uppercase tracking-widest text-brass">RHEA · NEAR TESTNET</p>
-            <h2 className="font-display text-2xl text-cream">On-chain token swaps</h2>
-            <p className="text-sm text-mint/75">NEP-141 swaps against RHEA Testnet pools. These are real Testnet transactions using non-monetary tokens, without verified physical coffee backing.</p>
-            <Link to="/app/swap" className="inline-flex items-center gap-1 text-sm text-cream underline-offset-4 hover:underline">Open Mini Swap <ArrowRight className="size-3.5" /></Link>
+          <article className="space-y-2 md:border-x md:border-feature-muted/30 md:px-6">
+            <p className="font-mono text-[11px] uppercase tracking-widest text-feature-highlight">RHEA · NEAR TESTNET</p>
+            <h2 className="font-display text-2xl text-feature-foreground">On-chain token swaps</h2>
+            <p className="text-sm text-feature-muted">NEP-141 swaps against RHEA Testnet pools. These are real Testnet transactions using non-monetary tokens, without verified physical coffee backing.</p>
+            <Link to="/app/swap" className="inline-flex items-center gap-1 text-sm text-feature-foreground underline-offset-4 hover:underline">Open Mini Swap <ArrowRight className="size-3.5" /></Link>
           </article>
           <article className="space-y-2">
-            <p className="font-mono text-[11px] uppercase tracking-widest text-brass">OUTLAYER · READ ONLY</p>
-            <h2 className="font-display text-2xl text-cream">Separate Oracle telemetry</h2>
-            <p className="text-sm text-mint/75">A read-only NEAR Testnet Oracle view for historical benchmark and demonstration data. It does not supply prices to Perps.</p>
-            <Link to="/app/oracle" className="inline-flex items-center gap-1 text-sm text-cream underline-offset-4 hover:underline">Inspect Oracle <ArrowRight className="size-3.5" /></Link>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-feature-highlight">OUTLAYER · READ ONLY</p>
+            <h2 className="font-display text-2xl text-feature-foreground">Separate Oracle telemetry</h2>
+            <p className="text-sm text-feature-muted">A read-only NEAR Testnet Oracle view for historical benchmark and demonstration data. It does not supply prices to Perps.</p>
+            <Link to="/app/oracle" className="inline-flex items-center gap-1 text-sm text-feature-foreground underline-offset-4 hover:underline">Inspect Oracle <ArrowRight className="size-3.5" /></Link>
           </article>
         </Section>
       </div>
 
       <Section className="py-20">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><div className="flex flex-wrap items-center gap-2"><p className="font-mono text-xs uppercase tracking-widest text-copper">Demo catalog</p><DemoBadge>SIMULATED</DemoBadge></div><h2 className="brand-section-title mt-2">Sample coffee listings</h2><p className="mt-2 max-w-2xl text-sm text-muted-foreground">Product names, roaster profiles, descriptions, stock and EUR prices are illustrative. This is not a live shop and does not accept real coffee orders.</p></div><Link to="/market" className="text-sm underline-offset-4 hover:underline">Browse demo catalog →</Link></div>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><div className="flex flex-wrap items-center gap-2"><p className="font-mono text-xs uppercase tracking-widest text-highlight">Demo catalog</p><DemoBadge>SIMULATED</DemoBadge></div><h2 className="brand-section-title mt-2">Sample coffee listings</h2><p className="mt-2 max-w-2xl text-sm text-muted-foreground">Product names, roaster profiles, descriptions, stock and EUR prices are illustrative. This is not a live shop and does not accept real coffee orders.</p></div><Link to="/market" className="text-sm underline-offset-4 hover:underline">Browse demo catalog →</Link></div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{s.products.filter((p) => p.featured).map((p) => <ProductCard key={p.id} p={p} />)}</div>
       </Section>
 
@@ -62,7 +62,7 @@ function Home() {
         <Section className="grid items-center gap-12 md:grid-cols-2">
           <div className="aspect-[4/3] w-full rounded-lg bg-muted" aria-hidden="true" />
           <div>
-            <p className="font-mono text-xs uppercase tracking-widest text-copper">Origins</p>
+            <p className="font-mono text-xs uppercase tracking-widest text-highlight">Origins</p>
             <div className="flex flex-wrap items-center gap-2"><h2 className="brand-section-title mt-2">Illustrative coffee records.</h2><DemoBadge>NOT VERIFIED</DemoBadge></div>
             <p className="mt-4 text-muted-foreground">Explore example origins and lot metadata. Producer, farm, grading and custody details are sample data, not verified identities, certificates, physical inventory or provenance.</p>
             <div className="mt-6 grid grid-cols-2 gap-3">
@@ -77,7 +77,7 @@ function Home() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {s.roasters.filter((r) => r.status === "Approved").slice(0, 3).map((r) => (
             <Link key={r.id} to="/roasters/$id" params={{ id: r.id }} className="brand-surface group min-w-0 p-6 transition-shadow hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-              <p className="text-xs uppercase tracking-wider text-copper">{r.city}, {r.country}</p>
+              <p className="text-xs uppercase tracking-wider text-highlight">{r.city}, {r.country}</p>
               <p className="mt-2 font-display text-2xl">{r.name}</p>
               <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{r.story}</p>
             </Link>
@@ -115,19 +115,19 @@ function Home() {
       </section>
 
       <Section className="grid gap-6 py-20 md:grid-cols-2">
-        <div className="rounded-lg bg-forest p-8 text-cream">
-          <p className="font-mono text-xs uppercase tracking-widest text-brass">Coffee Ventures</p>
+        <div className="brand-feature rounded-lg p-8">
+          <p className="font-mono text-xs uppercase tracking-widest text-feature-highlight">Coffee Ventures</p>
           <h3 className="mt-2 text-3xl">Back the supply chain.</h3>
-          <p className="mt-3 text-sm text-cream/80">Explore illustrative deals with cooperatives, roasters and AgriTech startups. Not an offer to invest.</p>
-          <Button asChild className="mt-6 bg-brass text-charcoal hover:bg-brass/90"><Link to="/app/ventures">Browse ventures</Link></Button>
+          <p className="mt-3 text-sm text-feature-muted">Explore illustrative deals with cooperatives, roasters and AgriTech startups. Not an offer to invest.</p>
+          <Button asChild className="mt-6 bg-feature-highlight text-feature hover:bg-feature-highlight/90"><Link to="/app/ventures">Browse ventures</Link></Button>
         </div>
-        <div className="relative isolate overflow-hidden rounded-lg p-8 text-cream">
+        <div className="brand-hero relative isolate overflow-hidden rounded-lg p-8">
           <div className="absolute inset-0 -z-10 h-full w-full bg-muted" aria-hidden="true" />
-          <div className="absolute inset-0 -z-10 bg-forest/80" />
-          <p className="font-mono text-xs uppercase tracking-widest text-brass">For roasters</p>
+          <div className="absolute inset-0 -z-10 bg-hero" />
+          <p className="font-mono text-xs uppercase tracking-widest text-hero-highlight">For roasters</p>
           <h3 className="mt-2 text-3xl">Roaster portal preview.</h3>
-          <p className="mt-3 text-sm text-cream/80">The current portal is a UI preview only. It does not onboard roasters, manage real inventory, process orders or issue payouts.</p>
-          <Button asChild className="mt-6 bg-cream text-forest hover:bg-parchment"><Link to="/roaster/$section" params={{ section: "dashboard" }}>Explore preview</Link></Button>
+          <p className="mt-3 text-sm text-hero-muted">The current portal is a UI preview only. It does not onboard roasters, manage real inventory, process orders or issue payouts.</p>
+          <Button asChild className="mt-6 bg-hero-action text-hero-action-foreground hover:bg-hero-action-hover"><Link to="/roaster/$section" params={{ section: "dashboard" }}>Explore preview</Link></Button>
         </div>
       </Section>
     </PublicShell>

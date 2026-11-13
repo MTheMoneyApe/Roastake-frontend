@@ -259,9 +259,11 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
       return undefined;
     }
 
+    const chartContainer = container;
     let cancelled = false;
     let chart: IChartApi | null = null;
     let resizeObserver: ResizeObserver | null = null;
+    let themeObserver: MutationObserver | null = null;
     let markersApi: ISeriesMarkersPluginApi<Time> | null = null;
 
     async function mountChart() {
@@ -331,21 +333,53 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
           mainSeries = lineSeries;
         }
 
+        const themedMarkers = (colors: ReturnType<typeof resolveChartTheme>) =>
+          chartMarkers.map((marker) => ({
+            ...marker,
+            color:
+              marker.shape === "arrowUp"
+                ? colors.gain
+                : marker.shape === "arrowDown"
+                  ? colors.loss
+                  : colors.close,
+          }));
         if (chartMarkers.length > 0) {
-          markersApi = lwc.createSeriesMarkers(
-            mainSeries,
-            chartMarkers.map((marker) => ({
-              ...marker,
-              color:
-                marker.shape === "arrowUp"
-                  ? theme.gain
-                  : marker.shape === "arrowDown"
-                    ? theme.loss
-                    : theme.close,
-            })),
-            { autoScale: true },
-          );
+          markersApi = lwc.createSeriesMarkers(mainSeries, themedMarkers(theme), {
+            autoScale: true,
+          });
         }
+        // Theme changes only repaint the existing chart; keep data, crosshair and viewport intact.
+        themeObserver = new MutationObserver(() => {
+          if (cancelled) return;
+          const colors = resolveChartTheme(chartContainer);
+          instance.applyOptions({
+            layout: {
+              background: { type: lwc.ColorType.Solid, color: colors.background },
+              textColor: colors.foreground,
+            },
+            grid: {
+              vertLines: { color: colors.border },
+              horzLines: { color: colors.border },
+            },
+            rightPriceScale: { borderColor: colors.border },
+            timeScale: { borderColor: colors.border },
+          });
+          mainSeries.applyOptions(
+            timeframeAvailability.canRenderCandles && candleData.length > 0
+              ? {
+                  upColor: colors.gain,
+                  downColor: colors.loss,
+                  wickUpColor: colors.gain,
+                  wickDownColor: colors.loss,
+                }
+              : { color: colors.line },
+          );
+          markersApi?.setMarkers(themedMarkers(colors));
+        });
+        themeObserver.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["class", "style"],
+        });
         instance.timeScale().fitContent();
 
         instance.subscribeCrosshairMove((param) => {
@@ -378,6 +412,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
     return () => {
       cancelled = true;
       resizeObserver?.disconnect();
+      themeObserver?.disconnect();
       try {
         markersApi?.setMarkers([]);
         markersApi?.detach();

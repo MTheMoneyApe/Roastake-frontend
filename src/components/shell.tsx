@@ -56,6 +56,7 @@ import { cn } from "@/lib/utils";
 import { WalletHubHeaderButton } from "@/components/wallet/wallet-hub";
 import { SimulatedDemoNetworkSelect } from "@/components/wallet/wallet-pages";
 import { DemoBadge, MaturityBadge, type MaturityVariant } from "./kit";
+import { ThemeToggle } from "@/components/theme-provider";
 
 type NavBadge = { label: string; variant: MaturityVariant; title?: string };
 type Item = { to: string; label: string; icon: typeof Coffee; badge?: NavBadge };
@@ -319,7 +320,11 @@ function Notifications() {
 }
 
 export function WalletButton() {
-  return <WalletHubHeaderButton />;
+  return (
+    <div className="max-[400px]:[&_button]:size-10 max-[400px]:[&_button]:p-0 max-[400px]:[&_button>span.font-mono]:hidden">
+      <WalletHubHeaderButton />
+    </div>
+  );
 }
 
 function Profile() {
@@ -330,7 +335,7 @@ function Profile() {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2"
+          className="gap-2 px-1.5 sm:px-3"
           aria-label="Open profile and demo role menu"
         >
           <span className="grid size-7 place-items-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
@@ -398,6 +403,7 @@ function Controls() {
         <Sparkles className="size-3" aria-hidden="true" />
         <span>NEAR Testnet · Primary Network</span>
       </Link>
+      <ThemeToggle />
       <Notifications />
       <WalletButton />
       <Profile />
@@ -452,13 +458,13 @@ function NavList({
                   onClick={() => toggle(g.label)}
                   aria-expanded={!isCollapsed}
                   aria-controls={`${navId}-group-${groupIndex}`}
-                  className="flex min-h-8 items-center gap-1 rounded-sm text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                  className="flex min-h-8 items-center gap-1 rounded-sm text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
                 >
                   <span>{g.label}</span>
                   <span aria-hidden="true">{isCollapsed ? "+" : "−"}</span>
                 </button>
               ) : (
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/60">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground">
                   {g.label}
                 </p>
               )}
@@ -466,7 +472,7 @@ function NavList({
                 <MaturityBadge
                   variant={g.groupBadge.variant}
                   title={g.groupBadge.title}
-                  className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-foreground"
+                  className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-accent-foreground"
                 >
                   {g.groupBadge.label}
                 </MaturityBadge>
@@ -502,7 +508,7 @@ function NavList({
                       {i.badge && (
                         <MaturityBadge
                           variant={i.badge.variant}
-                          className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-foreground"
+                          className="border-sidebar-primary/40 bg-sidebar-accent text-[9px] text-sidebar-accent-foreground"
                           aria-label={i.badge.title}
                         >
                           {i.badge.label}
@@ -518,7 +524,7 @@ function NavList({
       })}
       {showPortals && (
         <div className="border-t border-sidebar-border pt-4">
-          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/60">
+          <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-sidebar-foreground">
             Portals (Preview)
           </p>
           <ul className="space-y-0.5">
@@ -570,12 +576,10 @@ const MOBILE_PORTFOLIO_PATHS = new Set(["/app/wallet", "/app/activity"]);
 export function AppShell({
   children,
   nav = APP_NAV,
-  dark = false,
   home = "/app/dashboard",
 }: {
   children: ReactNode;
   nav?: Group[];
-  dark?: boolean;
   home?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -626,7 +630,7 @@ export function AppShell({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <div className={cn(dark && "dark", "min-h-screen min-w-0 bg-background text-foreground")}>
+      <div className="min-h-screen min-w-0 bg-background text-foreground">
         <a href="#main-content" className="brand-skip-link">
           Skip to content
         </a>
@@ -644,10 +648,7 @@ export function AppShell({
             event.preventDefault();
             menuTrigger.current?.focus();
           }}
-          className={cn(
-            dark && "dark",
-            "w-72 max-w-[calc(100vw-1.5rem)] overflow-y-auto border-sidebar-border bg-sidebar p-3 text-sidebar-foreground [--ring:var(--sidebar-ring)] lg:hidden",
-          )}
+          className="w-72 max-w-[calc(100vw-1.5rem)] overflow-y-auto border-sidebar-border bg-sidebar p-3 text-sidebar-foreground [--ring:var(--sidebar-ring)] lg:hidden"
         >
           <SheetTitle className="sr-only">Protocol sections</SheetTitle>
           <SheetDescription className="sr-only">
@@ -776,7 +777,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
         <a href="#main-content" className="brand-skip-link">
           Skip to content
         </a>
-        <div className="demo-stripe border-b border-brass/30 px-4 py-1.5 text-center text-[10px] font-medium leading-relaxed tracking-wide text-espresso sm:text-[11px]">
+        <div className="border-b border-warning-foreground/30 bg-warning px-4 py-1.5 text-center text-[10px] font-medium leading-relaxed tracking-wide text-warning-foreground sm:text-[11px]">
           ROASTAKE Testnet prototype · marketplace, coffee inventory, demo balances & yields are
           simulated; Perps and RHEA swaps use NEAR Testnet transactions.
         </div>
@@ -804,11 +805,12 @@ export function PublicShell({ children }: { children: ReactNode }) {
               </nav>
             </div>
             <div className="flex min-w-0 items-center gap-0.5 sm:gap-1.5">
+              <ThemeToggle />
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/cart" aria-label="Coffee cart" className="gap-2">
                   <ShoppingBag />
                   {h && cart > 0 && (
-                    <span className="num rounded-full bg-copper px-1.5 text-[11px] text-cream">
+                    <span className="num rounded-full bg-highlight px-1.5 text-[11px] text-highlight-foreground">
                       {cart}
                     </span>
                   )}
@@ -868,12 +870,12 @@ export function PublicShell({ children }: { children: ReactNode }) {
         <main id="main-content" tabIndex={-1} className="min-w-0 focus-visible:outline-none">
           {children}
         </main>
-        <footer className="mt-20 bg-forest text-mint">
+        <footer className="mt-20 bg-feature text-feature-foreground">
           <div className="brand-container grid gap-8 py-14 md:grid-cols-4">
             <div>
               <Logo />
-              <p className="mt-2 text-sm opacity-80">Roast. Stake. Repeat.</p>
-              <p className="mt-4 text-xs opacity-60">
+              <p className="mt-2 text-sm text-feature-muted">Roast. Stake. Repeat.</p>
+              <p className="mt-4 text-xs text-feature-muted">
                 A Testnet prototype: Perps and RHEA swaps can submit real NEAR Testnet transactions
                 using non-monetary test tokens. Marketplace orders, inventory, coffee custody, demo
                 balances and yields are simulated; no verified physical backing, real shipments or
@@ -912,11 +914,13 @@ export function PublicShell({ children }: { children: ReactNode }) {
               ],
             ].map(([t, ls]) => (
               <div key={t as string}>
-                <p className="mb-3 text-xs uppercase tracking-wider text-brass">{t as string}</p>
+                <p className="mb-3 text-xs uppercase tracking-wider text-feature-highlight">
+                  {t as string}
+                </p>
                 <ul className="space-y-1.5 text-sm">
                   {(ls as string[][]).map(([to, l]) => (
                     <li key={to}>
-                      <Link to={to} className="opacity-80 hover:opacity-100">
+                      <Link to={to} className="text-feature-muted hover:text-feature-foreground">
                         {l}
                       </Link>
                     </li>

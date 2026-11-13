@@ -7,7 +7,7 @@ const tint: Record<string, string> = { Colombia: "bg-copper/25", Ethiopia: "bg-b
 
 export function ProductImage({ p, className }: { p: Product; className?: string }) {
   return (
-    <div className={cn("relative overflow-hidden rounded-md bg-parchment", className)}>
+    <div className={cn("relative overflow-hidden rounded-md bg-secondary", className)}>
       <div className="h-full w-full bg-muted" aria-hidden="true" />
       <div className={cn("absolute inset-0 mix-blend-multiply", tint[p.country])} aria-hidden="true" />
       <span className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] rounded-md bg-card/95 px-3 py-2 font-display text-sm leading-tight text-foreground">{p.origin}</span>
