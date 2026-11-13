@@ -303,6 +303,7 @@ describe("Wallet Hub UI, Perps NEAR-First Gating & Demo Isolation", () => {
 
   it("shows secondary tabs and clearly distinguishes HyperEVM Chain 998 from Hyperliquid Testnet Core", async () => {
     renderWithWalletProviders(<WalletHubPanels />, { evmConnected: true });
+    fireEvent.click(screen.getByText(/Advanced networks/));
 
     await waitFor(() => {
       expect(screen.getByText(EVM_TEST_ADDR)).toBeInTheDocument();
