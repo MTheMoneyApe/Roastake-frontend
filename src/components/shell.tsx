@@ -423,20 +423,6 @@ function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
   );
 }
 
-function PublicNavigation() {
-  const { language } = useLandingLanguage();
-  return (
-    <nav aria-label="Main navigation" className="shrink-0">
-      <Link
-        to="/app/perps"
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-primary bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      >
-        {language === "es" ? "Iniciar app" : "Launch App"}
-      </Link>
-    </nav>
-  );
-}
-
 /**
  * All non-landing public routes use the same application shell and sidebar as Perps.
  * Keep this compatibility export so existing route modules inherit the shared layout.
@@ -468,7 +454,6 @@ function LandingShellContent({ children }: { children: ReactNode }) {
       <header className="brand-header sticky top-0 z-30 backdrop-blur">
         <div className="brand-container flex min-h-16 min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-1 py-2 sm:flex-nowrap sm:gap-4 sm:py-0">
           <Logo compact />
-          <PublicNavigation />
           <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
             <select
               aria-label="Language / Idioma"
