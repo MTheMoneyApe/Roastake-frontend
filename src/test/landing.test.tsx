@@ -101,7 +101,7 @@ describe("ROASTAKE bilingual editorial landing", () => {
     expect(markets).toHaveLength(2);
     markets.forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
     const docs = screen.getAllByRole("link", { name: "Open the documentation" });
-    expect(docs).toHaveLength(3);
+    expect(docs).toHaveLength(1);
     docs.forEach((link) => expect(link).toHaveAttribute("href", "/app/docs"));
     const links = screen.getAllByRole("link");
     for (const to of [
