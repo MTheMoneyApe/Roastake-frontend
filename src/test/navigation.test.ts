@@ -101,7 +101,7 @@ describe("Implementation-status navigation", () => {
   it("keeps the app concise and documentation outside the demo workspace", () => {
     expect(APP_NAV.map(({ label }) => label)).toEqual([
       "Markets / Testnet",
-      "Coffee Economy / Demo",
+      "Coffee Experience / Demo",
       "Demo Workspace",
       "Roadmap",
       "Documentation",
@@ -136,11 +136,7 @@ describe("Implementation-status navigation", () => {
 
   it("uses only five public destinations in a stable order", () => {
     expect(PUBLIC_NAV.map(({ to, label }) => ({ to, label }))).toEqual([
-      { to: "/", label: "Coffee Economy" },
-      { to: "/app/perps", label: "Testnet Markets" },
-      { to: "/app/assets", label: "Coffee Assets demo" },
-      { to: "/roadmap", label: "Roadmap" },
-      { to: "/app/docs", label: "Documentation" },
+      { to: "/app/perps", label: "Launch App" },
     ]);
   });
 
