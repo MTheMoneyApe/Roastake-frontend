@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PublicShell } from "@/components/shell";
+import { LandingShell } from "@/components/shell";
 import { LandingPage } from "@/components/landing-page";
 import { seo } from "@/lib/seo";
 
@@ -16,8 +16,8 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <PublicShell>
+    <LandingShell>
       <LandingPage />
-    </PublicShell>
+    </LandingShell>
   );
 }
