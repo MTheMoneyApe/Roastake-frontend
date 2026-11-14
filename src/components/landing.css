@@ -1,6 +1,6 @@
 /* Editorial landing composition; shared brand tokens preserve both themes. */
 .landing {
-  --landing-space: clamp(3.5rem, 2.5rem + 3vw, 6.5rem);
+  --landing-space: clamp(2.5rem, 1.8rem + 2vw, 4.25rem);
 }
 .landing :is(h1, h2, h3) {
   text-wrap: balance;
@@ -36,8 +36,8 @@
 .landing-hero-grid {
   display: grid;
   align-items: center;
-  gap: 2.5rem;
-  padding-block: clamp(3rem, 2rem + 3vw, 5.5rem);
+  gap: 2rem;
+  padding-block: clamp(2rem, 1.5rem + 2vw, 4rem);
 }
 .landing-hero-grid > *,
 .landing-editorial-grid > *,
@@ -55,15 +55,15 @@
 }
 .landing-hero-intro {
   max-inline-size: 46ch;
-  margin-block-start: 1.75rem;
-  font-size: 1.125rem;
-  line-height: 1.7;
+  margin-block-start: 1.25rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 .landing-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-block-start: 2rem;
+  margin-block-start: 1.5rem;
 }
 .landing-actions a {
   min-block-size: 3rem;
@@ -113,7 +113,7 @@
 .landing-editorial-grid,
 .landing-layer-grid {
   display: grid;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 .landing :is(.landing-lede, .landing-prose, .landing-layers article > p:not(.brand-eyebrow)) {
   color: var(--muted-foreground);
@@ -133,9 +133,9 @@
 }
 .landing-drivers {
   display: grid;
-  gap: 2rem;
-  margin-block-start: 3rem;
-  padding-block-start: 2.25rem;
+  gap: 1.5rem;
+  margin-block-start: 2rem;
+  padding-block-start: 1.5rem;
   border-block-start: 1px solid var(--border);
 }
 .landing-drivers h3 {
@@ -175,13 +175,13 @@
   font-size: 0.9375rem;
 }
 .landing-products {
-  margin-block-start: 3rem;
+  margin-block-start: 2rem;
 }
 .landing-products article {
   display: grid;
   gap: 1rem;
   border-block-start: 1px solid var(--border);
-  padding-block: 2rem;
+  padding-block: 1.5rem;
 }
 .landing-products h3 {
   margin-block-end: 0.75rem;
@@ -230,8 +230,8 @@
 }
 .landing-demos {
   display: grid;
-  gap: 1.5rem;
-  margin-block-start: 1.5rem;
+  gap: 1.25rem;
+  margin-block-start: 1.25rem;
 }
 .landing-demos a {
   margin-block-end: 0.5rem;
@@ -243,9 +243,9 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem 2rem;
-  margin-block-start: 3rem;
-  padding: clamp(1.25rem, 3vw, 2rem);
+  gap: 1.25rem 1.5rem;
+  margin-block-start: 2rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card);
@@ -431,11 +431,11 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
-  margin-block-start: 2.75rem;
+  margin-block-start: 2rem;
 }
 .landing-module-card {
   min-width: 0;
-  padding: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) * 1.5);
   background: var(--card);
@@ -447,7 +447,7 @@
 .landing-module-icon {
   width: 2rem;
   height: 2rem;
-  margin-block: 1.25rem;
+  margin-block: 0.9rem;
   color: var(--highlight);
 }
 .landing-module-card > h3 {
@@ -564,17 +564,17 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
-  margin-block-start: 2.75rem;
+  margin-block-start: 2rem;
 }
 .landing-built-card {
   min-width: 0;
-  padding: 1.5rem;
+  padding: 1.25rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--card);
 }
 .landing-built-card h3 {
-  margin-block: 1.25rem 0.5rem;
+  margin-block: 0.9rem 0.4rem;
   font-size: 1.35rem;
 }
 .landing-built-card > p:last-child {
