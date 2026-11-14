@@ -331,7 +331,13 @@ export function CoffeeMiniSwap() {
   }, []);
 
   const runSwap = useCallback(async () => {
-    if (!accountId || !quote || blocked || swapInFlight.current) return;
+    if (
+      !accountId ||
+      !quote ||
+      blocked ||
+      swapInFlight.current ||
+      (requiresImpactAcknowledgement && !impactAcknowledged)
+    ) return;
     // Lock synchronously as well as disabling controls: two taps can precede a render.
     swapInFlight.current = true;
     setTx({ phase: "signing" });
@@ -401,6 +407,8 @@ export function CoffeeMiniSwap() {
     minAmountOut,
     outputRegistered,
     quote,
+    requiresImpactAcknowledgement,
+    impactAcknowledged,
     refresh,
     route.poolId,
     route.tokenIn,
