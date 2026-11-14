@@ -388,7 +388,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
 
     renderPerpsUi(<ThreeMarketPerpsIndex />);
 
-    expect(await screen.findByText(/Three-Market Coffee Hub \(0\/3 Registered On-chain\)/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Coffee markets · 0\/3 registered on-chain/i)).toBeInTheDocument();
     expect(screen.getAllByText(/NOT REGISTERED/i).length).toBeGreaterThanOrEqual(3);
     expect(screen.queryByText(/LIVE TESTNET/i)).toBeNull();
   });
