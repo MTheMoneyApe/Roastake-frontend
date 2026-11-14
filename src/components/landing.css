@@ -299,8 +299,12 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
   .landing-products article {
-    grid-template-columns: 2rem minmax(0, 1fr) auto;
-    gap: 2rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 2rem;
+  }
+  .landing-products article > span {
+    justify-self: end;
   }
 }
 @media (prefers-reduced-motion: reduce) {
