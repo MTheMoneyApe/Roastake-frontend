@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createConfig, createStorage, noopStorage } from "wagmi";
 import { custom } from "viem";
 import { JudgesWalkthrough } from "@/components/perps/judges-walkthrough";
-import { DegenModeProvider } from "@/hooks/useDegenMode";
+import { DEGEN_MODE_STORAGE_KEY, DegenModeProvider } from "@/hooks/useDegenMode";
 import {
   ArabicaLiveMarketView,
   PerpsLiveMarketView,
@@ -363,6 +363,23 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
 
   afterEach(() => {
     cleanup();
+  });
+
+  it("renders the Mumu and Bobo PNGs on Long and Short tabs when Degen Mode is enabled", async () => {
+    window.localStorage.setItem(DEGEN_MODE_STORAGE_KEY, "true");
+    vi.spyOn(perpsRpc, "fetchPerpsProtocolSnapshot").mockResolvedValue(makeProtocol());
+
+    renderPerpsUi(<PerpsLiveMarketView marketEntry={THREE_MARKET_CATALOG[0]} />);
+
+    const directionTabs = await screen.findByRole("tablist", { name: "Order direction" });
+    await waitFor(() => {
+      expect(
+        directionTabs.querySelector('img[src="/images/mascots/mumu-near.webp"]'),
+      ).toBeInTheDocument();
+      expect(
+        directionTabs.querySelector('img[src="/images/mascots/bobo-near.webp"]'),
+      ).toBeInTheDocument();
+    });
   });
 
   it("renders Three-Market Hub cleanly across live Arabica, Robusta & Gesha without fabricating metrics", async () => {
