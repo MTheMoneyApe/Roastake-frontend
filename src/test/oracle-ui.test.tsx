@@ -192,7 +192,7 @@ describe("Coffee Oracle UI integration", () => {
       expect(screen.getByText("Unavailable (no stored observation)")).toBeInTheDocument();
     });
     expect(screen.queryByText(/imf-pcps-pcoffotm \(IMF PCPS\)/i)).not.toBeInTheDocument();
-    expect(screen.getAllByText("No reading is stored yet")).toHaveLength(2);
+    expect(screen.getAllByText("No observation yet")).toHaveLength(2);
   });
 
   it("allows inspecting the Gesha synthetic fixture separately and shows synthetic warning", async () => {
