@@ -79,12 +79,25 @@ import type {
   StoredPositionSide,
 } from "@/lib/perps/types";
 import { useWalletHub } from "@/lib/wallet/context";
+import { useDegenMode } from "@/hooks/useDegenMode";
 import { JudgesWalkthrough } from "./judges-walkthrough";
 import { PerpsMarginPanel } from "./margin-panel";
 import { PerpsMarketChart } from "./market-chart";
 import { TestnetOperatorControls } from "./operator-controls";
 import { LivePositionsPanel } from "./positions-panel";
 import { TxStatusPanel } from "./tx-status-panel";
+
+function DegenModeBanner() {
+  const { degenMode, copy } = useDegenMode();
+  if (!degenMode) return null;
+  return (
+    <div className="degen-banner" role="status" aria-live="polite">
+      <span aria-hidden="true">///</span>
+      <strong>{copy.banner}</strong>
+      <span aria-hidden="true">///</span>
+    </div>
+  );
+}
 
 function SyntheticOracleBanner({
   oracleStatus,
@@ -200,6 +213,7 @@ function LiveMarketOpenOrderForm({
   onTxUpdate: (record: NearUserTxRecord) => void;
 }) {
   const { near, openHub, sendNearTransaction } = useWalletHub();
+  const { degenMode, copy } = useDegenMode();
   const refreshAll = useRefreshPerpsQueries(near.accountId);
 
   const defaultPresetSize =
@@ -344,20 +358,26 @@ function LiveMarketOpenOrderForm({
               role="tab"
               aria-selected={side === option}
               onClick={() => setSide(option)}
-              className={`flex cursor-pointer items-center justify-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold transition ${
-                side === option
+              className={
+                "degen-order-tab flex cursor-pointer items-center justify-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold transition " +
+                (side === option
                   ? option === "Long"
                     ? "bg-gain/15 text-gain underline underline-offset-4"
                     : "bg-loss/15 text-loss underline underline-offset-4"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+                  : "text-muted-foreground hover:text-foreground")
+              }
             >
               {option === "Long" ? (
                 <TrendingUp className="size-3.5" aria-hidden="true" />
               ) : (
                 <TrendingDown className="size-3.5" aria-hidden="true" />
               )}
-              {option}
+              {degenMode && (
+                <span className="degen-hover-face" aria-hidden="true">
+                  {option === "Long" ? "🐂" : "🐻"}
+                </span>
+              )}
+              {degenMode ? (option === "Long" ? copy.long : copy.short) : option}
             </button>
           ))}
         </div>
@@ -648,6 +668,7 @@ export function ThreeMarketPerpsIndex() {
         }
       />
 
+      <DegenModeBanner />
       {error && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" aria-hidden="true" />
@@ -1109,6 +1130,7 @@ export function PerpsLiveMarketView({
         }
       />
 
+      <DegenModeBanner />
       {protocolError && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" aria-hidden="true" />

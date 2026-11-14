@@ -382,3 +382,132 @@
 @utility demo-stripe {
   background-image: repeating-linear-gradient(135deg, color-mix(in oklab, var(--brass) 18%, transparent) 0 8px, transparent 8px 16px);
 }
+
+
+/* Degen Mode is a presentation-only easter egg; order execution stays unchanged. */
+.degen-toggle {
+  display: inline-flex;
+  min-height: 2.25rem;
+  max-width: 8.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+  color: var(--muted-foreground);
+  padding: 0.4rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+.degen-toggle-standard:hover {
+  border-color: var(--highlight);
+  color: var(--foreground);
+}
+.degen-toggle-active {
+  border-color: oklch(0.82 0.25 145);
+  background: oklch(0.23 0.09 145);
+  color: oklch(0.92 0.23 145);
+  box-shadow: 0 0 0.5rem color-mix(in oklab, oklch(0.8 0.25 145) 50%, transparent);
+  text-shadow: 0 0 0.45rem color-mix(in oklab, oklch(0.8 0.25 145) 65%, transparent);
+  animation: degen-toggle-flicker 1.25s steps(2, end) infinite;
+}
+.degen-banner {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  overflow: hidden;
+  border: 1px solid oklch(0.78 0.23 145 / 0.7);
+  border-radius: var(--radius);
+  background-color: oklch(0.2 0.07 145);
+  background-image: repeating-linear-gradient(
+    135deg,
+    oklch(0.8 0.22 145 / 0.15) 0 0.65rem,
+    transparent 0.65rem 1.3rem
+  );
+  color: oklch(0.93 0.2 145);
+  padding: 0.8rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  line-height: 1.45;
+  text-align: center;
+  animation: degen-stripe-drift 5s linear infinite;
+}
+.degen-banner strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.degen-order-tab {
+  min-height: 2.75rem;
+}
+.degen-hover-face {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.2rem) scale(0.7);
+  filter: drop-shadow(0 0 0.25rem oklch(0.83 0.2 145 / 0.65));
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+.degen-order-tab:hover .degen-hover-face,
+.degen-order-tab:focus-visible .degen-hover-face {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.degen-pnl-callout {
+  display: inline-flex;
+  max-width: 15rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 0.35rem;
+  padding: 0.2rem 0.35rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: right;
+}
+.degen-pnl-bull {
+  border-color: oklch(0.78 0.2 145 / 0.55);
+  background: oklch(0.78 0.2 145 / 0.09);
+  color: oklch(0.72 0.18 145);
+}
+.degen-pnl-bear {
+  border-color: oklch(0.65 0.16 30 / 0.5);
+  background: oklch(0.65 0.16 30 / 0.09);
+  color: var(--loss);
+}
+@keyframes degen-toggle-flicker {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(0.74); }
+}
+@keyframes degen-stripe-drift {
+  from { background-position: 0 0; }
+  to { background-position: 2.6rem 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .degen-toggle-active,
+  .degen-banner {
+    animation: none;
+  }
+  .degen-toggle,
+  .degen-hover-face {
+    transition: none;
+  }
+}
+@media (max-width: 380px) {
+  .degen-toggle {
+    max-width: 6.8rem;
+    padding-inline: 0.4rem;
+    font-size: 0.5625rem;
+  }
+}

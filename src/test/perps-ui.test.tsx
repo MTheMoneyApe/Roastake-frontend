@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createConfig, createStorage, noopStorage } from "wagmi";
 import { custom } from "viem";
 import { JudgesWalkthrough } from "@/components/perps/judges-walkthrough";
+import { DegenModeProvider } from "@/hooks/useDegenMode";
 import {
   ArabicaLiveMarketView,
   PerpsLiveMarketView,
@@ -325,16 +326,19 @@ function renderPerpsUi(
   });
 
   return render(
-    <QueryClientProvider client={queryClient}>
-      <WalletInfrastructureProvider wagmiConfig={wagmiConfig} nearAdapterFactory={nearFactory}>
-        <TooltipProvider>{ui}</TooltipProvider>
-      </WalletInfrastructureProvider>
-    </QueryClientProvider>,
+    <DegenModeProvider>
+      <QueryClientProvider client={queryClient}>
+        <WalletInfrastructureProvider wagmiConfig={wagmiConfig} nearAdapterFactory={nearFactory}>
+          <TooltipProvider>{ui}</TooltipProvider>
+        </WalletInfrastructureProvider>
+      </QueryClientProvider>
+    </DegenModeProvider>,
   );
 }
 
 describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () => {
   beforeEach(() => {
+    window.localStorage.clear();
     demo.reset();
     clearPerpsTxHistory();
     vi.restoreAllMocks();
@@ -870,4 +874,23 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
       }),
     );
   });
+  it("renders Degen banner and Mumu/Bobo labels without changing order-side behavior", async () => {
+    window.localStorage.setItem("roastake-degen-mode", "true");
+    vi.spyOn(perpsRpc, "fetchPerpsProtocolSnapshot").mockResolvedValue(makeProtocol());
+    vi.spyOn(perpsRpc, "fetchPerpsTraderSnapshot").mockResolvedValue(makeTrader({ positions: [] }));
+
+    renderPerpsUi(<PerpsLiveMarketView marketEntry={THREE_MARKET_CATALOG[0]} />);
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "DEGEN MODE ACTIVE · CAFFEINATED PERPS 🚀",
+    );
+    const long = screen.getByRole("tab", { name: /MUMU LONG \(Pump! ☕\)/i });
+    const short = screen.getByRole("tab", { name: /BOBO SHORT \(Hedge! 🐻\)/i });
+    expect(long).toHaveAttribute("aria-selected", "true");
+    expect(short).toHaveAttribute("aria-selected", "false");
+    fireEvent.click(short);
+    expect(short).toHaveAttribute("aria-selected", "true");
+    expect(long).toHaveAttribute("aria-selected", "false");
+  });
+
 });

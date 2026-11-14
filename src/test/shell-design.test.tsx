@@ -52,6 +52,9 @@ vi.mock("@/components/wallet/wallet-pages", () => ({
 beforeEach(() => {
   location.pathname = "/app/assets";
   window.localStorage.removeItem(THEME_STORAGE_KEY);
+  window.localStorage.removeItem("roastake-degen-mode");
+  window.localStorage.removeItem("roastake-public-language");
+  delete document.body.dataset.degen;
   document.documentElement.classList.remove("dark");
   document.documentElement.dataset.theme = "light";
 });
@@ -59,6 +62,7 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  delete document.body.dataset.degen;
 });
 
 describe("Shared brand shells", () => {
@@ -308,6 +312,36 @@ describe("Shared brand shells", () => {
     expect(within(footer).getByText(/NEAR Testnet prototype/)).toBeInTheDocument();
     expect(within(footer).getByText(/does not represent verified inventory, custody, physical backing/)).toBeInTheDocument();
   });
+  it("shows a persistent Spanish Degen switch only on Perpetuals routes", async () => {
+    location.pathname = "/app/perps/COFFEE-ARABICA-TESTNET-USD";
+    window.localStorage.setItem("roastake-public-language", "es");
+    render(
+      <AppShell>
+        <h1>Perpetual market</h1>
+      </AppShell>,
+    );
+
+    const toggle = screen.getByRole("switch", { name: "Modo Degen" });
+    expect(toggle).toHaveTextContent("Estándar");
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    fireEvent.click(toggle);
+
+    await waitFor(() => expect(toggle).toHaveTextContent("DEGEN ACTIVO ☕📈"));
+    expect(toggle).toHaveAttribute("aria-checked", "true");
+    await waitFor(() => expect(document.body).toHaveAttribute("data-degen", "true"));
+    expect(window.localStorage.getItem("roastake-degen-mode")).toBe("true");
+  });
+
+  it("keeps the Degen switch off non-Perpetuals app routes", () => {
+    location.pathname = "/app/assets";
+    render(
+      <AppShell>
+        <h1>Assets</h1>
+      </AppShell>,
+    );
+    expect(screen.queryByRole("switch", { name: "Degen Mode" })).not.toBeInTheDocument();
+  });
+
 
   it.each([
     { path: "/app/perps/COL-G", scope: "demo", text: /Legacy browser-only simulated market/ },

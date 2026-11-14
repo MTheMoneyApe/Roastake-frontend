@@ -30,6 +30,7 @@ import { SimulatedDemoNetworkSelect } from "@/components/wallet/wallet-pages";
 import { MaturityBadge } from "./kit";
 import { ThemeToggle } from "@/components/theme-provider";
 import { LandingLanguageProvider, useLandingLanguage } from "@/components/landing-language";
+import { DegenModeProvider, useDegenMode } from "@/hooks/useDegenMode";
 
 import {
   APP_NAV,
@@ -155,9 +156,34 @@ export function WalletButton() {
   return <WalletHubHeaderButton />;
 }
 
-function Controls() {
+function Controls({
+  showDegenToggle,
+  degenMode,
+  onToggleDegen,
+  copy,
+}: {
+  showDegenToggle: boolean;
+  degenMode: boolean;
+  onToggleDegen: () => void;
+  copy: { standard: string; toggle: string; active: string };
+}) {
   return (
     <div className="flex items-center gap-1.5">
+      {showDegenToggle && (
+        <button
+          type="button"
+          role="switch"
+          aria-label={copy.toggle}
+          aria-checked={degenMode}
+          title={copy.toggle}
+          onClick={onToggleDegen}
+          className={
+            "degen-toggle " + (degenMode ? "degen-toggle-active" : "degen-toggle-standard")
+          }
+        >
+          {degenMode ? copy.active : copy.standard}
+        </button>
+      )}
       <span
         className="hidden items-center gap-1.5 rounded-full border border-primary/20 bg-accent px-2.5 py-1 text-[11px] font-medium text-accent-foreground 2xl:inline-flex"
         title="NEAR Testnet execution with non-monetary test tokens. Perps prices are operator-controlled and synthetic; OutLayer is separate and read-only."
@@ -290,7 +316,19 @@ function NavList({ groups, onNav }: { groups: Group[]; onNav?: () => void }) {
   );
 }
 
-export function AppShell({
+export function AppShell(props: {
+  children: ReactNode;
+  nav?: Group[];
+  home?: string;
+}) {
+  return (
+    <DegenModeProvider>
+      <AppShellContent {...props} />
+    </DegenModeProvider>
+  );
+}
+
+function AppShellContent({
   children,
   nav = APP_NAV,
   home = "/",
@@ -301,6 +339,8 @@ export function AppShell({
 }) {
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const { degenMode, toggleDegenMode, copy } = useDegenMode();
+  const showDegenToggle = path === "/app/perps" || path.startsWith("/app/perps/");
   const menuTrigger = useRef<HTMLButtonElement | null>(null);
   const currentPage = nav
     .flatMap((group) => group.items)
@@ -310,7 +350,10 @@ export function AppShell({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <div className="min-h-screen min-w-0 bg-background text-foreground">
+      <div
+        data-degen={degenMode ? "true" : undefined}
+        className="min-h-screen min-w-0 bg-background text-foreground"
+      >
         <a href="#main-content" className="brand-skip-link">
           Skip to content
         </a>
@@ -380,7 +423,12 @@ export function AppShell({
                 </nav>
               </div>
               <div className="shrink-0">
-                <Controls />
+                <Controls
+                  showDegenToggle={showDegenToggle}
+                  degenMode={degenMode}
+                  onToggleDegen={toggleDegenMode}
+                  copy={copy}
+                />
               </div>
             </div>
           </header>
