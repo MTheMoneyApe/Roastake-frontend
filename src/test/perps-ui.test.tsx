@@ -374,9 +374,9 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     expect(screen.getByText("Arabica / USD")).toBeInTheDocument();
     expect(screen.getByText("Robusta / USD")).toBeInTheDocument();
     expect(screen.getByText("Gesha / USD")).toBeInTheDocument();
-    expect(screen.getAllByText(/\$10\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText(/\$5\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText(/\$25\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$10\.000000/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$5\.000000/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$25\.000000/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/REGISTERED ON-CHAIN/i).length).toBeGreaterThanOrEqual(3);
     expect(screen.queryByRole("button", { name: /Deposit LP/i })).toBeNull();
   });
@@ -776,7 +776,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     });
 
     expect(await screen.findByText(/Robusta \/ USD/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/\$5\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$5\.000000/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/COFFEE-ROBUSTA-TESTNET\/USD/i).length).toBeGreaterThanOrEqual(1);
     expect(robustaHistorySpy).toHaveBeenCalledWith(
       expect.objectContaining({ marketId: MARKET_ROBUSTA_PERPS_ID }),
@@ -851,7 +851,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     });
 
     expect(await screen.findByText(/Gesha \/ USD/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/\$25\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$25\.000000/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/COFFEE-GESHA-TESTNET\/USD/i).length).toBeGreaterThanOrEqual(1);
     expect(geshaHistorySpy).toHaveBeenCalledWith(
       expect.objectContaining({ marketId: MARKET_GESHA_PERPS_ID }),
