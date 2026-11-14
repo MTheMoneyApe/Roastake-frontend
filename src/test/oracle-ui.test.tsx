@@ -164,7 +164,7 @@ describe("Coffee Oracle UI integration", () => {
       expect(screen.getAllByText("$7.38863238 USD/kg").length).toBeGreaterThan(0);
     });
 
-    expect(screen.getByText("No observation yet")).toBeInTheDocument();
+    expect(screen.getByText("No reading is stored yet")).toBeInTheDocument();
     expect(screen.getAllByText("2026-10-31 23:59:59 UTC").length).toBeGreaterThan(0);
     expect(screen.getAllByText("2026-11-10 22:24:23 UTC").length).toBeGreaterThan(0);
     expect(screen.getByText("6.00859288 NEAR")).toBeInTheDocument();
