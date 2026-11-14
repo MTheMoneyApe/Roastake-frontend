@@ -454,12 +454,12 @@ function ScopeNotice({ publicPage = false }: { publicPage?: boolean }) {
       aria-label="Implementation status"
       data-scope={scope}
       className={cn(
-        "mb-6 rounded-xl border bg-muted/50 px-4 py-3 text-sm",
+        "mb-4 rounded-xl border bg-muted/50 px-3 py-2.5 text-sm",
         publicPage && "brand-container mt-6",
       )}
     >
       <p className="font-semibold">{scope === "docs" ? "Documentation" : SCOPE_LABELS[scope]}</p>
-      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
         {getRouteScopeDescription(path)}
       </p>
     </aside>
