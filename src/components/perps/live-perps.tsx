@@ -1150,7 +1150,8 @@ export function PerpsLiveMarketView({
         <p className="text-xs text-muted-foreground">
           Market <code className="font-mono">{marketEntry.marketId}</code> is not registered
           on <code className="font-mono">{PERPS_CONTRACT_ID}</code>; order placement is disabled
-          until on-chain registration is verified.
+          until on-chain registration is verified. Prices use operator-controlled synthetic
+          Testnet references, not live coffee quotes. Testnet USDC has no monetary value.
         </p>
       </Panel>
     ) : (
@@ -1213,11 +1214,17 @@ export function PerpsLiveMarketView({
                 : "Unavailable"
           }
           sub={
-            <span className="block text-[11px]">
-              {oracleStatus.observedAtSec
-                ? `Seq #${oracleStatus.sequence ?? 0} · ${oracleStatus.ageSec ?? 0}s / ${oracleStatus.maxAgeSec}s`
-                : "No tick recorded"}
-            </span>
+            <>
+              <span className="block text-[10px]">
+                Operator-controlled synthetic Testnet reference · not live coffee quotes.
+              </span>
+              <span className="block text-[10px]">Testnet USDC has no monetary value.</span>
+              <span className="block text-[11px]">
+                {oracleStatus.observedAtSec
+                  ? `Seq #${oracleStatus.sequence ?? 0} · ${oracleStatus.ageSec ?? 0}s / ${oracleStatus.maxAgeSec}s`
+                  : "No tick recorded"}
+              </span>
+            </>
           }
         />
         <Stat
