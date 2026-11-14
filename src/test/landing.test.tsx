@@ -184,11 +184,12 @@ describe("ROASTAKE bilingual editorial landing", () => {
     expect(container.querySelector("#harvest-workflow")).toHaveTextContent("Pilot target · Q1 2027");
     expect(container.querySelectorAll(".landing-forward-steps > li")).toHaveLength(4);
     expect(container.querySelectorAll(".landing-built-card")).toHaveLength(3);
-    expect(container.querySelector("#built-on-near")).toHaveTextContent("Account Abstraction");
+    expect(container.querySelector("#built-on-near")).toHaveTextContent("NEAR Testnet Settlement");
     expect(container.querySelector("#built-on-near")).toHaveTextContent(
-      "Multichain Wallet Hub / Chain Signatures",
+      "NEAR-first Wallet Hub",
     );
-    expect(container.querySelector("#built-on-near")).toHaveTextContent("Sub-cent Fees");
+    expect(container.querySelector("#built-on-near")).toHaveTextContent("Low Transaction Costs");
+    expect(container.querySelector("#built-on-near")).not.toHaveTextContent(/Account Abstraction|Chain Signatures/i);
   });
 
   it.each(["en", "es"])(
