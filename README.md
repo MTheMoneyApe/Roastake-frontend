@@ -5,7 +5,7 @@ This repository (`MTheMoneyApe/Roastake-frontend`) is the **companion web fronte
 > [!IMPORTANT]
 > **Hackathon MVP Scope & Transparency (`Testnet Only`)**
 > - **Primary Submission & Smart Contracts Repository:** https://github.com/MTheMoneyApe/Roastake (branch `hackathon-submission`)
-> - **Track Alignment:** `defi` (*Unstoppable DeFi*, eligible Testnet-only under `Q-010` and `Q-011` of [`HACKATHON.md`](https://nearhackathon.com/HACKATHON.md)). Cross-chain NEAR Intents, Chain Signatures, and Mainnet settlement are **not** implemented or claimed.
+> - **Track Alignment:** `defi` (*Unstoppable DeFi*, eligible Testnet-only under `Q-010` and `Q-011` of [`HACKATHON.md`](https://nearhackathon.com/HACKATHON.md)). Cross-chain execution and Mainnet settlement are **not** implemented or claimed.
 > - **Live Testnet Markets (`3` Active):** `COFFEE-ARABICA-TESTNET/USD` (`$10.00/kg`, `M04.6-G`), `COFFEE-ROBUSTA-TESTNET/USD` (logical slug `COFFEE-ROBUSTA`, `$5.00/kg`, `M04.14`), and `COFFEE-GESHA-TESTNET/USD` (logical slug `COFFEE-GESHA`, `$25.00/kg`, `M04.15`) trading against [`perps-v1.roastake-dev-mta.testnet`](https://explorer.testnet.near.org/accounts/perps-v1.roastake-dev-mta.testnet) using Circle Native Testnet USDC (`no monetary value`) and independent per-market `TESTNET_SANDBOX_FEED` channels.
 > - **Preview / Demo Separation:** Historical Spot Marketplace / DeFi / ecosystem pages remain clearly badged `DEMO` / `PREVIEW` prototypes. `roastake-oracle-v1.testnet` (OutLayer IMF monthly benchmark) is an independent read-only view (`ARABICA-MONTHLY-IMF/USD` live, `GESHA-DEMO/USD` unset `null`) and does **not** price live Perps execution today.
 
@@ -43,7 +43,7 @@ npm install
 | Task | Command | Verified Result |
 | --- | --- | --- |
 | **Start Dev Server** | `npm run dev` | Serves app locally at `http://127.0.0.1:3000` (HTTP `200` verified across Perps, Positions, Activity, Wallet, Oracle routes) |
-| **Run Test Suite** | `npm run test` *(Vitest `--run`)* | Vitest `v4.1.11`: **`15 passed (15)` files, `114 passed (114)` tests** (three-market math, RPC guards, isolated indexer HTTP client/partial-vs-contiguous coverage/fallback, verified market history & chart tests, UI flows, responsive shell, SSR) |
+| **Run Test Suite** | `npm run test` *(Vitest `--run`)* | Vitest: **`28 passed (28)` files, `250 passed (250)` tests** on the current PR HEAD (three-market math, RPC guards, isolated indexer HTTP client/partial-vs-contiguous coverage/fallback, verified market history & chart tests, UI flows, responsive shell, SSR) |
 | **TypeScript Check** | `./node_modules/.bin/tsc --noEmit` *(or `bunx tsc --noEmit`)* | Exit `0` (`0` errors) |
 | **ESLint Check** | `./node_modules/.bin/eslint src/lib/perps src/components/perps ... --rule "prettier/prettier: off"` | Exit `0` (`0` logic/TS errors on Perps/Oracle/Wallet modules; full repo `npm run lint` hits Windows CRLF `prettier/prettier` noise in starter files) |
 | **Production Build** | `npm run build` | Vite + Nitro build passes cleanly (outputs `.output/`) |
@@ -111,7 +111,7 @@ Judges can verify live on-chain state **without Testnet funds or wallet signatur
 
 - **Backend Repository:** https://github.com/MTheMoneyApe/Roastake (public submission branch `hackathon-submission`; initial commit `0d130ff` on `2026-11-09`).
 - **This Repository (`pixel-perfect-replica`):** Initial commit `4c3b15c` (`2026-11-02 13:30:43 +0000`) started from a **TanStack Start / Vite / Lovable React starter template** (`shadcn/ui`, Tailwind CSS, and simulated coffee demo modules `src/lib/demo/*`, `src/components/coffee/*`).
-- **All NEAR Testnet infrastructure** (`src/lib/wallet/*`, `src/components/wallet/*`), OutLayer Oracle read-only dashboard (`src/lib/oracle/*`), multi-market Perpetuals terminals (`src/lib/perps/*`, `src/components/perps/*`, including indexer API client & chart modules `market-chart*.tsx` / `market-history*.ts`), and tests (`96/96`) were created inside the hackathon window (`2026-10-19`–`2026-11-14`).
+- **All NEAR Testnet infrastructure** (`src/lib/wallet/*`, `src/components/wallet/*`), OutLayer Oracle read-only dashboard (`src/lib/oracle/*`), multi-market Perpetuals terminals (`src/lib/perps/*`, `src/components/perps/*`, including indexer API client & chart modules `market-chart*.tsx` / `market-history*.ts`), and automated tests were created and expanded inside the hackathon window (`2026-10-19`–`2026-11-14`).
 
 ---
 
