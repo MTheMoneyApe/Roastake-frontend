@@ -214,6 +214,36 @@ describe("M04.18 Coffee Mini Swap UI", () => {
     expect(screen.getByRole("button", { name: /Sign & send swap/i })).toBeInTheDocument();
   });
 
+  it("requires explicit acknowledgement before signing a swap with extreme pool impact", async () => {
+    vi.mocked(fetchPoolSnapshot).mockResolvedValueOnce({
+      poolId: 2947,
+      exists: true,
+      tokenIds: [ARABICA_TOKEN, USDC_TOKEN],
+      amounts: [9_093_449n, 1_100_000n],
+      totalFeeUnits: 30,
+      sharesTotalSupply: 1_000_000_000_000_000_000_000_000n,
+    });
+    vi.mocked(fetchOnChainQuote).mockResolvedValueOnce(7_449_600n);
+
+    renderMiniSwap("qa-only.testnet", vi.fn());
+
+    await screen.findByText(/Wallet: 15\\.403562 USDC/);
+    fireEvent.change(screen.getByLabelText(/Amount \(USDC\)/), { target: { value: "5" } });
+
+    expect(
+      await screen.findByText(/High price impact — review before signing · 81\.97%/i),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/4\.55× the current input-token reserve/i)).toBeInTheDocument();
+
+    fireEvent.click(await screen.findByRole("button", { name: /Review transaction/i }));
+    const acknowledgement = screen.getByRole("checkbox", { name: /I understand this quote has/i });
+    const signButton = screen.getByRole("button", { name: /Acknowledge price impact/i });
+    expect(signButton).toBeDisabled();
+
+    fireEvent.click(acknowledgement);
+    expect(screen.getByRole("button", { name: /Sign & send swap/i })).toBeEnabled();
+  });
+
   it("fails closed when the pool RPC read fails instead of presenting an empty or missing pool", async () => {
     vi.mocked(fetchPoolSnapshot).mockRejectedValueOnce(
       new Error("All configured NEAR Testnet RPC endpoints failed."),
