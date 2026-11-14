@@ -258,8 +258,8 @@ describe("Shared brand shells", () => {
     expect(trigger).toHaveFocus();
   });
 
-  it.each([320, 390, 430, 1440])(
-    "keeps the Launch App button directly visible at %ipx",
+  it.each([320, 390, 430, 639, 640, 1440])(
+    "keeps the wallet connection control visible at %ipx",
     (width) => {
       vi.stubGlobal("innerWidth", width);
       location.pathname = "/";
@@ -268,13 +268,12 @@ describe("Shared brand shells", () => {
           <h1>Home</h1>
         </LandingShell>,
       );
-      const nav = screen.getByRole("navigation", { name: "Main navigation" });
-      expect(within(nav).getAllByRole("link")).toHaveLength(1);
-      const launch = within(nav).getByRole("link", { name: "Launch App" });
-      expect(launch).toHaveAttribute("href", "/app/perps");
-      expect(launch).toBeVisible();
-      expect(within(nav).queryByRole("button", { name: "Menu" })).not.toBeInTheDocument();
-      expect(within(nav).queryByRole("link", { name: "Coffee Economy" })).not.toBeInTheDocument();
+      const header = screen.getByRole("banner");
+      const wallet = within(header).getByRole("button", { name: "Connect Wallet" });
+      expect(wallet).toBeInTheDocument();
+      expect(wallet.closest(".hidden")).toBeNull();
+      expect(within(header).getByRole("combobox", { name: "Language / Idioma" })).toBeInTheDocument();
+      expect(within(header).getByRole("button", { name: "Night mode" })).toBeInTheDocument();
     },
   );
 
