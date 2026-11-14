@@ -40,6 +40,7 @@ export type NavGroup = {
   collapsible?: boolean;
   defaultCollapsed?: boolean;
   standalone?: boolean;
+  priority?: boolean;
 };
 
 export const SCOPE_LABELS = {
@@ -58,6 +59,7 @@ export const SCOPE_DESCRIPTIONS = {
 export const APP_NAV: NavGroup[] = [
   {
     label: "Markets / Testnet",
+    priority: true,
     description: SCOPE_LABELS.live,
     groupBadge: { label: "TESTNET", variant: "testnet" },
     items: [
@@ -118,6 +120,8 @@ export const APP_NAV: NavGroup[] = [
   },
   {
     label: "Coffee Experience / Demo",
+    collapsible: true,
+    defaultCollapsed: true,
     description: SCOPE_LABELS.demo,
     groupBadge: { label: "DEMO", variant: "demo" },
     items: [
@@ -129,7 +133,7 @@ export const APP_NAV: NavGroup[] = [
     ],
   },
   {
-    label: "Workspace",
+    label: "Demo Workspace",
     description: SCOPE_LABELS.demo,
     collapsible: true,
     defaultCollapsed: true,
@@ -138,9 +142,10 @@ export const APP_NAV: NavGroup[] = [
       { to: "/app/markets", label: "Markets", icon: Gauge },
       { to: "/roasters", label: "Roaster Profiles", icon: Store },
       { to: "/cart", label: "Coffee Cart", icon: ShoppingBag },
+      { to: "/checkout", label: "Checkout", icon: ShoppingBag },
       {
         to: "/app/activity",
-        label: "Orders & Activity",
+        label: "Activity",
         icon: RefreshCw,
         badge: {
           label: "TESTNET + DEMO",
