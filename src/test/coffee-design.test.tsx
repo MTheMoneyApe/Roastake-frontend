@@ -102,9 +102,8 @@ describe("shared coffee presentation and accessible controls", () => {
 
   it("retains the public hero and Testnet/demo boundaries without forcing a dark section", () => {
     const { container } = render(<Home />);
-    const heading = screen.getByRole("heading", {
-      level: 1,
-      name: "The financial layer for the global coffee economy.",
+    const heading = screen.getByRole("region", {
+      name: "ROASTAKE / REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
     });
     expect(container.querySelector(".dark")).toBeNull();
     expect(heading.closest("section")).toHaveClass("brand-hero", "landing-hero");
