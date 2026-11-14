@@ -111,6 +111,7 @@ export function CoffeeMiniSwap() {
   const [balanceOut, setBalanceOut] = useState<bigint>(0n);
   const [outputRegistered, setOutputRegistered] = useState<boolean | null>(null);
   const [reviewing, setReviewing] = useState(false);
+  const [impactAcknowledged, setImpactAcknowledged] = useState(false);
   const [tx, setTx] = useState<TxState>({ phase: "idle" });
   const [refreshKey, setRefreshKey] = useState(0);
   const swapInFlight = useRef(false);
@@ -201,6 +202,7 @@ export function CoffeeMiniSwap() {
     setQuote(null);
     setQuoteError(null);
     setReviewing(false);
+    setImpactAcknowledged(false);
     if (parsedAmount === null || poolLoading || poolReadError || !pool?.exists) return;
 
     const reserves = pool && pool.exists ? pool.amounts : [];
@@ -276,6 +278,12 @@ export function CoffeeMiniSwap() {
       slippagePct,
     });
   }, [pool, parsedAmount, route.tokenIn, route.tokenOut, slippagePct]);
+
+  const requiresImpactAcknowledgement = (math?.priceImpactPct ?? 0) >= 10;
+  const inputReserveMultiple =
+    parsedAmount !== null && liveReserves.reserveIn > 0n
+      ? Number(parsedAmount) / Number(liveReserves.reserveIn)
+      : null;
 
   const minAmountOut = useMemo(() => {
     if (!quote) return 0n;
@@ -586,6 +594,31 @@ export function CoffeeMiniSwap() {
           )}
           {quoteError && <p className="text-xs text-loss">{quoteError}</p>}
 
+          {math && math.priceImpactPct >= 5 && (
+            <div
+              role="alert"
+              className="rounded-md border border-[var(--warn)]/60 bg-[var(--warn-soft)]/25 px-3 py-2.5 text-xs"
+            >
+              <p className="font-semibold text-[var(--warn)]">
+                {math.priceImpactPct >= 10 ? "High price impact — review before signing" : "Price impact is elevated"}
+                {" "}· {math.priceImpactPct.toFixed(2)}%
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                {quotedExecutionPriceE8 !== null && poolReserves?.spotPriceE8
+                  ? `Average quote ${formatUsdPerKgPriceE8(quotedExecutionPriceE8)} vs pre-trade pool spot ${formatUsdPerKgPriceE8(poolReserves.spotPriceE8)}. `
+                  : ""}
+                {inputReserveMultiple !== null
+                  ? `This input is ${inputReserveMultiple.toFixed(2)}× the current input-token reserve.`
+                  : "The trade is large relative to current pool depth."}
+              </p>
+              {requiresImpactAcknowledgement && (
+                <p className="mt-1 font-medium text-foreground">
+                  A separate acknowledgement is required before the wallet can be opened.
+                </p>
+              )}
+            </div>
+          )}
+
           {!blocked && !reviewing && (
             <Button type="submit" className="w-full" disabled={txBusy}>
               Review transaction
@@ -627,15 +660,31 @@ export function CoffeeMiniSwap() {
                   <dd className="num">1 yoctoNEAR</dd>
                 </div>
               </dl>
+              {requiresImpactAcknowledgement && (
+                <label className="flex cursor-pointer items-start gap-2 rounded-md border border-[var(--warn)]/60 bg-[var(--warn-soft)]/25 p-3 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={impactAcknowledged}
+                    onChange={(event) => setImpactAcknowledged(event.target.checked)}
+                    className="mt-0.5 size-4 shrink-0 accent-current"
+                  />
+                  <span>
+                    I understand this quote has {math?.priceImpactPct.toFixed(2)}% price impact and
+                    accept the displayed minimum received amount.
+                  </span>
+                </label>
+              )}
               <div className="flex gap-2">
                 <Button
                   type="button"
                   className="flex-1"
                   onClick={() => void runSwap()}
-                  disabled={!hydrated || txBusy}
+                  disabled={!hydrated || txBusy || (requiresImpactAcknowledgement && !impactAcknowledged)}
                 >
                   {tx.phase === "signing" ? <Loader2 className="animate-spin" /> : null}
-                  Sign &amp; send swap
+                  {requiresImpactAcknowledgement && !impactAcknowledged
+                    ? "Acknowledge price impact"
+                    : "Sign & send swap"}
                 </Button>
                 <Button
                   type="button"
@@ -716,7 +765,18 @@ export function CoffeeMiniSwap() {
                 label="Synthetic reference · not pool price"
                 value={`${asset.referenceUsdPerKg.toFixed(2)}/kg`}
               />
-              <Row label="Price impact" value={math ? `${math.priceImpactPct.toFixed(3)}%` : "—"} />
+              <Row
+                label="Price impact · execution vs spot"
+                value={math ? `${math.priceImpactPct.toFixed(3)}%` : "—"}
+              />
+              <Row
+                label="Input reserve depth"
+                value={
+                  inputReserveMultiple !== null
+                    ? `${inputReserveMultiple.toFixed(2)}× current input reserve`
+                    : "—"
+                }
+              />
               <Row
                 label="Minimum received"
                 value={quote ? `${formatOut(minAmountOut)} ${outputSymbol}` : "—"}
