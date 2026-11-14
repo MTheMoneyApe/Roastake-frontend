@@ -232,7 +232,7 @@ function NavList({ groups, onNav }: { groups: Group[]; onNav?: () => void }) {
       {groups.map((g, groupIndex) => {
         const isCollapsed = g.collapsible && collapsed.has(g.label);
         return (
-          <div key={g.label}>
+          <div key={g.label} className={cn(g.priority && "rounded-xl border border-sidebar-primary/40 bg-sidebar-accent/25 px-1.5 py-2 shadow-sm")}>
             {!g.standalone && (
               <div className="mb-1.5 flex items-center justify-between gap-2 px-3">
                 {g.collapsible ? (
@@ -371,7 +371,7 @@ function AppShellContent({
             event.preventDefault();
             menuTrigger.current?.focus();
           }}
-          className="w-72 max-w-[calc(100vw-1.5rem)] overflow-y-auto border-sidebar-border bg-sidebar p-3 text-sidebar-foreground [--ring:var(--sidebar-ring)] lg:hidden"
+          className="h-full w-72 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain border-sidebar-border bg-sidebar p-3 pb-[max(1rem,env(safe-area-inset-bottom))] text-sidebar-foreground [--ring:var(--sidebar-ring)] lg:hidden"
         >
           <SheetTitle className="sr-only">Protocol sections</SheetTitle>
           <SheetDescription className="sr-only">
