@@ -231,6 +231,23 @@ describe("ROASTAKE bilingual editorial landing", () => {
       );
       expect(container).toHaveTextContent(expected.badge);
       expect(container.querySelector("#why-coffee")).toHaveTextContent(expected.problem);
+      expect(container.querySelectorAll(".landing-rwa-step h4")[0]).toHaveTextContent(
+        language === "es" ? "Tokenización y pasaporte" : "Mint & Passport",
+      );
+      expect(container.querySelectorAll(".landing-rwa-step h4")[1]).toHaveTextContent(
+        language === "es" ? "Cobertura / Trading" : "Hedge / Trade",
+      );
+      expect(container.querySelectorAll(".landing-rwa-step h4")[2]).toHaveTextContent(
+        language === "es" ? "Tueste · −15% de peso" : "Roast · −15% weight",
+      );
+      expect(container.querySelectorAll(".landing-rwa-step h4")[3]).toHaveTextContent(
+        language === "es" ? "Canje físico" : "Physical Redeem",
+      );
+      expect(container).toHaveTextContent("/app/coffee-passport");
+      expect(container).toHaveTextContent("/app/perps");
+      expect(container).toHaveTextContent("/market");
+      expect(container).toHaveTextContent("/app/roast");
+      expect(container).toHaveTextContent("/app/redeem");
       expect(container.querySelector("#harvest-workflow")).toHaveTextContent(expected.pilot);
       expect(container.querySelector("#built-on-near")).toHaveTextContent(expected.built);
       expect(container.querySelectorAll("h2")).toHaveLength(6);
