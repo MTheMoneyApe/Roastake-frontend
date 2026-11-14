@@ -17,6 +17,39 @@ const copy = {
     intro:
       "Coffee connects the world. We’re building a bridge from its real economy to digital assets and decentralized markets — starting on NEAR Testnet.",
     primary: "Explore Testnet Markets",
+    testnetBadge: "NEAR TESTNET PROTOTYPE · SIMULATED PRICING",
+    heroBridge: "Hedge price volatility on NEAR Testnet perps or explore traceable specialty coffee lots.",
+    lotsCta: "Browse Coffee Lots",
+    liveKicker: "LIVE ON NEAR TESTNET",
+    liveTitle: "Market tools and a coffee-asset journey.",
+    liveLead: "Explore the financial layer available on NEAR Testnet and the proposed digital journey for specialty coffee lots.",
+    perpsEyebrow: "NEAR TESTNET · SYNTHETIC MARKETS",
+    perpsTitle: "Coffee Perpetuals",
+    perpsText: "Explore Arabica, Robusta and Gesha perpetual markets for reference-price discovery and hedging practice, using operator-controlled synthetic prices.",
+    perpsAction: "Explore Perpetuals",
+    rwaEyebrow: "RWA PRODUCT FLOW · ILLUSTRATIVE",
+    rwaTitle: "The coffee-asset lifecycle",
+    rwaText: "Follow a proposed lot journey from digital passport and marketplace activity through roasting and redemption.",
+    rwaSteps: [
+      ["Mint & Passport", "Start a lot’s digital identity and passport record.", [["Open passport", "/app/coffee-passport"]]],
+      ["Hedge / Trade", "Explore price exposure and browse specialty coffee lots.", [["Open Perps", "/app/perps"], ["Browse market", "/market"]]],
+      ["Roast · −15% weight", "Model the green-to-roasted conversion and its 15% weight change.", [["Open roasting lab", "/app/roast"]]],
+      ["Physical Redeem", "Explore the proposed path from a digital lot record to physical fulfilment.", [["Open redemption", "/app/redeem"]]],
+    ],
+    secondaryToolsTitle: "More Testnet infrastructure",
+    secondaryTools: [
+      ["RHEA Mini Swap", "Test-token swaps through NEAR Testnet pools.", "/app/swap"],
+      ["OutLayer Oracle", "Independent, read-only benchmark monitoring.", "/app/oracle"],
+    ],
+    builtKicker: "BUILT ON NEAR",
+    builtTitle: "Infrastructure for a connected coffee economy.",
+    builtLead: "NEAR brings together simple account experiences, multichain coordination and low transaction costs — useful foundations for real-world coffee workflows.",
+    architectureCards: [
+      ["Account Abstraction", "Frictionless producer onboarding", "Simplify wallet setup and transaction flows so producers can access digital tools with less network complexity."],
+      ["Multichain Wallet Hub / Chain Signatures", "Cross-chain access and coordination", "Connect a unified wallet experience with cross-chain signing, creating a path to payments and liquidity across ecosystems."],
+      ["Sub-cent Fees", "Economics for micro-lots", "Low transaction costs make frequent, smaller-value operations more practical — from lot records to asset lifecycle actions."],
+    ],
+    workflowKicker: "FUTURE FORWARD-CONTRACT WORKFLOW",
     secondary: "Open the documentation",
     workflowKicker: "A future workflow",
     workflowStatus: "PLANNED · NOT LIVE",
@@ -28,7 +61,7 @@ const copy = {
     workflowSteps: [
       [
         "Propose a coffee lot",
-        "A producer submits origin, expected harvest, quality and volume for review. These details are not independently verified today.",
+        "A producer proposes origin, expected harvest, quality and volume for a coffee lot.",
       ],
       [
         "Agree on price and terms",
@@ -36,29 +69,29 @@ const copy = {
       ],
       [
         "Record a forward contract",
-        "The planned on-chain workflow records the agreed terms and obligations. Forward-contract creation and execution are not live.",
+        "The planned on-chain workflow records the agreed terms, delivery window and obligations.",
       ],
       [
         "Verify the lot and test settlement",
-        "The pilot would test coffee-lot verification and end-to-end settlement on NEAR Testnet—before any real-world delivery or commercial claim.",
+        "The pilot tests lot records and the full NEAR Testnet workflow ahead of physical delivery.",
       ],
     ],
-    pilotKicker: "Pilot target · 2027",
-    pilotTitle: "Test the workflow with three producers and two roasters.",
+    pilotKicker: "Pilot target · Q1 2027",
+    pilotTitle: "Validate the workflow with three producers and two roasters in Huila.",
     pilotNote:
-      "NEAR ecosystem support would help build the on-chain forward-contract workflow and verifiable coffee-lot records, then test contract creation, price agreement, lot verification and end-to-end Testnet settlement. Three producers and two roasters are the 2027 target cohort—not confirmed partners or committed participants. Physical delivery and commercial settlement are outside the current prototype.",
+      "Q1 2027 target: a pilot cohort of three producers and two roasters in Huila. The work would validate lot records, forward-contract terms, price agreement and an end-to-end NEAR Testnet workflow.",
     pilotMetrics: [
       ["3", "producers"],
       ["2", "roasters"],
-      ["2027", "target year"],
+      ["Q1 2027", "target window"],
     ],
     foundation: "Rooted in the real world",
-    thesisKicker: "The foundation",
-    thesisTitle: "Coffee is more than a commodity.",
+    thesisKicker: "The real problem",
+    thesisTitle: "Coffee prices move. Producers and roasters carry the risk.",
     thesisLead:
-      "It is a daily ritual, a livelihood and a global economy. That real-world foundation comes first.",
+      "Price swings between planting, harvest, purchase and roasting leave producers with uncertain income and roasters with unpredictable costs and margins.",
     thesis:
-      "Everyday consumption may give global demand resilient characteristics. But coffee is not crisis-proof, a guaranteed hedge or an uncorrelated asset. Prices can fall; production and trade remain exposed to real risks.",
+      "Many small producers and independent roasters have limited access to practical hedging, working capital and financial tools. The gap is access to transparent pricing and risk-management infrastructure.",
     drivers: [
       [
         "Everyday demand",
@@ -162,6 +195,39 @@ const copy = {
     intro:
       "El café conecta al mundo. Construimos un puente entre su economía real, los activos digitales y los mercados descentralizados — empezando en NEAR Testnet.",
     primary: "Explorar mercados Testnet",
+    testnetBadge: "PROTOTIPO NEAR TESTNET · PRECIOS SIMULADOS",
+    heroBridge: "Cubre la volatilidad de precios con perpetuos en NEAR Testnet o explora lotes de café de especialidad trazables.",
+    lotsCta: "Explorar lotes de café",
+    liveKicker: "ACTIVO EN NEAR TESTNET",
+    liveTitle: "Herramientas de mercado y recorrido del activo café.",
+    liveLead: "Explora la capa financiera disponible en NEAR Testnet y el recorrido digital propuesto para los lotes de café de especialidad.",
+    perpsEyebrow: "NEAR TESTNET · MERCADOS SINTÉTICOS",
+    perpsTitle: "Coffee Perpetuals",
+    perpsText: "Explora mercados perpetuos de Arábica, Robusta y Gesha para descubrir referencias de precio y practicar cobertura, con precios sintéticos controlados por un operador.",
+    perpsAction: "Explorar perpetuos",
+    rwaEyebrow: "FLUJO DE PRODUCTO RWA · ILUSTRATIVO",
+    rwaTitle: "El ciclo de vida del activo café",
+    rwaText: "Recorre el ciclo propuesto de un lote: pasaporte digital, actividad en el marketplace, tueste y canje.",
+    rwaSteps: [
+      ["Mint & Passport", "Inicia la identidad digital y el pasaporte de un lote.", [["Abrir pasaporte", "/app/coffee-passport"]]],
+      ["Hedge / Trade", "Explora la exposición al precio y los lotes de café de especialidad.", [["Abrir Perps", "/app/perps"], ["Ver marketplace", "/market"]]],
+      ["Roast · −15% de peso", "Modela la conversión de café verde a tostado y su cambio de peso del 15%.", [["Abrir laboratorio de tueste", "/app/roast"]]],
+      ["Physical Redeem", "Explora el recorrido propuesto desde el registro digital hasta la entrega física.", [["Abrir canje", "/app/redeem"]]],
+    ],
+    secondaryToolsTitle: "Más infraestructura Testnet",
+    secondaryTools: [
+      ["RHEA Mini Swap", "Swaps con tokens de prueba a través de pools NEAR Testnet.", "/app/swap"],
+      ["OutLayer Oracle", "Monitorización independiente de referencias, de solo lectura.", "/app/oracle"],
+    ],
+    builtKicker: "CONSTRUIDO SOBRE NEAR",
+    builtTitle: "Infraestructura para conectar la economía del café.",
+    builtLead: "NEAR reúne experiencias de cuenta sencillas, coordinación multichain y bajos costes de transacción: bases útiles para los flujos del café en el mundo real.",
+    architectureCards: [
+      ["Account Abstraction", "Onboarding sencillo para productores", "Simplifica la configuración de wallet y los flujos de transacción para que los productores accedan a herramientas digitales con menos complejidad de red."],
+      ["Multichain Wallet Hub / Chain Signatures", "Acceso y coordinación entre redes", "Conecta una experiencia de wallet unificada con firmas cross-chain y abre un camino para pagos y liquidez entre ecosistemas."],
+      ["Sub-cent Fees", "Viabilidad para micro-lotes", "Los bajos costes de transacción hacen más viables las operaciones frecuentes de pequeño valor, desde los registros de lotes hasta las acciones del ciclo del activo."],
+    ],
+    workflowKicker: "FLUJO FUTURO DE CONTRATOS A PLAZO",
     secondary: "Abrir documentación",
     workflowKicker: "Un flujo de trabajo futuro",
     workflowStatus: "PLANIFICADO · NO ACTIVO",
@@ -173,7 +239,7 @@ const copy = {
     workflowSteps: [
       [
         "Proponer un lote de café",
-        "El productor presenta el origen, la cosecha estimada, la calidad y el volumen para su revisión. Hoy estos datos no cuentan con verificación independiente.",
+        "El productor propone el origen, la cosecha estimada, la calidad y el volumen del lote.",
       ],
       [
         "Acordar precio y condiciones",
@@ -181,29 +247,29 @@ const copy = {
       ],
       [
         "Registrar un contrato a plazo",
-        "El flujo on-chain previsto registraría las condiciones y obligaciones acordadas. La creación y ejecución del contrato aún no están activas.",
+        "El flujo on-chain previsto registra las condiciones acordadas, la ventana de entrega y las obligaciones.",
       ],
       [
         "Verificar el lote y probar la liquidación",
-        "El piloto probaría la verificación del lote y la liquidación integral en NEAR Testnet, antes de cualquier entrega física o afirmación comercial.",
+        "El piloto prueba los registros del lote y el flujo completo en NEAR Testnet antes de la entrega física.",
       ],
     ],
-    pilotKicker: "Objetivo del piloto · 2027",
-    pilotTitle: "Probar el flujo con tres productores y dos tostadores.",
+    pilotKicker: "Objetivo del piloto · Q1 2027",
+    pilotTitle: "Validar el flujo con tres productores y dos tostadores en Huila.",
     pilotNote:
-      "El apoyo del ecosistema NEAR permitiría construir el flujo on-chain de contratos a plazo y los registros verificables de lotes de café, y después probar la creación de contratos, el acuerdo de precio, la verificación de lotes y la liquidación integral en Testnet. Tres productores y dos tostadores son el objetivo para 2027, no socios ni participantes confirmados. La entrega física y la liquidación comercial quedan fuera del prototipo actual.",
+      "Objetivo para Q1 2027: un grupo piloto de tres productores y dos tostadores en Huila. El trabajo validaría los registros de lotes, las condiciones de contratos a plazo, el acuerdo de precio y un flujo integral en NEAR Testnet.",
     pilotMetrics: [
       ["3", "productores"],
       ["2", "tostadores"],
-      ["2027", "año objetivo"],
+      ["Q1 2027", "ventana objetivo"],
     ],
     foundation: "Con raíces en el mundo real",
-    thesisKicker: "El fundamento",
-    thesisTitle: "El café es más que una materia prima.",
+    thesisKicker: "El problema real",
+    thesisTitle: "El precio del café cambia. Productores y tostadores asumen el riesgo.",
     thesisLead:
-      "Es un ritual diario, un medio de vida y una economía global. Esa base real es lo primero.",
+      "Los cambios de precio entre la siembra, la cosecha, la compra y el tueste generan ingresos inciertos para los productores y costes difíciles de planificar para los tostadores.",
     thesis:
-      "El consumo cotidiano puede dar resiliencia a la demanda global. Pero el café no es inmune a las crisis, una cobertura garantizada ni un activo descorrelacionado. Los precios pueden caer; la producción y el comercio siguen expuestos a riesgos reales.",
+      "Muchos pequeños productores y tostadores independientes tienen acceso limitado a coberturas prácticas, capital circulante y herramientas financieras. La brecha está en el acceso a precios transparentes e infraestructura de gestión del riesgo.",
     drivers: [
       [
         "Demanda cotidiana",
@@ -304,41 +370,48 @@ const copy = {
 } as const;
 
 const productRoutes = ["/app/perps", "/app/swap", "/app/oracle"] as const;
-const demoRoutes = [
-  "/market",
-  "/app/assets",
-  "/app/coffee-passport",
-  "/app/roast",
-  "/app/redeem",
-] as const;
 const driverIcons = [Coffee, CloudSun, Globe2, TrendingUp];
 
 export function LandingPage() {
   const { language } = useLandingLanguage();
   const c = copy[language];
-  const actions = (
-    <div className="landing-actions">
-      <Button
-        size="lg"
-        asChild
-        className="bg-hero-action text-hero-action-foreground hover:bg-hero-action-hover"
-      >
-        <Link to="/app/perps">
-          {c.primary}
-          <ArrowRight aria-hidden="true" />
-        </Link>
-      </Button>
-    </div>
-  );
+
   return (
     <div className="landing" lang={language}>
       <section className="brand-hero landing-hero" aria-labelledby="landing-title">
         <Section className="landing-hero-grid">
           <div className="landing-hero-copy">
-            <h1 id="landing-title" className="landing-brand-title text-hero-highlight">{c.kicker}</h1>
-            <p className="landing-hero-intro text-hero-muted">{c.headline} {c.emphasis}</p>
-            <p className="landing-hero-description text-hero-muted">{c.intro}</p>
-            {actions}
+            <span className="landing-testnet-badge">{c.testnetBadge}</span>
+            <h1 id="landing-title" className="landing-brand-title text-hero-highlight">
+              {c.kicker}
+            </h1>
+            <p className="landing-hero-intro text-hero-muted">
+              {c.headline} {c.emphasis}
+            </p>
+            <p className="landing-hero-description text-hero-muted">{c.heroBridge}</p>
+            <div className="landing-actions">
+              <Button
+                size="lg"
+                asChild
+                className="bg-hero-action text-hero-action-foreground hover:bg-hero-action-hover"
+              >
+                <Link to="/app/perps">
+                  {c.primary}
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="border-hero-foreground/45 bg-transparent text-hero-foreground hover:bg-hero-foreground/10"
+              >
+                <Link to="/market">
+                  {c.lotsCta}
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
           </div>
           <div>
             <CoffeePhoto
@@ -349,7 +422,6 @@ export function LandingPage() {
               sizes="(min-width: 1280px) 530px, (min-width: 1024px) 42vw, calc(100vw - 2rem)"
               className="landing-hero-photo"
             />
-            <p className="landing-photo-caption text-hero-muted">{c.photoCaption}</p>
           </div>
         </Section>
         <Section className="landing-hero-foot">
@@ -359,9 +431,101 @@ export function LandingPage() {
           </a>
         </Section>
       </section>
+
+      <section id="why-coffee" className="landing-section" aria-labelledby="thesis-title">
+        <Section>
+          <div className="landing-editorial-grid">
+            <div>
+              <p className="brand-eyebrow">{c.thesisKicker}</p>
+              <h2 id="thesis-title">{c.thesisTitle}</h2>
+            </div>
+            <div className="landing-prose">
+              <p className="landing-lead-strong">{c.thesisLead}</p>
+              <p>{c.thesis}</p>
+            </div>
+          </div>
+          <ul className="landing-drivers" role="list">
+            {c.drivers.map(([title, text], i) => {
+              const Icon = driverIcons[i];
+              return (
+                <li key={i}>
+                  <Icon className="size-5 text-highlight" aria-hidden="true" />
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </Section>
+      </section>
+
+      <section id="live-on-near" className="landing-section landing-tinted" aria-labelledby="live-title">
+        <Section>
+          <div className="landing-section-head">
+            <p className="brand-eyebrow">{c.liveKicker}</p>
+            <h2 id="live-title">{c.liveTitle}</h2>
+            <p className="landing-lede">{c.liveLead}</p>
+          </div>
+
+          <div className="landing-live-grid">
+            <article className="landing-module-card landing-perps-card">
+              <p className="brand-eyebrow">{c.perpsEyebrow}</p>
+              <TrendingUp className="landing-module-icon" aria-hidden="true" />
+              <h3>{c.perpsTitle}</h3>
+              <p>{c.perpsText}</p>
+              <Link to="/app/perps" className="landing-module-link">
+                {c.perpsAction}
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </article>
+
+            <article className="landing-module-card landing-rwa-card">
+              <p className="brand-eyebrow">{c.rwaEyebrow}</p>
+              <Coffee className="landing-module-icon" aria-hidden="true" />
+              <h3>{c.rwaTitle}</h3>
+              <p>{c.rwaText}</p>
+              <ol className="landing-rwa-steps" role="list">
+                {c.rwaSteps.map(([title, description, links], i) => (
+                  <li className="landing-rwa-step" key={title}>
+                    <span className="landing-rwa-number">{i + 1}</span>
+                    <div>
+                      <h4>{title}</h4>
+                      <p>{description}</p>
+                      <div className="landing-rwa-links">
+                        {links.map(([label, route]) => (
+                          <Link to={route} key={route}>
+                            {label}
+                            <ArrowRight aria-hidden="true" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </article>
+          </div>
+
+          <div className="landing-secondary-tools">
+            <p className="brand-eyebrow">{c.secondaryToolsTitle}</p>
+            <div>
+              {c.secondaryTools.map(([title, description, route]) => (
+                <Link to={route} key={route}>
+                  <span>
+                    <strong>{title}</strong>
+                    <small>{description}</small>
+                  </span>
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </Section>
+      </section>
+
       <section
         id="harvest-workflow"
-        className="landing-section landing-tinted"
+        className="landing-section"
         aria-labelledby="workflow-title"
       >
         <Section>
@@ -375,7 +539,6 @@ export function LandingPage() {
                 <span>{c.workflowStatus}</span>
               </MaturityBadge>
               <p className="landing-lead-strong">{c.workflowLead}</p>
-              <p className="landing-small">{c.workflowPrototype}</p>
             </div>
           </div>
           <ol className="landing-forward-steps" role="list">
@@ -408,132 +571,34 @@ export function LandingPage() {
           </article>
         </Section>
       </section>
-      <section id="why-coffee" className="landing-section" aria-labelledby="thesis-title">
-        <Section>
-          <div className="landing-editorial-grid">
-            <div>
-              <p className="brand-eyebrow">{c.thesisKicker}</p>
-              <h2 id="thesis-title">{c.thesisTitle}</h2>
-            </div>
-            <div className="landing-prose">
-              <p className="landing-lead-strong">{c.thesisLead}</p>
-              <p>{c.thesis}</p>
-            </div>
-          </div>
-          <ul className="landing-drivers" role="list">
-            {c.drivers.map(([title, text], i) => {
-              const Icon = driverIcons[i];
-              return (
-                <li key={i}>
-                  <Icon className="size-5 text-highlight" aria-hidden="true" />
-                  <h3>{title}</h3>
-                  <p>{text}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </Section>
-      </section>
+
       <section
-        id="ecosystem-layers"
+        id="built-on-near"
         className="landing-section landing-tinted"
-        aria-labelledby="layers-title"
+        aria-labelledby="built-title"
       >
-        <Section className="landing-layer-grid">
-          <div>
-            <p className="brand-eyebrow">{c.layersKicker}</p>
-            <h2 id="layers-title">{c.layersTitle}</h2>
-            <p className="landing-lede">{c.layersLead}</p>
-            <CoffeePhoto
-              photo="cherries"
-              caption={false}
-              alt={c.cherriesAlt}
-              className="mt-8"
-              sizes="(min-width: 1280px) 470px, (min-width: 1024px) 36vw, calc(100vw - 2rem)"
-            />
-            <p className="landing-photo-caption text-muted-foreground">{c.photoCaption}</p>
-          </div>
-          <ol className="landing-layers" role="list">
-            {c.layers.map(([title, status, text, note], i) => (
-              <li key={i}>
-                <article>
-                  <p className="brand-eyebrow">
-                    {i < 2 ? c.foundation : "NEAR Testnet"}
-                  </p>
-                  <h3>{title}</h3>
-                  <MaturityBadge variant={i === 2 ? "testnet" : "preview"}>
-                    <span lang={i === 2 ? "en" : undefined}>{status}</span>
-                  </MaturityBadge>
-                  <p>{text}</p>
-                  {note && <p>{note}</p>}
-                </article>
-              </li>
-            ))}
-          </ol>
-        </Section>
-      </section>
-      <section id="explore" className="landing-section" aria-labelledby="explore-title">
         <Section>
           <div className="landing-section-head">
-            <p className="brand-eyebrow">{c.exploreKicker}</p>
-            <h2 id="explore-title">{c.exploreTitle}</h2>
-            <p className="landing-lede">{c.exploreLead}</p>
+            <p className="brand-eyebrow">{c.builtKicker}</p>
+            <h2 id="built-title">{c.builtTitle}</h2>
+            <p className="landing-lede">{c.builtLead}</p>
           </div>
-          <div className="landing-products">
-            {c.products.map(([title, note, text], i) => (
-              <article key={productRoutes[i]}>
-                <div>
-                  <p className="brand-eyebrow">{note}</p>
-                  <h3>
-                    <Link to={productRoutes[i]}>
-                      {title}
-                      <ArrowRight aria-hidden="true" />
-                    </Link>
-                  </h3>
-                  <p>{text}</p>
-                </div>
-                <MaturityBadge variant="testnet">
-                  <span lang="en">{SCOPE_LABELS.live}</span>
-                </MaturityBadge>
+          <div className="landing-built-grid">
+            {c.architectureCards.map(([title, subtitle, description], i) => (
+              <article className="landing-built-card" key={title}>
+                <span className="landing-built-number">{String(i + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                <p className="landing-built-subtitle">{subtitle}</p>
+                <p>{description}</p>
               </article>
             ))}
           </div>
-          <div className="landing-demo-head">
-            <h3>{c.demoTitle}</h3>
-            <MaturityBadge variant="demo">
-              <span lang="en">{SCOPE_LABELS.demo}</span>
-            </MaturityBadge>
-          </div>
-          <p className="landing-small max-w-3xl">{c.demoNote}</p>
-          <ul className="landing-demos" role="list">
-            {c.demos.map(([title, text], i) => (
-              <li key={demoRoutes[i]}>
-                <Link to={demoRoutes[i]}>
-                  {title}
-                  <ArrowRight className="size-4" aria-hidden="true" />
-                </Link>
-                <p>{text}</p>
-              </li>
-            ))}
-          </ul>
-          <article className="landing-planned">
-            <div>
-              <MaturityBadge variant="preview">
-                <span lang="en">{SCOPE_LABELS.planned}</span>
-              </MaturityBadge>
-              <h3>{c.plannedTitle}</h3>
-              <p className="landing-small">{c.plannedNote}</p>
-            </div>
-            <Link to="/roadmap" className="landing-text-link">
-              {c.roadmapLink}
-              <ArrowRight aria-hidden="true" />
-            </Link>
-          </article>
         </Section>
       </section>
+
       <section
         id="coffee-capital"
-        className="landing-section landing-tinted"
+        className="landing-section"
         aria-labelledby="capital-title"
       >
         <Section className="landing-editorial-grid">
@@ -551,6 +616,7 @@ export function LandingPage() {
           </div>
         </Section>
       </section>
+
       <section id="roadmap" className="landing-section" aria-labelledby="roadmap-title">
         <Section>
           <div className="landing-editorial-grid">
