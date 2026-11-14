@@ -1,0 +1,39 @@
+name: Frontend quality
+
+on:
+  pull_request:
+    branches: [hackathon-submission]
+  push:
+    branches: [feat/degen-mode-easter-egg]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: TypeScript, Vitest and touched-file lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Type check
+        run: bunx tsc --noEmit
+      - name: Run Vitest suite
+        run: bun run test
+      - name: Lint modified frontend files
+        run: >-
+          bunx eslint
+          src/lib/navigation.ts
+          src/components/shell.tsx
+          src/components/wallet/wallet-hub.tsx
+          src/test/navigation.test.ts
+          src/test/shell-design.test.tsx
+          src/test/degen-mode.test.tsx
+          src/test/perps-ui.test.tsx
