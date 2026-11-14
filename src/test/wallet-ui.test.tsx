@@ -328,7 +328,7 @@ describe("Wallet Hub UI, Perps NEAR-First Gating & Demo Isolation", () => {
       expect(screen.getByText(/ROASTAKE Perpetuals executes on/i)).toBeInTheDocument();
     });
     expect(screen.getByRole("button", { name: /Connect NEAR Wallet/i })).toBeInTheDocument();
-    expect(screen.getByText(/LIVE CONTRACT · perps-v1\.roastake-dev-mta\.testnet/i)).toHaveClass(
+    expect(screen.getByText(/ON-CHAIN TESTNET CONTRACT · perps-v1\.roastake-dev-mta\.testnet/i)).toHaveClass(
       "max-w-full",
       "whitespace-normal",
       "[overflow-wrap:anywhere]",
