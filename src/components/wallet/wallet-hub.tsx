@@ -90,7 +90,7 @@ export function WalletHubHeaderButton() {
       onClick={() => openHub(nearConnected ? "near" : undefined)}
       aria-label={ariaLabel}
       className={cn(
-        "min-h-11 gap-1.5 px-2.5 text-xs sm:min-h-8",
+        "min-h-11 min-w-11 shrink-0 gap-1.5 px-2.5 text-xs sm:min-h-8",
         nearConnected && "border-gain/50 bg-forest/30 hover:bg-forest/50",
         !nearConnected && connectedAccounts.length > 0 && "border-brass/60",
       )}
