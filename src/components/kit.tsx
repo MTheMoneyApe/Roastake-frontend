@@ -122,7 +122,7 @@ export function PageHeader({
   demo?: boolean;
 }) {
   return (
-    <div className="mb-6 flex min-w-0 flex-col gap-4 border-b pb-6 md:flex-row md:items-end md:justify-between">
+    <div className="mb-4 flex min-w-0 flex-col gap-3 border-b pb-4 md:flex-row md:items-end md:justify-between">
       <div className="min-w-0">
         {crumbs.length > 0 && (
           <nav
@@ -171,14 +171,14 @@ export function Stat({
   help?: string;
 }) {
   return (
-    <div className="brand-surface p-4">
+    <div className="brand-surface p-3">
       <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
         {label}
         {help && <Help text={help} />}
       </div>
       <div
         className={cn(
-          "num mt-1.5 text-xl font-medium md:text-2xl",
+          "num mt-1 text-lg font-medium md:text-xl",
           tone === "gain" && "text-gain",
           tone === "loss" && "text-loss",
         )}
@@ -192,7 +192,7 @@ export function Stat({
 export const Stats = ({ children, cols = 4 }: { children: ReactNode; cols?: number }) => (
   <div
     className={cn(
-      "grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 [&>*]:min-w-0",
+      "grid grid-cols-1 gap-2.5 min-[360px]:grid-cols-2 [&>*]:min-w-0",
       cols === 3 && "md:grid-cols-3",
       cols === 4 && "md:grid-cols-4",
       cols === 5 && "md:grid-cols-5",
@@ -219,19 +219,19 @@ export function Panel({
   return (
     <section className={cn("brand-surface", className)}>
       {(title || actions) && (
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2.5">
           <h2 className="font-sans text-sm font-semibold tracking-normal">{title}</h2>
           <div className="flex flex-wrap gap-2">{actions}</div>
         </header>
       )}
-      <div className={cn("p-4", bodyClass)}>{children}</div>
+      <div className={cn("p-3", bodyClass)}>{children}</div>
     </section>
   );
 }
 
 export function Empty({ text, action }: { text: string; action?: ReactNode }) {
   return (
-    <div className="brand-surface flex flex-col items-center gap-3 border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
+    <div className="brand-surface flex flex-col items-center gap-2.5 border-dashed px-4 py-7 text-center text-sm text-muted-foreground">
       <Inbox className="size-6" aria-hidden="true" />
       <p>{text}</p>
       {action}
@@ -271,7 +271,7 @@ export function DataTable<T>({
               <th
                 key={c.key}
                 scope="col"
-                className={cn("px-4 py-2 font-medium", c.align === "right" && "text-right")}
+                className={cn("px-3 py-1.5 font-medium", c.align === "right" && "text-right")}
               >
                 {c.label}
               </th>
@@ -287,7 +287,7 @@ export function DataTable<T>({
               {cols.map((c) => (
                 <td
                   key={c.key}
-                  className={cn("px-4 py-2.5", c.align === "right" && "num text-right")}
+                  className={cn("px-3 py-2", c.align === "right" && "num text-right")}
                 >
                   {c.render(r)}
                 </td>
