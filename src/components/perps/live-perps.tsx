@@ -38,7 +38,7 @@ import {
   Stat,
   Stats,
 } from "@/components/kit";
-import { formatFixedPoint, parseUnsignedBigInt } from "@/lib/oracle/format";
+import { formatAgeDuration, formatFixedPoint, parseUnsignedBigInt } from "@/lib/oracle/format";
 import {
   GAS_50_TGAS,
   MARKET_ARABICA_PERPS_ID,
@@ -695,7 +695,11 @@ export function ThreeMarketPerpsIndex() {
         <div className="min-w-0 rounded-lg border bg-card p-3.5">
           <p className="text-xs font-medium text-muted-foreground">Price-feed freshness</p>
           <p className="num mt-2 text-2xl font-semibold">
-            {protocol ? `${freshMarketCount}/${registeredMarketCount} fresh` : "—"}
+            {protocol
+              ? registeredMarketCount > 0
+                ? `${freshMarketCount}/${registeredMarketCount} fresh`
+                : "No registered markets"
+              : "—"}
           </p>
           <p className="mt-1 text-[11px] text-muted-foreground">
             {protocol
@@ -706,7 +710,7 @@ export function ThreeMarketPerpsIndex() {
         <div className="min-w-0 rounded-lg border bg-card p-3.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-medium text-muted-foreground">New-position feed gate</p>
-            <Pill tone={!protocol ? "muted" : protocol.pausedGlobal || freshMarketCount === 0 ? "warn" : "gain"}>
+            <Pill tone={!protocol || registeredMarketCount === 0 ? "muted" : protocol.pausedGlobal || freshMarketCount === 0 ? "warn" : "gain"}>
               {feedGateLabel}
             </Pill>
           </div>
@@ -873,24 +877,18 @@ export function ThreeMarketPerpsIndex() {
                           <p className="text-[11px] font-medium text-muted-foreground">Feed age</p>
                           <p className="num mt-1 text-lg font-semibold">
                             {entryOracleStatus.ageSec !== null
-                              ? `${entryOracleStatus.ageSec.toLocaleString()}s`
+                              ? formatAgeDuration(entryOracleStatus.ageSec)
                               : "Unavailable"}
                           </p>
                           <p className="text-[11px] text-muted-foreground">
-                            Maximum allowed: {entryOracleStatus.maxAgeSec.toLocaleString()}s
+                            Maximum allowed: {formatAgeDuration(entryOracleStatus.maxAgeSec)}
                           </p>
                         </div>
                       </div>
                       {entryOracleStatus.status === "STALE" && isRegistered && (
-                        <Alert variant="default" className="border-[var(--warn)]/50 bg-[var(--warn-soft)]/20">
-                          <AlertTriangle className="size-4" aria-hidden="true" />
-                          <AlertTitle className="text-xs font-semibold">New opens blocked by stale feed</AlertTitle>
-                          <AlertDescription className="text-xs">
-                            The saved synthetic tick is older than this market’s limit. An operator
-                            must publish a fresh Testnet tick before new positions can open. Existing
-                            positions can still be closed.
-                          </AlertDescription>
-                        </Alert>
+                        <p className="text-xs font-medium text-[var(--warn)]">
+                          Feed is too old for new opens. Existing positions can still be closed.
+                        </p>
                       )}
                       <div className="rounded-md border px-3 py-2.5">
                         <p className="text-[11px] text-muted-foreground">Open interest · Long / Short</p>
