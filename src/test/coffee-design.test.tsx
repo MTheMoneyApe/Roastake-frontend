@@ -111,14 +111,8 @@ describe("shared coffee presentation and accessible controls", () => {
       "loading",
       "eager",
     );
-    expect(
-      screen.getByText(/No verified inventory, backing, custody, certification, payments/),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Test USDC has no monetary value/)).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /Does not power Perps, provide its execution prices or verify coffee, custody or backing/,
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText("NEAR TESTNET PROTOTYPE · SIMULATED PRICING")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Explore Testnet Markets/ })).toHaveAttribute("href", "/app/perps");
+    expect(screen.getByRole("link", { name: /Browse Coffee Lots/ })).toHaveAttribute("href", "/market");
   });
 });
