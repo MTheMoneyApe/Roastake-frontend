@@ -29,6 +29,12 @@ import {
 } from "lucide-react";
 import type { MaturityVariant } from "@/components/kit";
 import { resolveThreeMarketEntry } from "@/lib/perps/config";
+
+export type NavBadge = { label: string; variant: MaturityVariant; title?: string };
+export type NavItem = { to: string; label: string; icon: typeof Coffee; badge?: NavBadge };
+export type NavGroup = {
+  label: string;
+  description?: string;
   groupBadge?: NavBadge;
   items: NavItem[];
   collapsible?: boolean;
