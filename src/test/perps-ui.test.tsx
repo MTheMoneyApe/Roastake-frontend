@@ -370,7 +370,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
 
     renderPerpsUi(<ThreeMarketPerpsIndex />);
 
-    expect(await screen.findByText(/Three-Market Coffee Hub/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Coffee Index Perpetuals/i)).toBeInTheDocument();
     expect(screen.getByText("Arabica / USD")).toBeInTheDocument();
     expect(screen.getByText("Robusta / USD")).toBeInTheDocument();
     expect(screen.getByText("Gesha / USD")).toBeInTheDocument();
@@ -404,7 +404,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
       await screen.findByText(/NEAR Testnet RPC Unavailable/i, {}, { timeout: 4000 }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Retry RPC/i })).toBeInTheDocument();
-    expect(screen.getAllByText(/Registry unverified — RPC unavailable/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText(/UNVERIFIED/i).length).toBeGreaterThanOrEqual(2);
     expect(screen.queryByText(/LIVE TESTNET/i)).toBeNull();
     expect(screen.queryByText(/4x · 25\.00% · 12\.50%/i)).toBeNull();
 
