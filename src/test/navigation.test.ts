@@ -16,6 +16,20 @@ const routeSources = import.meta.glob("../routes/*.tsx", {
 }) as Record<string, string>;
 
 describe("Implementation-status navigation", () => {
+  it("keeps the operational NEAR Testnet group visually prioritised over demo and roadmap", () => {
+    expect(APP_NAV[0]).toMatchObject({ priority: true });
+    expect(APP_NAV[0].collapsible).not.toBe(true);
+    expect(APP_NAV[1]).toMatchObject({ collapsible: true, defaultCollapsed: true });
+    expect(APP_NAV[2]).toMatchObject({ collapsible: true, defaultCollapsed: true });
+    expect(APP_NAV[0].items.map(({ to }) => to)).toEqual([
+      "/app/perps",
+      "/app/positions",
+      "/app/swap",
+      "/app/oracle",
+      "/app/wallet",
+    ]);
+  });
+
   it.each([
     { name: "app", groups: APP_NAV },
     { name: "public/footer", groups: [{ label: "Public", items: PUBLIC_NAV }] },
