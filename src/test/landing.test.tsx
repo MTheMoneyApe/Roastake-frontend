@@ -161,11 +161,11 @@ describe("ROASTAKE bilingual editorial landing", () => {
         true,
       );
     }
-    expect(screen.getByRole("link", { name: "RHEA Mini Swap" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /RHEA Mini Swap/ })).toHaveAttribute(
       "href",
       "/app/swap",
     );
-    expect(screen.getByRole("link", { name: "OutLayer Oracle" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /OutLayer Oracle/ })).toHaveAttribute(
       "href",
       "/app/oracle",
     );
