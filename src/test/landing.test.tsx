@@ -253,8 +253,18 @@ describe("ROASTAKE bilingual editorial landing", () => {
       expect(container.querySelector("#built-on-near")).toHaveTextContent(expected.built);
       expect(container.querySelectorAll("h2")).toHaveLength(6);
       const images = Array.from(container.querySelectorAll("img"));
-      expect(images).toHaveLength(1);
+      expect(images).toHaveLength(3);
       expect(images[0]).toHaveAttribute("loading", "eager");
+      const perps = container.querySelector(".landing-perps-mascots");
+      expect(perps).toBeInTheDocument();
+      expect(perps).toHaveTextContent("Mumu");
+      expect(perps).toHaveTextContent("Bobo");
+      expect(perps?.querySelector('img[src="/images/mascots/mumu-near.webp"]')).toHaveAccessibleName(
+        language === "es" ? "Mumu, la mascota toro de NEAR" : "Mumu, the NEAR bull mascot",
+      );
+      expect(perps?.querySelector('img[src="/images/mascots/bobo-near.webp"]')).toHaveAccessibleName(
+        language === "es" ? "Bobo, la mascota oso de NEAR" : "Bobo, the NEAR bear mascot",
+      );
       expect(images[0]).toHaveAttribute("fetchpriority", "high");
       expect(images[0]).toHaveAttribute("srcset");
       expect(images[0]).toHaveAttribute("sizes");

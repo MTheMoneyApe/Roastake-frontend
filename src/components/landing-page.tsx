@@ -27,6 +27,11 @@ const copy = {
     perpsTitle: "Coffee Perpetuals",
     perpsText: "Explore Arabica, Robusta and Gesha perpetual markets for reference-price discovery and hedging practice, using operator-controlled synthetic prices.",
     perpsAction: "Explore Perpetuals",
+    perpsMascotsLabel: "Perps mascots",
+    mumuAlt: "Mumu, the NEAR bull mascot",
+    boboAlt: "Bobo, the NEAR bear mascot",
+    mumuRole: "BULL · LONG",
+    boboRole: "BEAR · SHORT",
     rwaEyebrow: "RWA PRODUCT FLOW · ILLUSTRATIVE",
     rwaTitle: "The coffee-asset lifecycle",
     rwaText: "Follow a proposed lot journey from digital passport and marketplace activity through roasting and redemption.",
@@ -203,6 +208,11 @@ const copy = {
     perpsTitle: "Coffee Perpetuals",
     perpsText: "Explora mercados perpetuos de Arábica, Robusta y Gesha para descubrir referencias de precio y practicar cobertura, con precios sintéticos controlados por un operador.",
     perpsAction: "Explorar perpetuos",
+    perpsMascotsLabel: "Personajes de Perps",
+    mumuAlt: "Mumu, la mascota toro de NEAR",
+    boboAlt: "Bobo, la mascota oso de NEAR",
+    mumuRole: "TORO · LONG",
+    boboRole: "OSO · SHORT",
     rwaEyebrow: "FLUJO DE PRODUCTO RWA · ILUSTRATIVO",
     rwaTitle: "El ciclo de vida del activo café",
     rwaText: "Recorre el ciclo propuesto de un lote: pasaporte digital, actividad en el marketplace, tueste y canje.",
@@ -468,6 +478,36 @@ export function LandingPage() {
               <p className="brand-eyebrow">{c.perpsEyebrow}</p>
               <TrendingUp className="landing-module-icon" aria-hidden="true" />
               <h3>{c.perpsTitle}</h3>
+              <div className="landing-perps-mascots" role="group" aria-label={c.perpsMascotsLabel}>
+                <div className="landing-perps-mascot">
+                  <img
+                    src="/images/mascots/mumu-near.webp"
+                    alt={c.mumuAlt}
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>
+                    <strong>Mumu</strong>
+                    <small>{c.mumuRole}</small>
+                  </span>
+                </div>
+                <div className="landing-perps-mascot">
+                  <img
+                    src="/images/mascots/bobo-near.webp"
+                    alt={c.boboAlt}
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span>
+                    <strong>Bobo</strong>
+                    <small>{c.boboRole}</small>
+                  </span>
+                </div>
+              </div>
               <p>{c.perpsText}</p>
               <Link to="/app/perps" className="landing-module-link">
                 {c.perpsAction}
