@@ -28,6 +28,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 vi.mock("@/components/shell", () => ({
+  LandingShell: ({ children }: { children: ReactNode }) => <main>{children}</main>,
   PublicShell: ({ children }: { children: ReactNode }) => <main>{children}</main>,
   Section: ({ children, ...props }: HTMLAttributes<HTMLDivElement>) => (
     <div {...props}>{children}</div>
