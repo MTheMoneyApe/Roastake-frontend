@@ -412,7 +412,7 @@ export function CoffeeMiniSwap() {
     const coffee = pool.amounts[coffeeIndex];
     const usdc = pool.amounts[usdcIndex];
     // NEP-141 decimals: coffee 8, USDC 6. Express reserve ratio in USD/kg at 1e8.
-    const spotPriceE8 = coffee > 0n ? (usdc * USDC_TO_PRICE_E8_MULTIPLIER) / coffee : null;
+    const spotPriceE8 = coffee > 0n && usdc > 0n ? (usdc * USDC_TO_PRICE_E8_MULTIPLIER) / coffee : null;
     return { coffee, usdc, spotPriceE8 };
   }, [pool, asset.tokenId]);
 
