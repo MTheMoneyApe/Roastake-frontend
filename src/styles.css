@@ -98,8 +98,8 @@
   /* Light is deliberate even when the operating system prefers dark. */
   color-scheme: light;
   --radius: 0.625rem;
-  --content-width: 80rem;
-  --page-gutter: clamp(1rem, 2.5vw, 2rem);
+  --content-width: 84rem;
+  --page-gutter: clamp(0.875rem, 1.7vw, 1.5rem);
   --header-height: 4rem;
   --page-title-size: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);
   --section-title-size: clamp(1.5rem, 1.125rem + 1.5vw, 2.25rem);
@@ -269,7 +269,7 @@
     padding-inline: var(--page-gutter);
     min-width: 0;
   }
-  .brand-page { padding-block: 2rem 6rem; }
+  .brand-page { padding-block: 1.25rem 3.5rem; }
   .brand-header {
     min-height: var(--header-height);
     background: color-mix(in oklab, var(--card) 95%, transparent);
