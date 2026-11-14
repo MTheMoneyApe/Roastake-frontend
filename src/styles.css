@@ -449,17 +449,22 @@
 .degen-order-tab {
   min-height: 2.75rem;
 }
-.degen-hover-face {
+.degen-hover-mascot {
   display: inline-block;
-  opacity: 0;
-  transform: translateY(0.2rem) scale(0.7);
-  filter: drop-shadow(0 0 0.25rem oklch(0.83 0.2 145 / 0.65));
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  border-radius: 0.375rem;
+  object-fit: contain;
+  opacity: 0.94;
+  transform: translateY(0.08rem) scale(0.96);
+  filter: drop-shadow(0 0 0.25rem oklch(0.83 0.2 145 / 0.55));
   transition: opacity 140ms ease, transform 140ms ease;
 }
-.degen-order-tab:hover .degen-hover-face,
-.degen-order-tab:focus-visible .degen-hover-face {
+.degen-order-tab:hover .degen-hover-mascot,
+.degen-order-tab:focus-visible .degen-hover-mascot {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0) scale(1.06);
 }
 .degen-pnl-callout {
   display: inline-flex;
@@ -500,7 +505,7 @@
     animation: none;
   }
   .degen-toggle,
-  .degen-hover-face {
+  .degen-hover-mascot {
     transition: none;
   }
 }

@@ -367,15 +367,26 @@ function LiveMarketOpenOrderForm({
                   : "text-muted-foreground hover:text-foreground")
               }
             >
-              {option === "Long" ? (
+              {degenMode ? (
+                <img
+                  src={
+                    option === "Long"
+                      ? "/images/mascots/mumu-near.webp"
+                      : "/images/mascots/bobo-near.webp"
+                  }
+                  alt=""
+                  aria-hidden="true"
+                  width={32}
+                  height={32}
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                  className="degen-hover-mascot"
+                />
+              ) : option === "Long" ? (
                 <TrendingUp className="size-3.5" aria-hidden="true" />
               ) : (
                 <TrendingDown className="size-3.5" aria-hidden="true" />
-              )}
-              {degenMode && (
-                <span className="degen-hover-face" aria-hidden="true">
-                  {option === "Long" ? "🐂" : "🐻"}
-                </span>
               )}
               {degenMode ? (option === "Long" ? copy.long : copy.short) : option}
             </button>
