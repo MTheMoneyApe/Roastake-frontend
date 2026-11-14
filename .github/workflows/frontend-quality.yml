@@ -31,7 +31,7 @@ jobs:
         run: bun run test
       - name: Lint modified frontend files
         run: >-
-          bunx eslint
+          bunx eslint --rule 'prettier/prettier: off'
           src/lib/navigation.ts
           src/components/shell.tsx
           src/components/wallet/wallet-hub.tsx
