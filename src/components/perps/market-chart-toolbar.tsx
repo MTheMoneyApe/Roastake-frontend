@@ -21,6 +21,9 @@ export interface ArabicaMarketChartToolbarProps {
   effectiveAgeSec: number | null;
   effectiveIsStale: boolean;
   maxAgeSec: number;
+  marketReferencePriceE8?: string | null;
+  marketSequence?: number | null;
+  marketObservedAtSec?: number | null;
   timeframe: MarketChartTimeframe;
   onTimeframeChange: (tf: MarketChartTimeframe) => void;
   timeframeAvailability: TimeframeAvailability;
@@ -34,6 +37,9 @@ export function ArabicaMarketChartToolbar({
   effectiveAgeSec,
   effectiveIsStale,
   maxAgeSec,
+  marketReferencePriceE8 = null,
+  marketSequence = null,
+  marketObservedAtSec = null,
   timeframe,
   onTimeframeChange,
   timeframeAvailability,
@@ -96,17 +102,17 @@ export function ArabicaMarketChartToolbar({
 
       <div className="grid grid-cols-2 gap-2 rounded-md border bg-muted/35 px-3 py-2 text-xs sm:grid-cols-4">
         <div>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Latest verified price</span>
-          <div className="num font-medium text-foreground">{latest ? `${formatUsdE8(latest.priceE8)}/kg` : "—"}</div>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Latest contract / verified reference</span>
+          <div className="num font-medium text-foreground">{latest ? `${formatUsdE8(latest.priceE8)}/kg` : marketReferencePriceE8 ? `${formatUsdE8(marketReferencePriceE8)}/kg` : "—"}</div>
         </div>
         <div>
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Sequence · samples</span>
-          <div className="num font-medium text-foreground">{latest ? `#${latest.sequence} · ${observationCount} ticks · ${markerCount} trades` : "—"}</div>
+          <div className="num font-medium text-foreground">{latest ? `#${latest.sequence} · ${observationCount} ticks · ${markerCount} trades` : marketSequence !== null ? `#${marketSequence} · ${observationCount} indexed ticks` : "—"}</div>
         </div>
         <div>
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Age · policy</span>
           <div className={cn("num font-medium", effectiveIsStale ? "text-loss" : "text-foreground")}>
-            {latest ? `${formatAgeDurationCompact(effectiveAgeSec)} · ${maxAgeSec}s max` : "—"}
+            {effectiveAgeSec !== null ? `${formatAgeDurationCompact(effectiveAgeSec)} · ${maxAgeSec}s max${latest ? "" : marketObservedAtSec !== null ? " · contract feed" : ""}` : "—"}
           </div>
         </div>
         <div className="min-w-0">
@@ -114,7 +120,7 @@ export function ArabicaMarketChartToolbar({
           <div className="num truncate font-medium text-foreground">
             {coverage?.indexedThroughHeight !== null && coverage?.indexedThroughHeight !== undefined
               ? `#${coverage.indexedThroughHeight} · lag ${coverage.lagBlocks ?? "—"} blk`
-              : latest ? `Receipt ${latest.txHash.slice(0, 9)}…` : "—"}
+              : latest ? `Receipt ${latest.txHash.slice(0, 9)}…` : marketReferencePriceE8 ? "Contract state · no history receipt" : "—"}
           </div>
         </div>
       </div>
