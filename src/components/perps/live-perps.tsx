@@ -646,7 +646,7 @@ export function ThreeMarketPerpsIndex() {
   const utilBps = protocol ? computeUtilizationBps(reservedE8, lpMtmE8) : 0n;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         demo={false}
         title="Coffee Index Perpetuals"
@@ -689,8 +689,8 @@ export function ThreeMarketPerpsIndex() {
         </Alert>
       )}
 
-      <section aria-label="NEAR Testnet execution status" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+      <section aria-label="NEAR Testnet execution status" className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-medium text-muted-foreground">Execution contract</p>
             <Pill tone={protocol ? "gain" : error ? "loss" : "muted"}>
@@ -704,7 +704,7 @@ export function ThreeMarketPerpsIndex() {
             Finalized NEAR Testnet contract state
           </p>
         </div>
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <p className="text-xs font-medium text-muted-foreground">Markets registered</p>
           <p className="num mt-2 text-2xl font-semibold">
             {protocol ? `${registeredMarketCount}/3` : "—"}
@@ -713,7 +713,7 @@ export function ThreeMarketPerpsIndex() {
             {protocol ? "Confirmed by the on-chain registry" : "Awaiting finalized registry read"}
           </p>
         </div>
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <p className="text-xs font-medium text-muted-foreground">Price-feed freshness</p>
           <p className="num mt-2 text-2xl font-semibold">
             {protocol
@@ -728,7 +728,7 @@ export function ThreeMarketPerpsIndex() {
               : "Feed state not yet verified"}
           </p>
         </div>
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-medium text-muted-foreground">New-position feed gate</p>
             <Pill tone={!protocol || registeredMarketCount === 0 ? "muted" : protocol.pausedGlobal || freshMarketCount === 0 ? "warn" : "gain"}>
@@ -811,7 +811,7 @@ export function ThreeMarketPerpsIndex() {
 
       <SyntheticOracleBanner oracleStatus={arabicaOracleStatus} />
 
-      <section aria-labelledby="three-markets-heading" className="space-y-3">
+      <section aria-labelledby="three-markets-heading" className="space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 id="three-markets-heading" className="text-sm font-semibold">
             {protocol
@@ -832,7 +832,7 @@ export function ThreeMarketPerpsIndex() {
           feed is current or that new positions can open.
         </p>
 
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-3 lg:grid-cols-3">
           {marketCatalogStates.map(
             ({
               entry,
@@ -876,7 +876,7 @@ export function ThreeMarketPerpsIndex() {
                     </div>
                   }
                 >
-                  <div className="flex h-full flex-col justify-between gap-4">
+                  <div className="flex h-full flex-col justify-between gap-3">
                     <div className="space-y-3">
                       <p className="text-xs text-muted-foreground">
                         {entry.variety} perpetual market on NEAR Testnet. Its price is an
