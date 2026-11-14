@@ -71,53 +71,64 @@ afterEach(() => {
 });
 
 describe("ROASTAKE bilingual editorial landing", () => {
-  it("explains the thesis in one H1 and ordered sections without skipping heading levels", () => {
-    render(<LandingPage />);
+  it("presents the product pitch in the requested section order", () => {
+    const { container } = render(<LandingPage />);
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(screen.getByRole("heading", { level: 1 })).toHaveAccessibleName(
       "ROASTAKE / REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
     );
     expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
-      "Coffee is more than a commodity.",
-      "One economy. Three connected layers.",
-      "What you can explore today.",
+      "Coffee prices move. Producers and roasters carry the risk.",
+      "Market tools and a coffee-asset journey.",
+      "From harvest to a clearer price agreement.",
+      "Infrastructure for a connected coffee economy.",
       "Coffee + DeFi + Venture Capital.",
       "Understand today. Shape what comes next.",
-      "Real coffee. Clear boundaries. A new financial direction.",
     ]);
+    const sectionOrder = ["why-coffee", "live-on-near", "harvest-workflow", "built-on-near"];
+    const positions = sectionOrder.map((id) =>
+      Array.from(container.querySelectorAll("section")).findIndex((section) => section.id === id),
+    );
+    expect(positions.every((position) => position >= 0)).toBe(true);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(container.querySelector(".landing-hero-foot a")).toHaveAttribute("href", "#why-coffee");
     const headings = screen.getAllByRole("heading");
-    headings
-      .slice(1)
-      .forEach((h, i) =>
-        expect(Number(h.tagName.slice(1))).toBeLessThanOrEqual(
-          Number(headings[i].tagName.slice(1)) + 1,
-        ),
+    headings.slice(1).forEach((heading, index) => {
+      expect(Number(heading.tagName.slice(1))).toBeLessThanOrEqual(
+        Number(headings[index].tagName.slice(1)) + 1,
       );
+    });
   });
 
-  it("keeps one primary Launch App CTA in the hero", () => {
+  it("connects both hero calls to action and preserves the product routes", () => {
     render(<LandingPage />);
-    const markets = screen.getAllByRole("link", { name: "Launch App" });
-    expect(markets).toHaveLength(1);
-    markets.forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
-    expect(document.querySelector(".landing-closing")).not.toBeInTheDocument();
-    const docs = screen.getAllByRole("link", { name: "Open the documentation" });
-    expect(docs).toHaveLength(1);
-    docs.forEach((link) => expect(link).toHaveAttribute("href", "/app/docs"));
-    const links = screen.getAllByRole("link");
-    for (const to of [
+    expect(screen.getByRole("link", { name: "Explore Testnet Markets" })).toHaveAttribute(
+      "href",
       "/app/perps",
-      "/app/swap",
-      "/app/oracle",
+    );
+    expect(screen.getByRole("link", { name: "Browse Coffee Lots" })).toHaveAttribute(
+      "href",
       "/market",
-      "/app/assets",
+    );
+    expect(screen.getByRole("link", { name: "Open the documentation" })).toHaveAttribute(
+      "href",
+      "/app/docs",
+    );
+    const links = screen.getAllByRole("link");
+    for (const route of [
+      "/app/perps",
+      "/market",
       "/app/coffee-passport",
       "/app/roast",
       "/app/redeem",
+      "/app/swap",
+      "/app/oracle",
       "/roadmap",
       "/app/docs",
-    ])
-      expect(links.some((link) => link.getAttribute("href") === to)).toBe(true);
+    ]) {
+      expect(links.some((link) => link.getAttribute("href") === route)).toBe(true);
+    }
+    expect(document.querySelector(".landing-closing")).not.toBeInTheDocument();
     links.forEach((link) => {
       expect(link).toHaveAccessibleName();
       expect(link.getAttribute("href")).not.toMatch(/^(?:javascript:|$)/i);
@@ -127,54 +138,61 @@ describe("ROASTAKE bilingual editorial landing", () => {
     );
   });
 
-  it("groups live Testnet products, illustrative demos and planned services with canonical labels", () => {
+  it("separates on-chain Perps from the illustrative RWA journey", () => {
     const { container } = render(<LandingPage />);
-    expect(screen.getAllByText("Live on NEAR Testnet")).toHaveLength(4);
-    expect(screen.getByText("Demo / Illustrative")).toBeInTheDocument();
-    expect(screen.getAllByText("Roadmap / Planned")).toHaveLength(2);
-    const perps = screen.getByRole("link", { name: "Coffee Perpetuals" }).closest("article")!;
-    expect(perps).toHaveTextContent(/operator.controlled synthetic Testnet/i);
-    expect(perps).toHaveTextContent(/not live coffee exchange quotations/);
-    expect(perps).not.toHaveTextContent(/no monetary value/);
-    const swap = screen.getByRole("link", { name: "RHEA Mini Swap" }).closest("article")!;
-    expect(swap).toHaveTextContent(/Actual NEAR Testnet swaps/);
-    expect(swap).toHaveTextContent(/not physical coffee transactions/);
-    const oracle = screen.getByRole("link", { name: "OutLayer Oracle" }).closest("article")!;
-    expect(oracle).toHaveTextContent(/read.only/);
-    expect(oracle).toHaveTextContent(/Does not power Perps/);
-    expect(oracle).toHaveTextContent(/or verify coffee, custody or backing/);
-    expect(container).toHaveTextContent(/Browser.only examples. No verified inventory/);
-    expect(container).not.toHaveTextContent(/Testnet today. Physical integrations are future work/);
-    expect(container).not.toHaveTextContent(/0[1-5]\s*\//);
-    expect(container.querySelectorAll(".landing-product-index")).toHaveLength(0);
-    expect(container).not.toHaveTextContent(/NEAR Testnet prototype · Perps uses/);
-    expect(container.querySelector("#coffee-capital")).toHaveTextContent(
-      /No live investment product/,
+    const live = container.querySelector("#live-on-near");
+    expect(live).toBeInTheDocument();
+    const perps = screen.getByRole("heading", { name: "Coffee Perpetuals" }).closest("article")!;
+    expect(perps).toHaveTextContent(/operator-controlled synthetic prices/);
+    expect(within(perps).getByRole("link", { name: "Explore Perpetuals" })).toHaveAttribute(
+      "href",
+      "/app/perps",
     );
+    const rwa = screen.getByRole("heading", { name: "The coffee-asset lifecycle" }).closest("article")!;
+    expect(rwa).toHaveTextContent(/RWA PRODUCT FLOW · ILLUSTRATIVE/);
+    for (const route of [
+      "/app/coffee-passport",
+      "/app/perps",
+      "/market",
+      "/app/roast",
+      "/app/redeem",
+    ]) {
+      expect(within(rwa).getAllByRole("link").some((link) => link.getAttribute("href") === route)).toBe(
+        true,
+      );
+    }
+    expect(screen.getByRole("link", { name: "RHEA Mini Swap" })).toHaveAttribute(
+      "href",
+      "/app/swap",
+    );
+    expect(screen.getByRole("link", { name: "OutLayer Oracle" })).toHaveAttribute(
+      "href",
+      "/app/oracle",
+    );
+    expect(container.querySelectorAll(".landing-rwa-step")).toHaveLength(4);
+    expect(container).not.toHaveTextContent(/Editorial photography · not evidence/);
   });
 
-  it("keeps physical backing and mass-loss semantics proposed, with a nuanced risk thesis", () => {
+  it("shows the four-stage RWA lifecycle, Q1 pilot target and three NEAR architecture pillars", () => {
     const { container } = render(<LandingPage />);
-    const assets = screen
-      .getByRole("heading", { name: "Coffee Asset Economy" })
-      .closest("article")!;
-    expect(assets).toHaveTextContent(/GCT/);
-    expect(assets).toHaveTextContent(/RCT/);
-    expect(assets).toHaveTextContent(/1 token = 1 kg is a proposed accounting model/);
-    expect(assets).toHaveTextContent(
-      /not a currently backed, custodied, physically verified or redeemable asset/,
+    const steps = container.querySelectorAll(".landing-rwa-step");
+    expect(steps).toHaveLength(4);
+    expect(steps[0]).toHaveTextContent("Mint & Passport");
+    expect(steps[1]).toHaveTextContent("Hedge / Trade");
+    expect(steps[2]).toHaveTextContent("−15% weight");
+    expect(steps[3]).toHaveTextContent("Physical Redeem");
+    expect(container.querySelector("#harvest-workflow")).toHaveTextContent("Pilot target · Q1 2027");
+    expect(container.querySelectorAll(".landing-forward-steps > li")).toHaveLength(4);
+    expect(container.querySelectorAll(".landing-built-card")).toHaveLength(3);
+    expect(container.querySelector("#built-on-near")).toHaveTextContent("Account Abstraction");
+    expect(container.querySelector("#built-on-near")).toHaveTextContent(
+      "Multichain Wallet Hub / Chain Signatures",
     );
-    expect(assets).toHaveTextContent(/Roasting loses mass/);
-    expect(assets).toHaveTextContent(/not 1:1/);
-    expect(assets).toHaveTextContent(/Yield, loss and fees/);
-    expect(container).toHaveTextContent(
-      /not crisis.proof, a guaranteed hedge or an uncorrelated asset/,
-    );
-    expect(container).toHaveTextContent(/Prices can fall/);
+    expect(container.querySelector("#built-on-near")).toHaveTextContent("Sub-cent Fees");
   });
 
   it.each(["en", "es"])(
-    "has complete %s narrative, valid CTA destinations and localized photo descriptions",
+    "renders the complete %s pitch with localized calls to action and image text",
     (language) => {
       if (language === "es") localStorage.setItem(LANDING_LANGUAGE_KEY, "es");
       const { container } = render(
@@ -183,34 +201,48 @@ describe("ROASTAKE bilingual editorial landing", () => {
         </LandingLanguageProvider>,
       );
       expect(container.querySelector(".landing")).toHaveAttribute("lang", language);
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        language === "es" ? "CAFÉ REAL. NUEVAS POSIBILIDADES FINANCIERAS." : "REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
+      const expected = language === "es"
+        ? {
+            headline: "CAFÉ REAL. NUEVAS POSIBILIDADES FINANCIERAS.",
+            primary: "Explorar mercados Testnet",
+            secondary: "Explorar lotes de café",
+            badge: "PROTOTIPO NEAR TESTNET · PRECIOS SIMULADOS",
+            problem: "El precio del café cambia.",
+            pilot: "Objetivo del piloto · Q1 2027",
+            built: "CONSTRUIDO SOBRE NEAR",
+          }
+        : {
+            headline: "REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
+            primary: "Explore Testnet Markets",
+            secondary: "Browse Coffee Lots",
+            badge: "NEAR TESTNET PROTOTYPE · SIMULATED PRICING",
+            problem: "Coffee prices move.",
+            pilot: "Pilot target · Q1 2027",
+            built: "BUILT ON NEAR",
+          };
+      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(expected.headline);
+      expect(screen.getByRole("link", { name: expected.primary })).toHaveAttribute(
+        "href",
+        "/app/perps",
       );
-      const cta = language === "es" ? "Iniciar app" : "Launch App";
-      const primaryCtas = screen.getAllByRole("link", { name: cta });
-      expect(primaryCtas).toHaveLength(1);
-      primaryCtas.forEach((link) => expect(link).toHaveAttribute("href", "/app/perps"));
+      expect(screen.getByRole("link", { name: expected.secondary })).toHaveAttribute(
+        "href",
+        "/market",
+      );
+      expect(container).toHaveTextContent(expected.badge);
+      expect(container.querySelector("#why-coffee")).toHaveTextContent(expected.problem);
+      expect(container.querySelector("#harvest-workflow")).toHaveTextContent(expected.pilot);
+      expect(container.querySelector("#built-on-near")).toHaveTextContent(expected.built);
       expect(container.querySelectorAll("h2")).toHaveLength(6);
-      expect(container).toHaveTextContent(language === "es" ? "La capa financiera para la economía global del café." : "The financial layer for the global coffee economy.");
-      expect(container.querySelector("#ecosystem-layers ol")?.children).toHaveLength(3);
-      expect(container.querySelector("#coffee-capital")).toHaveTextContent(
-        language === "es"
-          ? /No se ofrece un producto de inversión activo/
-          : /No live investment product/,
-      );
       const images = Array.from(container.querySelectorAll("img"));
-      expect(images).toHaveLength(2);
+      expect(images).toHaveLength(1);
       expect(images[0]).toHaveAttribute("loading", "eager");
       expect(images[0]).toHaveAttribute("fetchpriority", "high");
-      expect(images[1]).toHaveAttribute("loading", "lazy");
-      images.forEach((img) => {
-        expect(img.getAttribute("src")).toMatch(/^\/images\/.+\.webp$/);
-        expect(img).toHaveAttribute("srcset");
-        expect(img).toHaveAttribute("sizes");
-        expect(Number(img.getAttribute("width"))).toBeGreaterThan(0);
-        expect(Number(img.getAttribute("height"))).toBeGreaterThan(0);
-        expect(img).toHaveAccessibleName();
-      });
+      expect(images[0]).toHaveAttribute("srcset");
+      expect(images[0]).toHaveAttribute("sizes");
+      expect(Number(images[0].getAttribute("width"))).toBeGreaterThan(0);
+      expect(Number(images[0].getAttribute("height"))).toBeGreaterThan(0);
+      expect(images[0]).toHaveAccessibleName();
       expect(images[0].alt).toContain(language === "es" ? "caficultor" : "grower");
     },
   );
