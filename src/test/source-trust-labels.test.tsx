@@ -8,6 +8,7 @@ import { OracleOverviewCard, OraclePage } from "@/components/coffee/oracle";
 import { PerpsLiveMarketView, ThreeMarketPerpsIndex } from "@/components/perps/live-perps";
 import { PerpsMarketChart } from "@/components/perps/market-chart";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { DegenModeProvider } from "@/hooks/useDegenMode";
 import { MARKET_GESHA_DEMO, MARKET_IMF_ARABICA } from "@/lib/oracle/config";
 import { MARKET_ARABICA_PERPS_ID, PERPS_CONTRACT_ID } from "@/lib/perps/config";
 
@@ -143,7 +144,7 @@ function oracleSnapshot(dataClass = "PUBLIC_BENCHMARK_MONTHLY", source = "imf-pc
 }
 
 function renderUi(ui: ReactNode) {
-  return render(<TooltipProvider>{ui}</TooltipProvider>);
+  return render(<DegenModeProvider><TooltipProvider>{ui}</TooltipProvider></DegenModeProvider>);
 }
 
 beforeEach(() => {
@@ -172,10 +173,10 @@ afterEach(() => {
 describe("source-trust disclosures", () => {
   it("labels the Perps introduction as synthetic and non-monetary before RPC data is available", () => {
     renderUi(<ThreeMarketPerpsIndex />);
-    const intro = screen.getByText(/NEAR Testnet Perpetuals contract explorer\./);
-    expect(intro).toHaveTextContent(/operator-controlled synthetic testnet references/i);
-    expect(intro).toHaveTextContent(/not live coffee quotes/i);
-    expect(intro).toHaveTextContent(/testnet usdc has no monetary value/i);
+    const intro = screen.getByText(/Three coffee perpetual markets on NEAR Testnet/ );
+    expect(intro).toHaveTextContent(/execution prices are synthetic test references/i);
+    expect(intro).toHaveTextContent(/not live coffee quotations/i);
+    expect(screen.getByText(/Testnet USDC has no monetary value/i)).toBeInTheDocument();
   });
 
   it("keeps source and collateral warnings beside the terminal price and order form", () => {
@@ -278,10 +279,10 @@ describe("source-trust disclosures", () => {
 
   it("introduces OutLayer as a separate read-only view even while data is unavailable", () => {
     renderUi(<OraclePage />);
-    const intro = screen.getByText(/read-only NEAR Testnet oracle view/i);
+    const intro = screen.getByText(/A read-only view of coffee data stored on NEAR Testnet/i);
     expect(intro).toHaveTextContent(/OutLayer/);
     expect(intro).toHaveTextContent(/independent from perps/i);
-    expect(intro).toHaveTextContent(/no transactions/i);
+    expect(screen.getByText(/OutLayer is used for a separate read-only data workflow/i)).toBeInTheDocument();
     expect(intro).not.toHaveTextContent(/^Live /);
   });
 });
