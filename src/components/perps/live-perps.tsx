@@ -595,22 +595,27 @@ export function ThreeMarketPerpsIndex() {
   const staleMarketCount = marketCatalogStates.filter(
     (state) => state.isRegistered && state.oracleStatus.status === "STALE",
   ).length;
+  const unavailableMarketCount = Math.max(0, registeredMarketCount - freshMarketCount - staleMarketCount);
   const feedGateLabel = !protocol
     ? error
       ? "Unverified"
       : "Checking"
     : protocol.pausedGlobal
       ? "Paused by contract"
-      : registeredMarketCount > 0 && freshMarketCount === 0
-        ? "Blocked by stale feeds"
-        : "Freshness gate available";
+      : registeredMarketCount === 0
+        ? "No markets registered"
+        : freshMarketCount === 0
+          ? "No fresh feed available"
+          : "Freshness gate available";
   const feedGateDescription = !protocol
     ? "A finalized Testnet read is required before this status can be confirmed."
     : protocol.pausedGlobal
       ? "The contract-wide pause is active. Market-level checks also apply."
-      : freshMarketCount === 0
-        ? "No registered market has a fresh synthetic tick. New opens that require a valid feed are blocked; existing positions can still be closed."
-        : `${freshMarketCount} market(s) have a feed within the age policy. Account, liquidity and risk checks still apply before an order can open.`;
+      : registeredMarketCount === 0
+        ? "No market registration is confirmed by the contract registry."
+        : freshMarketCount === 0
+          ? "No registered market has a fresh synthetic tick. New opens that require a valid feed are blocked; existing positions can still be closed."
+          : `${freshMarketCount} market(s) have a feed within the age policy. Account, liquidity and risk checks still apply before an order can open.`;
 
   const arabicaLongOi = parseUnsignedBigInt(protocol?.arabicaMarket?.long_oi_e8 ?? "0") ?? 0n;
   const arabicaShortOi = parseUnsignedBigInt(protocol?.arabicaMarket?.short_oi_e8 ?? "0") ?? 0n;
@@ -694,7 +699,7 @@ export function ThreeMarketPerpsIndex() {
           </p>
           <p className="mt-1 text-[11px] text-muted-foreground">
             {protocol
-              ? `${staleMarketCount} stale · operator renewal required`
+              ? `${staleMarketCount} stale · ${unavailableMarketCount} unavailable${staleMarketCount > 0 ? " · operator renewal required" : ""}`
               : "Feed state not yet verified"}
           </p>
         </div>
@@ -713,7 +718,7 @@ export function ThreeMarketPerpsIndex() {
 
       <Stats cols={3}>
         <Stat
-          label="Synthetic Testnet References"
+          label="Synthetic test prices · USD/kg"
           value={
             isLoading
               ? "Loading..."
@@ -732,11 +737,11 @@ export function ThreeMarketPerpsIndex() {
           }
         />
         <Stat
-          label="LP Vault & Solvency"
+          label="LP contract accounting"
           value={
             protocol ? (
               protocol.solvencyInvariant ? (
-                <span className="text-[var(--gain)]">Invariant PASS</span>
+                <span className="text-[var(--gain)]">Reserve check PASS</span>
               ) : (
                 <span className="text-[var(--loss)]">Alert</span>
               )
@@ -746,7 +751,7 @@ export function ThreeMarketPerpsIndex() {
           }
           sub={
             protocol
-              ? `${formatUsdE8(protocol.lpSnapshot.lp_mtm_equity_e8)} MTM · ${formatBpsAsPercent(utilBps)} util · ${protocol.accounting.total_open_positions} open · ${protocol.pausedGlobal ? "PAUSED" : "Active"}`
+              ? `${formatUsdE8(protocol.lpSnapshot.lp_mtm_equity_e8)} MTM · ${formatBpsAsPercent(utilBps)} utilization · ${protocol.accounting.total_open_positions} open · accounting check only`
               : "Peer-to-Pool Vault"
           }
         />
