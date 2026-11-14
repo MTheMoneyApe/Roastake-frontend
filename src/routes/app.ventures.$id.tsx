@@ -4,10 +4,18 @@ import { ModulePage } from "@/components/module-page";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/app/ventures/$id")({
-  head: () => seo("Id", "ROASTAKE Id — simulated demo module."),
+  head: ({ params }) =>
+    seo(
+      `Venture ${params.id} — Roadmap / Planned`,
+      "Venture design preview only. Not deployed or operational; no live investments, fundraising or promised returns.",
+    ),
   component: Page,
 });
 
 function Page() {
-  return <AppShell><ModulePage path="/app/ventures/$id" /></AppShell>;
+  return (
+    <AppShell>
+      <ModulePage path="/app/ventures/$id" />
+    </AppShell>
+  );
 }

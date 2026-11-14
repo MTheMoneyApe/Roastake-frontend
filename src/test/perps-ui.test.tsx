@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createConfig, createStorage, noopStorage } from "wagmi";
 import { custom } from "viem";
 import { JudgesWalkthrough } from "@/components/perps/judges-walkthrough";
+import { DegenModeProvider } from "@/hooks/useDegenMode";
 import {
   ArabicaLiveMarketView,
   PerpsLiveMarketView,
@@ -325,16 +326,19 @@ function renderPerpsUi(
   });
 
   return render(
-    <QueryClientProvider client={queryClient}>
-      <WalletInfrastructureProvider wagmiConfig={wagmiConfig} nearAdapterFactory={nearFactory}>
-        <TooltipProvider>{ui}</TooltipProvider>
-      </WalletInfrastructureProvider>
-    </QueryClientProvider>,
+    <DegenModeProvider>
+      <QueryClientProvider client={queryClient}>
+        <WalletInfrastructureProvider wagmiConfig={wagmiConfig} nearAdapterFactory={nearFactory}>
+          <TooltipProvider>{ui}</TooltipProvider>
+        </WalletInfrastructureProvider>
+      </QueryClientProvider>
+    </DegenModeProvider>,
   );
 }
 
 describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () => {
   beforeEach(() => {
+    window.localStorage.clear();
     demo.reset();
     clearPerpsTxHistory();
     vi.restoreAllMocks();
@@ -366,13 +370,13 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
 
     renderPerpsUi(<ThreeMarketPerpsIndex />);
 
-    expect(await screen.findByText(/Three-Market Coffee Hub/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Coffee Index Perpetuals/i)).toBeInTheDocument();
     expect(screen.getByText("Arabica / USD")).toBeInTheDocument();
     expect(screen.getByText("Robusta / USD")).toBeInTheDocument();
     expect(screen.getByText("Gesha / USD")).toBeInTheDocument();
-    expect(screen.getAllByText(/\$10\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText(/\$5\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText(/\$25\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$10\.000000/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$5\.000000/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$25\.000000/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/REGISTERED ON-CHAIN/i).length).toBeGreaterThanOrEqual(3);
     expect(screen.queryByRole("button", { name: /Deposit LP/i })).toBeNull();
   });
@@ -384,7 +388,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
 
     renderPerpsUi(<ThreeMarketPerpsIndex />);
 
-    expect(await screen.findByText(/Three-Market Coffee Hub \(0\/3 Registered On-chain\)/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Coffee markets · 0\/3 registered on-chain/i)).toBeInTheDocument();
     expect(screen.getAllByText(/NOT REGISTERED/i).length).toBeGreaterThanOrEqual(3);
     expect(screen.queryByText(/LIVE TESTNET/i)).toBeNull();
   });
@@ -400,7 +404,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
       await screen.findByText(/NEAR Testnet RPC Unavailable/i, {}, { timeout: 4000 }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Retry RPC/i })).toBeInTheDocument();
-    expect(screen.getAllByText(/Registry unverified — RPC unavailable/i).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText(/UNVERIFIED/i).length).toBeGreaterThanOrEqual(2);
     expect(screen.queryByText(/LIVE TESTNET/i)).toBeNull();
     expect(screen.queryByText(/4x · 25\.00% · 12\.50%/i)).toBeNull();
 
@@ -772,7 +776,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     });
 
     expect(await screen.findByText(/Robusta \/ USD/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/\$5\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$5\.000000/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/COFFEE-ROBUSTA-TESTNET\/USD/i).length).toBeGreaterThanOrEqual(1);
     expect(robustaHistorySpy).toHaveBeenCalledWith(
       expect.objectContaining({ marketId: MARKET_ROBUSTA_PERPS_ID }),
@@ -847,7 +851,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     });
 
     expect(await screen.findByText(/Gesha \/ USD/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/\$25\.000000\/kg/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/\$25\.000000/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/COFFEE-GESHA-TESTNET\/USD/i).length).toBeGreaterThanOrEqual(1);
     expect(geshaHistorySpy).toHaveBeenCalledWith(
       expect.objectContaining({ marketId: MARKET_GESHA_PERPS_ID }),
@@ -870,4 +874,23 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
       }),
     );
   });
+  it("renders Degen banner and Mumu/Bobo labels without changing order-side behavior", async () => {
+    window.localStorage.setItem("roastake-degen-mode", "true");
+    vi.spyOn(perpsRpc, "fetchPerpsProtocolSnapshot").mockResolvedValue(makeProtocol());
+    vi.spyOn(perpsRpc, "fetchPerpsTraderSnapshot").mockResolvedValue(makeTrader({ positions: [] }));
+
+    renderPerpsUi(<PerpsLiveMarketView marketEntry={THREE_MARKET_CATALOG[0]} />);
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "DEGEN MODE ACTIVE · CAFFEINATED PERPS 🚀",
+    );
+    const long = screen.getByRole("tab", { name: /MUMU LONG \(Pump! ☕\)/i });
+    const short = screen.getByRole("tab", { name: /BOBO SHORT \(Hedge! 🐻\)/i });
+    expect(long).toHaveAttribute("aria-selected", "true");
+    expect(short).toHaveAttribute("aria-selected", "false");
+    fireEvent.click(short);
+    expect(short).toHaveAttribute("aria-selected", "true");
+    expect(long).toHaveAttribute("aria-selected", "false");
+  });
+
 });

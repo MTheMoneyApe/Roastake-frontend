@@ -2,7 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(:root.dark, :root.dark *));
 
 /*
  * Design system definition.
@@ -10,11 +10,11 @@
  * The @theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
  *
- * The :root and .dark blocks define the actual color values using oklch.
+ * The :root and :root.dark blocks define the actual color values using oklch.
  * All colors MUST use oklch format.
  *
  * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 1. Add the variable to :root (light value) and :root.dark (night value)
  * 2. Register it in @theme inline as --color-<name>: var(--<name>)
  */
 
@@ -44,6 +44,8 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-input-foreground: var(--input-foreground);
+  --color-overlay: var(--overlay);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
@@ -63,6 +65,10 @@
   --color-highlight-foreground: var(--highlight-foreground);
   --color-gain: var(--gain);
   --color-loss: var(--loss);
+  --color-gain-foreground: var(--gain-foreground);
+  --color-loss-foreground: var(--loss-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-forest: var(--forest);
   --color-sage: var(--sage);
   --color-mint: var(--mint);
@@ -72,13 +78,31 @@
   --color-copper: var(--copper);
   --color-brass: var(--brass);
   --color-charcoal: var(--charcoal);
+  --color-feature: var(--feature);
+  --color-feature-foreground: var(--feature-foreground);
+  --color-feature-muted: var(--feature-muted);
+  --color-feature-highlight: var(--feature-highlight);
+  --color-hero: var(--hero);
+  --color-hero-foreground: var(--hero-foreground);
+  --color-hero-muted: var(--hero-muted);
+  --color-hero-highlight: var(--hero-highlight);
+  --color-hero-action: var(--hero-action);
+  --color-hero-action-foreground: var(--hero-action-foreground);
+  --color-hero-action-hover: var(--hero-action-hover);
   --font-display: "Fraunces", Georgia, serif;
   --font-sans: "DM Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {
-  --radius: 0.5rem;
+  /* Light is deliberate even when the operating system prefers dark. */
+  color-scheme: light;
+  --radius: 0.625rem;
+  --content-width: 80rem;
+  --page-gutter: clamp(1rem, 2.5vw, 2rem);
+  --header-height: 4rem;
+  --page-title-size: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);
+  --section-title-size: clamp(1.5rem, 1.125rem + 1.5vw, 2.25rem);
   /* Brand palette */
   --forest: oklch(0.33 0.05 170);
   --deep-sage: oklch(0.39 0.05 165);
@@ -87,11 +111,15 @@
   --parchment: oklch(0.9 0.03 85);
   --cream: oklch(0.965 0.012 90);
   --espresso: oklch(0.33 0.04 40);
-  --copper: oklch(0.62 0.09 50);
+  --copper: oklch(0.49 0.09 50);
   --brass: oklch(0.73 0.08 80);
   --charcoal: oklch(0.27 0.015 155);
-  --gain: oklch(0.62 0.12 155);
-  --loss: oklch(0.6 0.16 30);
+  --gain: oklch(0.44 0.1 155);
+  --loss: oklch(0.5 0.16 30);
+  --gain-foreground: var(--cream);
+  --loss-foreground: var(--cream);
+  --warning: oklch(0.93 0.04 80);
+  --warning-foreground: oklch(0.43 0.08 65);
 
   --background: var(--cream);
   --foreground: var(--charcoal);
@@ -110,11 +138,13 @@
   --destructive: var(--loss);
   --destructive-foreground: var(--cream);
   --border: oklch(0.87 0.02 90);
-  --input: oklch(0.87 0.02 90);
-  --ring: var(--sage);
+  --input: oklch(0.59 0.025 150);
+  --input-foreground: var(--foreground);
+  --overlay: var(--charcoal);
+  --ring: var(--forest);
   --highlight: var(--copper);
   --highlight-foreground: var(--cream);
-  --chart-1: var(--sage);
+  --chart-1: var(--forest);
   --chart-2: var(--copper);
   --chart-3: var(--brass);
   --chart-4: var(--deep-sage);
@@ -127,12 +157,31 @@
   --sidebar-accent-foreground: var(--cream);
   --sidebar-border: oklch(0.42 0.04 165);
   --sidebar-ring: var(--sage);
-  --gradient-hero: linear-gradient(180deg, color-mix(in oklab, var(--charcoal) 10%, transparent), color-mix(in oklab, var(--charcoal) 85%, transparent));
+  /* Intentional forest feature bands retain their own accessible pairs. */
+  --feature: var(--forest);
+  --feature-foreground: var(--cream);
+  --feature-muted: var(--mint);
+  --feature-highlight: var(--brass);
+  --hero: var(--forest);
+  --hero-foreground: var(--cream);
+  --hero-muted: var(--mint);
+  --hero-highlight: var(--brass);
+  --hero-action: var(--cream);
+  --hero-action-foreground: var(--forest);
+  --hero-action-hover: var(--parchment);
+  --gradient-hero: linear-gradient(180deg, color-mix(in oklab, var(--overlay) 10%, transparent), color-mix(in oklab, var(--overlay) 85%, transparent));
   --gradient-brand: linear-gradient(135deg, var(--forest), var(--deep-sage));
-  --shadow-soft: 0 12px 32px -16px color-mix(in oklab, var(--espresso) 35%, transparent);
+  --shadow-soft: 0 2px 8px -4px color-mix(in oklab, var(--espresso) 15%, transparent);
 }
 
-.dark {
+:root.dark {
+  color-scheme: dark;
+  --copper: oklch(0.76 0.08 55);
+  --chart-1: var(--sage);
+  --chart-4: oklch(0.8 0.05 135);
+  --chart-5: oklch(0.72 0.07 65);
+  --warning: oklch(0.3 0.035 80);
+  --warning-foreground: oklch(0.82 0.08 80);
   --background: oklch(0.205 0.014 160);
   --foreground: oklch(0.94 0.015 110);
   --card: oklch(0.245 0.016 160);
@@ -147,15 +196,19 @@
   --muted-foreground: oklch(0.7 0.025 140);
   --accent: oklch(0.32 0.03 165);
   --accent-foreground: var(--mint);
-  --destructive: oklch(0.65 0.16 30);
-  --destructive-foreground: var(--cream);
+  --destructive: oklch(0.72 0.14 30);
+  --destructive-foreground: var(--charcoal);
   --border: oklch(0.33 0.018 160);
-  --input: oklch(0.35 0.018 160);
+  --input: oklch(0.57 0.025 150);
+  --input-foreground: var(--foreground);
+  --overlay: oklch(0.12 0.012 160);
   --ring: var(--sage);
   --highlight: var(--copper);
-  --highlight-foreground: var(--cream);
+  --highlight-foreground: var(--charcoal);
   --gain: oklch(0.74 0.13 155);
-  --loss: oklch(0.68 0.16 30);
+  --loss: oklch(0.72 0.14 30);
+  --gain-foreground: var(--charcoal);
+  --loss-foreground: var(--charcoal);
   --sidebar: oklch(0.18 0.014 160);
   --sidebar-foreground: oklch(0.85 0.02 135);
   --sidebar-primary: var(--brass);
@@ -163,22 +216,163 @@
   --sidebar-accent: oklch(0.27 0.025 165);
   --sidebar-accent-foreground: var(--cream);
   --sidebar-border: oklch(0.28 0.016 160);
+  --feature: oklch(0.24 0.025 170);
+  --feature-foreground: var(--cream);
+  --feature-muted: oklch(0.82 0.025 135);
+  --feature-highlight: oklch(0.78 0.08 80);
+  --hero: oklch(0.18 0.025 170);
+  --hero-foreground: var(--cream);
+  --hero-muted: oklch(0.86 0.025 135);
+  --hero-highlight: oklch(0.78 0.08 80);
+  --hero-action: var(--mint);
+  --hero-action-foreground: var(--charcoal);
+  --hero-action-hover: var(--cream);
+  --gradient-brand: linear-gradient(135deg, var(--feature), var(--background));
+  --shadow-soft: 0 2px 8px -4px color-mix(in oklab, var(--overlay) 55%, transparent);
 }
 
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: var(--border);
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
 
 @layer base {
+  html { scroll-padding-top: calc(var(--header-height) + 1rem); }
   body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
-  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+  h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1, h2, h3 { text-wrap: balance; }
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  :where([role="alert"]) { overflow-wrap: anywhere; }
+  @media (prefers-reduced-motion: reduce) {
+    :where(.animate-spin, .animate-pulse, .animate-in, .animate-out) { animation: none; }
+  }
+  @media (forced-colors: active) {
+    :where(a, button, input, textarea, select, [tabindex]):focus-visible { outline-color: Highlight; }
+  }
+}
+
+/* Shared layout and component primitives: public, protocol and portal routes. */
+@layer components {
+  .brand-container, .brand-page {
+    width: 100%;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+    min-width: 0;
+  }
+  .brand-page { padding-block: 2rem 6rem; }
+  .brand-header {
+    min-height: var(--header-height);
+    background: color-mix(in oklab, var(--card) 95%, transparent);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+  .brand-feature {
+    background: var(--feature);
+    color: var(--feature-foreground);
+    --ring: var(--feature-highlight);
+  }
+  .brand-hero {
+    background: var(--hero);
+    color: var(--hero-foreground);
+    --ring: var(--hero-highlight);
+  }
+  .brand-surface {
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-soft);
+  }
+  .brand-page-title {
+    font-family: var(--font-display);
+    font-size: var(--page-title-size);
+    font-weight: 500;
+    line-height: 1.15;
+  }
+  .brand-section-title {
+    font-family: var(--font-display);
+    font-size: var(--section-title-size);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .brand-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--highlight);
+  }
+  .brand-skip-link {
+    position: fixed;
+    inset-block-start: 0.5rem;
+    inset-inline-start: 0.5rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    border-radius: var(--radius);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.75rem 1rem;
+  }
+  .brand-skip-link:focus { transform: none; }
+  /* Preserve compact desktop trading controls, but enlarge real touch targets. */
+  @media (pointer: coarse) {
+    .brand-button, .brand-input, .brand-select, .brand-tab {
+      min-height: 2.75rem;
+      min-width: 2.75rem;
+    }
+  }
+}
+
+/* near-connect 0.12 injects an unlayered dark-only stylesheet. Scope these
+ * higher-specificity color overrides to its host, never wallet iframe contents. */
+:root .hot-connector-popup { color: var(--popover-foreground); }
+:root .hot-connector-popup * { color: inherit; font-family: var(--font-sans); }
+:root .hot-connector-popup .modal-container {
+  background: color-mix(in oklab, var(--overlay) 65%, transparent);
+}
+:root .hot-connector-popup .modal-content {
+  background: var(--popover);
+  border-color: var(--border);
+  box-shadow: var(--shadow-soft);
+}
+:root .hot-connector-popup .modal-body { background: var(--muted); }
+:root .hot-connector-popup :is(.modal-header p, .modal-body p, .connect-item p, .footer) {
+  color: var(--popover-foreground);
+}
+:root .hot-connector-popup :is(.get-wallet-link, .connect-item-info .wallet-address) {
+  color: var(--muted-foreground);
+}
+:root .hot-connector-popup :is(.modal-header button:hover, .connect-item:hover) {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+:root .hot-connector-popup .get-wallet-link:hover { color: var(--foreground); }
+:root .hot-connector-popup .modal-body textarea {
+  background: var(--card);
+  border-color: var(--input);
+  color: var(--foreground);
+}
+:root .hot-connector-popup .modal-body button {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+:root .hot-connector-popup .modal-header path { stroke: currentColor; }
+:root .hot-connector-popup .modal-header circle { fill: currentColor; }
+:root .hot-connector-popup :is(button, textarea, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
 }
 
 @utility num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
@@ -187,4 +381,133 @@
 @utility shadow-soft { box-shadow: var(--shadow-soft); }
 @utility demo-stripe {
   background-image: repeating-linear-gradient(135deg, color-mix(in oklab, var(--brass) 18%, transparent) 0 8px, transparent 8px 16px);
+}
+
+
+/* Degen Mode is a presentation-only easter egg; order execution stays unchanged. */
+.degen-toggle {
+  display: inline-flex;
+  min-height: 2.25rem;
+  max-width: 8.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+  color: var(--muted-foreground);
+  padding: 0.4rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+.degen-toggle-standard:hover {
+  border-color: var(--highlight);
+  color: var(--foreground);
+}
+.degen-toggle-active {
+  border-color: oklch(0.82 0.25 145);
+  background: oklch(0.23 0.09 145);
+  color: oklch(0.92 0.23 145);
+  box-shadow: 0 0 0.5rem color-mix(in oklab, oklch(0.8 0.25 145) 50%, transparent);
+  text-shadow: 0 0 0.45rem color-mix(in oklab, oklch(0.8 0.25 145) 65%, transparent);
+  animation: degen-toggle-flicker 1.25s steps(2, end) infinite;
+}
+.degen-banner {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  overflow: hidden;
+  border: 1px solid oklch(0.78 0.23 145 / 0.7);
+  border-radius: var(--radius);
+  background-color: oklch(0.2 0.07 145);
+  background-image: repeating-linear-gradient(
+    135deg,
+    oklch(0.8 0.22 145 / 0.15) 0 0.65rem,
+    transparent 0.65rem 1.3rem
+  );
+  color: oklch(0.93 0.2 145);
+  padding: 0.8rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  line-height: 1.45;
+  text-align: center;
+  animation: degen-stripe-drift 5s linear infinite;
+}
+.degen-banner strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.degen-order-tab {
+  min-height: 2.75rem;
+}
+.degen-hover-face {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.2rem) scale(0.7);
+  filter: drop-shadow(0 0 0.25rem oklch(0.83 0.2 145 / 0.65));
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+.degen-order-tab:hover .degen-hover-face,
+.degen-order-tab:focus-visible .degen-hover-face {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.degen-pnl-callout {
+  display: inline-flex;
+  max-width: 15rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 0.35rem;
+  padding: 0.2rem 0.35rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: right;
+}
+.degen-pnl-bull {
+  border-color: oklch(0.78 0.2 145 / 0.55);
+  background: oklch(0.78 0.2 145 / 0.09);
+  color: oklch(0.72 0.18 145);
+}
+.degen-pnl-bear {
+  border-color: oklch(0.65 0.16 30 / 0.5);
+  background: oklch(0.65 0.16 30 / 0.09);
+  color: var(--loss);
+}
+@keyframes degen-toggle-flicker {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(0.74); }
+}
+@keyframes degen-stripe-drift {
+  from { background-position: 0 0; }
+  to { background-position: 2.6rem 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .degen-toggle-active,
+  .degen-banner {
+    animation: none;
+  }
+  .degen-toggle,
+  .degen-hover-face {
+    transition: none;
+  }
+}
+@media (max-width: 380px) {
+  .degen-toggle {
+    max-width: 6.8rem;
+    padding-inline: 0.4rem;
+    font-size: 0.5625rem;
+  }
 }

@@ -105,10 +105,7 @@ export function TestnetOperatorControls({
   );
   const pausedGlobal = Boolean(protocol?.pausedGlobal);
   const market = getMarketFromProtocolSnapshot(protocol, marketId);
-  const oracleStatus = evaluatePerpsOracleStatus(
-    market,
-    protocol?.blockTimestampSec ?? null,
-  );
+  const oracleStatus = evaluatePerpsOracleStatus(market, protocol?.blockTimestampSec ?? null);
   const fallbackOraclePriceE8 =
     marketId === MARKET_ROBUSTA_PERPS_ID
       ? "500000000"
@@ -196,7 +193,10 @@ export function TestnetOperatorControls({
           ["Classification", "TESTNET_SANDBOX_FEED"],
           ["Price (USD e8)", `${priceE8} (${formatUsdE8(priceE8)}/kg)`],
           ["Sequence", `#${market.sandbox_sequence ?? 0} → #${nextSequence}`],
-          ["Observed Timestamp (finalized block)", `${observedAtSec} (block ${freshBlock.blockHash.slice(0, 8)}...)`],
+          [
+            "Observed Timestamp (finalized block)",
+            `${observedAtSec} (block ${freshBlock.blockHash.slice(0, 8)}...)`,
+          ],
         ],
       });
     } finally {
@@ -363,8 +363,8 @@ export function TestnetOperatorControls({
           </AlertTitle>
           <AlertDescription className="text-[11px] text-muted-foreground">
             Connected wallet matches live <code className="font-mono">get_admin()</code> on{" "}
-            <code className="font-mono">{PERPS_CONTRACT_ID}</code>. Every action prompts explicit
-            Meteor / HOT Connect signature without private keys in the frontend.
+            <code className="font-mono">{PERPS_CONTRACT_ID}</code>. Every action prompts explicit a
+            supported NEAR Testnet wallet signature without private keys in the frontend.
           </AlertDescription>
         </Alert>
 
@@ -374,7 +374,8 @@ export function TestnetOperatorControls({
             <span className="flex items-center gap-1.5 font-semibold">
               <Flame className="size-3.5 text-[var(--warn)]" aria-hidden="true" />
               <span>
-                A. Refresh Synthetic Oracle (<code className="font-mono">push_sandbox_oracle_price</code>)
+                A. Refresh Synthetic Oracle (
+                <code className="font-mono">push_sandbox_oracle_price</code>)
               </span>
             </span>
             <Pill tone={oracleStatus.isValidForOpen ? "gain" : "warn"}>
@@ -384,8 +385,14 @@ export function TestnetOperatorControls({
           <KV
             rows={[
               ["Target Market", marketId],
-              ["Current Price / Seq", `${oracleStatus.priceE8 ? formatUsdE8(oracleStatus.priceE8) : formatUsdE8(fallbackOraclePriceE8)}/kg · seq #${market?.sandbox_sequence ?? 0}`],
-              ["Next Update Target", `${formatUsdE8(fallbackOraclePriceE8)}/kg · seq #${(market?.sandbox_sequence ?? 0) + 1}`],
+              [
+                "Current Price / Seq",
+                `${oracleStatus.priceE8 ? formatUsdE8(oracleStatus.priceE8) : formatUsdE8(fallbackOraclePriceE8)}/kg · seq #${market?.sandbox_sequence ?? 0}`,
+              ],
+              [
+                "Next Update Target",
+                `${formatUsdE8(fallbackOraclePriceE8)}/kg · seq #${(market?.sandbox_sequence ?? 0) + 1}`,
+              ],
               ["Classification", "TESTNET_SANDBOX_FEED (finalized block timestamp)"],
             ]}
           />
@@ -524,7 +531,10 @@ export function TestnetOperatorControls({
         </div>
       </div>
 
-      <Dialog open={Boolean(pendingAction)} onOpenChange={(open) => !open && setPendingAction(null)}>
+      <Dialog
+        open={Boolean(pendingAction)}
+        onOpenChange={(open) => !open && setPendingAction(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{pendingAction?.title}</DialogTitle>
@@ -534,7 +544,8 @@ export function TestnetOperatorControls({
             <div className="space-y-3 text-xs">
               <KV rows={pendingAction.technicalRows} />
               <p className="rounded border bg-muted/40 px-2.5 py-2 text-[11px] text-muted-foreground">
-                {TESTNET_NON_MONETARY_NOTICE} Approve explicitly in Meteor Wallet / HOT Connect.
+                {TESTNET_NON_MONETARY_NOTICE} Approve explicitly in your supported NEAR Testnet
+                wallet.
               </p>
             </div>
           )}

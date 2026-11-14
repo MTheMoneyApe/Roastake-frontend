@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createConfig, createStorage, noopStorage } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { PerpsIndex } from "@/components/trading";
+import { DegenModeProvider } from "@/hooks/useDegenMode";
 import { CopyAddressButton } from "@/components/wallet/copy-address-button";
 import {
   WalletHubDialog,
@@ -188,18 +189,24 @@ function makeWagmiConfig(defaultConnected = false) {
 
 function renderWithWalletProviders(
   ui: ReactNode,
-  opts?: { nearInitialAccount?: string; evmConnected?: boolean },
+  opts?: {
+    nearInitialAccount?: string;
+    evmConnected?: boolean;
+    nearAdapterFactory?: () => NearAdapterPort;
+  },
 ) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <QueryClientProvider client={client}>
+    <DegenModeProvider>
+      <QueryClientProvider client={client}>
       <WalletInfrastructureProvider
         wagmiConfig={makeWagmiConfig(Boolean(opts?.evmConnected))}
-        nearAdapterFactory={makeNearFactory(opts?.nearInitialAccount)}
+        nearAdapterFactory={opts?.nearAdapterFactory ?? makeNearFactory(opts?.nearInitialAccount)}
       >
         {ui}
       </WalletInfrastructureProvider>
-    </QueryClientProvider>,
+      </QueryClientProvider>
+    </DegenModeProvider>,
   );
 }
 
@@ -214,6 +221,63 @@ afterEach(() => {
 });
 
 describe("Wallet Hub UI, Perps NEAR-First Gating & Demo Isolation", () => {
+  it.each(["selector", "direct Meteor"])(
+    "releases modal pointer/focus locks before %s handoff and restores errors",
+    async (entry) => {
+      let modalAtConnect = true;
+      let pointerAtConnect = "";
+      let selected = false;
+      const factory = (): NearAdapterPort => ({
+        initialize: async () => ({
+          wallets: [{ id: "meteor-wallet", name: "Meteor Wallet", supportsTestnet: true }],
+          existing: null,
+        }),
+        connect: async () => {
+          modalAtConnect = Boolean(document.querySelector('[role="dialog"]'));
+          pointerAtConnect = document.body.style.pointerEvents;
+          // Model the SDK's body-level portal, outside Radix DialogContent.
+          return new Promise((_, reject) => {
+            const option = document.createElement("button");
+            option.textContent = "External Meteor option";
+            option.onclick = () => {
+              selected = true;
+              option.remove();
+              reject(new Error("User rejected"));
+            };
+            document.body.append(option);
+          });
+        },
+        disconnect: async () => {},
+        dispose: () => {},
+      });
+      renderWithWalletProviders(
+        <>
+          <WalletHubHeaderButton />
+          <WalletHubDialog />
+        </>,
+        { nearAdapterFactory: factory },
+      );
+      fireEvent.click(screen.getByRole("button", { name: /Open multichain wallet hub/i }));
+      const launch = await screen.findByRole("button", {
+        name: entry === "selector" ? "Connect NEAR Wallet" : "Meteor Wallet",
+      });
+      fireEvent.click(launch);
+      const external = await screen.findByRole("button", { name: "External Meteor option" });
+      expect(modalAtConnect).toBe(false);
+      expect(pointerAtConnect).not.toBe("none");
+      // Touch produces a compatibility click; real hit-testing is checked in Chrome too.
+      if (entry === "direct Meteor") {
+        fireEvent.touchStart(external);
+        fireEvent.touchEnd(external);
+      }
+      fireEvent.click(external);
+      expect(selected).toBe(true);
+      expect(await screen.findByRole("dialog")).toBeVisible();
+      expect(
+        await screen.findByText("Connection or network request rejected by user."),
+      ).toBeVisible();
+    },
+  );
   it("opens unified Wallet Hub from header without exposing simulated demo dollars as wallet balance", async () => {
     renderWithWalletProviders(
       <>
@@ -242,6 +306,7 @@ describe("Wallet Hub UI, Perps NEAR-First Gating & Demo Isolation", () => {
 
   it("shows secondary tabs and clearly distinguishes HyperEVM Chain 998 from Hyperliquid Testnet Core", async () => {
     renderWithWalletProviders(<WalletHubPanels />, { evmConnected: true });
+    fireEvent.click(screen.getByText(/Advanced networks/));
 
     await waitFor(() => {
       expect(screen.getByText(EVM_TEST_ADDR)).toBeInTheDocument();
@@ -263,7 +328,11 @@ describe("Wallet Hub UI, Perps NEAR-First Gating & Demo Isolation", () => {
       expect(screen.getByText(/ROASTAKE Perpetuals executes on/i)).toBeInTheDocument();
     });
     expect(screen.getByRole("button", { name: /Connect NEAR Wallet/i })).toBeInTheDocument();
-    expect(screen.getByText(/LIVE CONTRACT · perps-v1\.roastake-dev-mta\.testnet/i)).toBeInTheDocument();
+    expect(screen.getByText(/ON-CHAIN TESTNET CONTRACT · perps-v1\.roastake-dev-mta\.testnet/i)).toHaveClass(
+      "max-w-full",
+      "whitespace-normal",
+      "[overflow-wrap:anywhere]",
+    );
   });
 
   it("renders dedicated /app/wallet page with clear separation between real wallet hub and simulated demo wallet", async () => {

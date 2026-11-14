@@ -164,7 +164,7 @@ describe("Coffee Oracle UI integration", () => {
       expect(screen.getAllByText("$7.38863238 USD/kg").length).toBeGreaterThan(0);
     });
 
-    expect(screen.getByText("No observation yet")).toBeInTheDocument();
+    expect(screen.getByText("No reading is stored yet")).toBeInTheDocument();
     expect(screen.getAllByText("2026-10-31 23:59:59 UTC").length).toBeGreaterThan(0);
     expect(screen.getAllByText("2026-11-10 22:24:23 UTC").length).toBeGreaterThan(0);
     expect(screen.getByText("6.00859288 NEAR")).toBeInTheDocument();
@@ -249,9 +249,9 @@ describe("Coffee Oracle UI integration", () => {
     renderWithQuery(<OraclePage />);
 
     await waitFor(() => {
-      expect(screen.getByText("Stale observation")).toBeInTheDocument();
+      expect(screen.getByText("Stale")).toBeInTheDocument();
     });
-    expect(screen.getAllByText(/exceeds contract max age/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/The reading is older than allowed/i)).toBeInTheDocument();
   });
 
   it("renders explicit RPC error alert and never displays fake fallback prices on failure", async () => {
