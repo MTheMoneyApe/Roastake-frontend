@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createConfig, createStorage, noopStorage } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { PerpsIndex } from "@/components/trading";
+import { DegenModeProvider } from "@/hooks/useDegenMode";
 import { CopyAddressButton } from "@/components/wallet/copy-address-button";
 import {
   WalletHubDialog,
@@ -196,14 +197,16 @@ function renderWithWalletProviders(
 ) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <QueryClientProvider client={client}>
+    <DegenModeProvider>
+      <QueryClientProvider client={client}>
       <WalletInfrastructureProvider
         wagmiConfig={makeWagmiConfig(Boolean(opts?.evmConnected))}
         nearAdapterFactory={opts?.nearAdapterFactory ?? makeNearFactory(opts?.nearInitialAccount)}
       >
         {ui}
       </WalletInfrastructureProvider>
-    </QueryClientProvider>,
+      </QueryClientProvider>
+    </DegenModeProvider>,
   );
 }
 
