@@ -3,6 +3,7 @@ name: Frontend quality
 on:
   pull_request:
     branches: [hackathon-submission]
+    types: [opened, reopened, synchronize, edited]
   push:
     branches: [hackathon-submission]
   workflow_dispatch:
