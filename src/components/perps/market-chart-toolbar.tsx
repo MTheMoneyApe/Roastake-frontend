@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LicenseRef-ROASTAKE-Evaluation-Only
 // Copyright © 2026 @MTheMoneyApe. All rights reserved.
 
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { MaturityBadge, Pill } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,7 @@ import {
   type PerpsMarketHistorySnapshot,
   type TimeframeAvailability,
 } from "@/lib/perps/market-history-types";
-import { formatAgeDurationCompact, formatObservationUtc } from "@/lib/perps/market-history";
+import { formatAgeDurationCompact } from "@/lib/perps/market-history";
 import { formatUsdE8 } from "@/lib/perps/math";
 import { cn } from "@/lib/utils";
 
