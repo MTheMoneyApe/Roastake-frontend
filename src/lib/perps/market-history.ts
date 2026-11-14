@@ -200,19 +200,44 @@ export async function fetchMarketHistoryWithFallback(
 ): Promise<PerpsMarketHistorySnapshot> {
   const targetMarketId = params.marketId ?? MARKET_ARABICA_PERPS_ID;
   try {
-    if (targetMarketId === MARKET_ARABICA_PERPS_ID) {
-      return await fetchArabicaHistoryFromIndexer({
-        baseUrl: params.apiBaseUrl,
-        maxAgeSec: params.maxAgeSec,
-        referenceNowSec: params.referenceNowSec,
+    const indexedSnapshot =
+      targetMarketId === MARKET_ARABICA_PERPS_ID
+        ? await fetchArabicaHistoryFromIndexer({
+            baseUrl: params.apiBaseUrl,
+            maxAgeSec: params.maxAgeSec,
+            referenceNowSec: params.referenceNowSec,
+          })
+        : await fetchMarketHistoryFromIndexer({
+            marketId: targetMarketId,
+            baseUrl: params.apiBaseUrl,
+            maxAgeSec: params.maxAgeSec,
+            referenceNowSec: params.referenceNowSec,
+          });
+
+    // An HTTP-healthy indexer can still have an empty store while its sequential
+    // backfill is degraded. Recover only immutable, receipt-verified transaction
+    // evidence; never synthesize ticks or OHLC data to fill the chart.
+    if (indexedSnapshot.observations.length === 0 && indexedSnapshot.tradeMarkers.length === 0) {
+      const verifiedSeedSnapshot = await fetchMarketVerifiedHistory({
+        ...params,
+        marketId: targetMarketId,
       });
+      if (
+        verifiedSeedSnapshot.observations.length > 0 ||
+        verifiedSeedSnapshot.tradeMarkers.length > 0
+      ) {
+        return {
+          ...verifiedSeedSnapshot,
+          historyConnectionState: "fallback_m0412_rpc",
+          fallbackReason:
+            "The persistent indexer is reachable but has not indexed verified events yet. Showing only immutable, receipt-verified Testnet transaction evidence.",
+          coverage: null,
+          candleAvailability: null,
+          volume: null,
+        };
+      }
     }
-    return await fetchMarketHistoryFromIndexer({
-      marketId: targetMarketId,
-      baseUrl: params.apiBaseUrl,
-      maxAgeSec: params.maxAgeSec,
-      referenceNowSec: params.referenceNowSec,
-    });
+    return indexedSnapshot;
   } catch (indexerErr) {
     const fallbackSnap = await fetchMarketVerifiedHistory({
       ...params,
