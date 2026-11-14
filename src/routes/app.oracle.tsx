@@ -10,7 +10,7 @@ export const Route = createFileRoute("/app/oracle")({
   head: () =>
     seo(
       "Coffee Oracle",
-      "Read-only NEAR Testnet Oracle telemetry for ARABICA-MONTHLY-IMF/USD and GESHA-DEMO/USD.",
+      "Read-only OutLayer NEAR Testnet Oracle observations, independent from Perps. Historical IMF monthly benchmarks and synthetic fixtures are source-labelled, not live coffee quotes.",
     ),
   component: Page,
 });

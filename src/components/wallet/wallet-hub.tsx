@@ -2,6 +2,8 @@
 // Copyright © 2026 @MTheMoneyApe. All rights reserved.
 
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { flushSync } from "react-dom";
 import {
   Activity,
   AlertTriangle,
@@ -88,7 +90,7 @@ export function WalletHubHeaderButton() {
       onClick={() => openHub(nearConnected ? "near" : undefined)}
       aria-label={ariaLabel}
       className={cn(
-        "min-h-8 gap-1.5 px-2.5 text-xs",
+        "min-h-11 min-w-11 shrink-0 gap-1.5 px-2.5 text-xs sm:min-h-8",
         nearConnected && "border-gain/50 bg-forest/30 hover:bg-forest/50",
         !nearConnected && connectedAccounts.length > 0 && "border-brass/60",
       )}
@@ -100,19 +102,22 @@ export function WalletHubHeaderButton() {
       ) : (
         <Wallet className="size-3.5 shrink-0" aria-hidden="true" />
       )}
-      <span className="max-w-[125px] truncate font-mono sm:max-w-[165px]">{buttonText}</span>
+      <span className="hidden max-w-[125px] truncate font-mono sm:inline sm:max-w-[165px]">{buttonText}</span>
+      <span className="inline rounded bg-forest/30 px-1.5 py-1 font-mono text-[10px] uppercase tracking-wider sm:hidden">
+        NEAR
+      </span>
       {!nearConnected && connectedAccounts.length === 0 && (
         <span className="hidden rounded bg-forest/30 px-1 py-0.5 font-mono text-[10px] uppercase tracking-wider sm:inline">
           NEAR
         </span>
       )}
       {nearConnected && extraCount > 0 && (
-        <span className="num rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
+        <span className="hidden rounded bg-muted px-1 py-0.5 font-mono text-[10px] sm:inline">
           +{extraCount}
         </span>
       )}
       {!nearConnected && connectedAccounts.length > 0 && (
-        <span className="hidden rounded bg-brass/20 px-1 py-0.5 font-mono text-[10px] text-brass xl:inline">
+        <span className="hidden rounded bg-brass/20 px-1 py-0.5 font-mono text-[10px] text-warning-foreground xl:inline">
           NEAR unset
         </span>
       )}
@@ -129,7 +134,13 @@ const SECONDARY_TABS: { id: Exclude<WalletEcosystem, "near">; label: string; tag
   { id: "hyperliquid", label: "Hyperliquid Core", tag: "Venue API" },
 ];
 
-export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
+export function WalletHubPanels({
+  compact = false,
+  onConnectNear,
+}: {
+  compact?: boolean;
+  onConnectNear?: (walletId?: string) => void;
+}) {
   const {
     hydrated,
     primaryProtocolNetwork,
@@ -232,7 +243,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
               <Button
                 type="button"
                 size="sm"
-                onClick={() => connectNear()}
+                onClick={() => (onConnectNear ?? connectNear)()}
                 disabled={!hydrated || near.status === "connecting"}
                 className="min-h-9 gap-1.5"
               >
@@ -276,7 +287,10 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
                 <p className="text-xs text-muted-foreground num">
                   Circle Testnet USDC:{" "}
                   <strong className="text-foreground">
-                    {formatFixedPoint(nearPerpsTrader.data.circleUsdcBalanceUnits, 6, { maxFractionDigits: 4 })} USDC
+                    {formatFixedPoint(nearPerpsTrader.data.circleUsdcBalanceUnits, 6, {
+                      maxFractionDigits: 4,
+                    })}{" "}
+                    USDC
                   </strong>{" "}
                   · Perps Free Margin:{" "}
                   <strong className="text-foreground">
@@ -296,8 +310,11 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
         ) : (
           <div className="mt-3 space-y-2 rounded-md border border-dashed px-3.5 py-2.5 text-xs text-muted-foreground">
             <p>
-              Connect via <strong className="text-foreground">HOT Connect</strong> (`testnet` mode,
-              read-only identity). No access-key or on-chain transaction is submitted on connect.
+              Connect through the{" "}
+              <strong className="text-foreground">NEAR Testnet wallet selector</strong> powered by
+              @hot-labs/near-connect. Available providers depend on its current Testnet manifest;
+              HOT Wallet support is not implied. No access-key or on-chain transaction is submitted
+              on connect.
             </p>
             {near.availableWallets.length > 0 && (
               <div className="flex flex-wrap items-center gap-1.5 pt-1">
@@ -309,7 +326,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
                     size="sm"
                     variant="outline"
                     className="h-7 px-2 text-[11px]"
-                    onClick={() => connectNear(w.id)}
+                    onClick={() => (onConnectNear ?? connectNear)(w.id)}
                   >
                     {w.name}
                   </Button>
@@ -345,7 +362,10 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <EcosystemIcon ecosystem={acc.ecosystem} className="size-3.5 text-sage" />
+                      <EcosystemIcon
+                        ecosystem={acc.ecosystem}
+                        className="size-3.5 text-accent-foreground"
+                      />
                       <span className="font-semibold text-foreground">{acc.ecosystemLabel}</span>
                       <span className="text-muted-foreground">· {acc.providerName}</span>
                       {acc.isPrimaryProtocolNetwork && <Pill tone="gain">Primary Execution</Pill>}
@@ -407,11 +427,12 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
           </span>
         </div>
 
-        <div
-          role="tablist"
-          aria-label="Secondary wallet ecosystems"
-          className="flex flex-wrap gap-2"
-        >
+        <details className="rounded-lg border bg-muted/20 p-3">
+          <summary className="cursor-pointer text-sm font-medium">
+            Advanced networks · EVM, Solana and Hyperliquid
+          </summary>
+          <div className="mt-3 space-y-4">
+            <div role="tablist" aria-label="Secondary wallet ecosystems" className="flex flex-wrap gap-2">
           {SECONDARY_TABS.map((tab) => {
             const active = activeSecondaryTab === tab.id;
             return (
@@ -433,7 +454,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
               </Button>
             );
           })}
-        </div>
+            </div>
 
         {/* EVM Testnets Panel (including HyperEVM Chain ID 998) */}
         {activeSecondaryTab === "evm" && (
@@ -721,7 +742,7 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
               <div className="space-y-3 rounded-md border bg-background/50 p-3 text-xs">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <Link2 className="size-3.5 text-brass" aria-hidden="true" />
+                    <Link2 className="size-3.5 text-highlight" aria-hidden="true" />
                     <span className="font-mono font-semibold">
                       {hyperliquid.associatedEvmAddress}
                     </span>
@@ -795,6 +816,8 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
             )}
           </div>
         )}
+          </div>
+        </details>
       </section>
 
       {!compact && (
@@ -821,11 +844,27 @@ export function WalletHubPanels({ compact = false }: { compact?: boolean }) {
 
 /** Accessible Radix Modal hosting the Unified Wallet Hub from header triggers. */
 export function WalletHubDialog() {
-  const { isHubOpen, openHub, closeHub } = useWalletHub();
+  const { isHubOpen, openHub, closeHub, connectNear } = useWalletHub();
+  const [isNearHandoff, setIsNearHandoff] = useState(false);
+
+  async function handOffNearConnection(walletId?: string) {
+    // near-connect portals its selector/provider UI directly into document.body.
+    // Fully unmount Radix (including its exit animation) before opening that UI:
+    // otherwise Dialog's pointer lock and focus trap make provider cards inert.
+    flushSync(() => setIsNearHandoff(true));
+    try {
+      await connectNear(walletId);
+    } finally {
+      // Restore the hub to show either the connected account or explicit error.
+      setIsNearHandoff(false);
+    }
+  }
+
+  if (isNearHandoff) return null;
 
   return (
     <Dialog open={isHubOpen} onOpenChange={(next) => (next ? openHub() : closeHub())}>
-      <DialogContent className="dark grid-cols-1 w-[calc(100vw-1rem)] max-h-[88vh] max-w-3xl overflow-y-auto overflow-x-hidden p-4 text-foreground sm:w-full sm:p-6">
+      <DialogContent className="grid-cols-1 w-[calc(100vw-1rem)] max-h-[88vh] max-w-3xl overflow-y-auto overflow-x-hidden p-4 text-foreground sm:w-full sm:p-6">
         <DialogHeader className="min-w-0 pr-6 text-left">
           <DialogTitle className="flex flex-wrap items-center gap-2 font-display text-xl">
             <span>ROASTAKE Multichain Wallet Hub</span>
@@ -836,7 +875,7 @@ export function WalletHubDialog() {
             Solana Devnet, and Hyperliquid Testnet Core without touching simulated demo balances.
           </DialogDescription>
         </DialogHeader>
-        <WalletHubPanels compact />
+        <WalletHubPanels compact onConnectNear={handOffNearConnection} />
       </DialogContent>
     </Dialog>
   );

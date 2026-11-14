@@ -9,5 +9,5 @@ export const Route = createFileRoute("/roaster/$section")({
 });
 
 function Page() {
-  return <AppShell nav={ROASTER_NAV} dark={false} home="/roaster/dashboard"><ModulePage path="/roaster/$section" /></AppShell>;
+  return <AppShell nav={ROASTER_NAV} home="/roaster/dashboard"><ModulePage path="/roaster/$section" /></AppShell>;
 }

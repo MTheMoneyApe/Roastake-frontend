@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ROASTAKE · Auditoría final</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font: 14px/1.6 var(--font-sans, system-ui);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      h1 {
+        font-size: 30px;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        margin: 8px 0 16px;
+      }
+      h2 {
+        font-size: 21px;
+        line-height: 1.3;
+        margin: 0 0 16px;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0 0 8px;
+      }
+      p {
+        margin: 8px 0;
+      }
+      small,
+      .muted {
+        color: var(--muted-foreground);
+      }
+      .eyebrow {
+        font: 11px var(--font-mono, monospace);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted-foreground);
+      }
+      .intro {
+        max-width: 65ch;
+      }
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 16px 0 24px;
+      }
+      .badge {
+        padding: 4px 8px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 12px;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .metric {
+        border-top: 2px solid var(--chart-1);
+        padding: 12px 0;
+      }
+      .metric strong {
+        font-size: 28px;
+        display: block;
+        line-height: 1.2;
+      }
+      .metric span {
+        font-size: 12px;
+        color: var(--muted-foreground);
+      }
+      section {
+        margin: 32px 0;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+      .findings {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .finding {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        background: var(--card);
+      }
+      .finding small {
+        display: block;
+        font: 11px var(--font-mono, monospace);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+      }
+      .finding p {
+        font-size: 13px;
+        margin: 0;
+      }
+      .notice {
+        border-left: 3px solid var(--chart-2);
+        padding-left: 16px;
+        margin-top: 24px;
+      }
+      .filters {
+        display: flex;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      button {
+        font: inherit;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        background: var(--background);
+        color: var(--foreground);
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button[aria-pressed="true"] {
+        background: var(--foreground);
+        color: var(--background);
+      }
+      button:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid var(--chart-1);
+        outline-offset: 3px;
+      }
+      .gallery {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .shot {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+      }
+      .shot summary {
+        padding: 12px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 520px;
+        object-fit: contain;
+        background: var(--muted);
+      }
+      .shot p {
+        padding: 0 12px 12px;
+        font-size: 12px;
+        color: var(--muted-foreground);
+        margin: 0;
+      }
+      .shot[hidden] {
+        display: none;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin: 8px 0;
+      }
+      code {
+        font-family: var(--font-mono, monospace);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+      footer {
+        padding: 16px 0;
+        color: var(--muted-foreground);
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+      }
+      @media (max-width: 550px) {
+        h1 {
+          font-size: 26px;
+        }
+        .metrics {
+          gap: 8px;
+        }
+        .metric strong {
+          font-size: 24px;
+        }
+        .findings,
+        .gallery {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="eyebrow">ROASTAKE · Revisión de frontend · 13 NOV 2026</div>
+      <h1>Correcciones verificadas.<br />Límites explícitos.</h1>
+      <p class="intro">
+        Cierre sobre el mismo PR #2 y la misma rama. Auditoría de seguridad, verdad del producto,
+        navegación y consistencia visual: no solo de la landing.
+      </p>
+      <div class="badges">
+        <span class="badge">PR #2 · OPEN / DRAFT</span
+        ><span class="badge">Preview del código · READY</span
+        ><span class="badge">Sin promoción a producción</span>
+      </div>
+    </header>
+    <div class="metrics">
+      <div class="metric"><strong>240</strong><span>tests pasan · 27 archivos</span></div>
+      <div class="metric"><strong>89</strong><span>destinos desktop recorridos</span></div>
+      <div class="metric">
+        <strong>176</strong><span>muestras móvil · 88 destinos × 2 temas</span>
+      </div>
+    </div>
+    <p class="muted">
+      Código publicado y observado: <code>6f6f273cab6080870043ac85f09291b37a1d9ccf</code>. La
+      entrega añade documentación; el SHA final se registra en el PR y en el mensaje de cierre.
+    </p>
+    <section>
+      <h2>Qué quedó corregido</h2>
+      <div class="findings">
+        <article class="finding">
+          <small>Seguridad · RHEA</small>
+          <h3>Una firma, una solicitud</h3>
+          <p>
+            Guardia síncrona contra doble envío y controles bloqueados durante firma/verificación.
+            Reproducción fallida antes; regresión pasa después.
+          </p>
+        </article>
+        <article class="finding">
+          <small>Seguridad · Wallet</small>
+          <h3>No resucitar sesiones cerradas</h3>
+          <p>
+            Eventos y promesas tardíos ya no restauran identidad tras desconectar. Fallos de
+            inicialización visibles.
+          </p>
+        </article>
+        <article class="finding">
+          <small>Navegación · móvil</small>
+          <h3>El carrito vuelve a ser accesible</h3>
+          <p>
+            Acción visible y localizada de 44×44px, incluso a 320px. Checkout simulado completado
+            sin pago ni envío.
+          </p>
+        </article>
+        <article class="finding">
+          <small>Verdad del producto</small>
+          <h3>Testnet ≠ demo ≠ roadmap</h3>
+          <p>
+            Mercados legacy, Positions, Activity, proveedores reales y documentación diferenciados.
+            OutLayer separado; GCT/RCT conceptual, con pérdida de masa.
+          </p>
+        </article>
+      </div>
+      <p class="notice">
+        Perps usa precios sintéticos controlados por operador. RHEA usa tokens Testnet sin valor
+        monetario. Marketplace, lotes y redención son simulaciones: nada aquí demuestra café físico,
+        respaldo, custodia, envío ni rentabilidad.
+      </p>
+    </section>
+    <section>
+      <h2>Verificación y alcance real</h2>
+      <ul>
+        <li>
+          <strong>Pasan:</strong> instalación congelada, TypeScript, 240 tests, build, diff check y
+          ESLint de todos los archivos TypeScript modificados/nuevos (0 errores, 6 advertencias).
+        </li>
+        <li>
+          <strong>Lint global falla:</strong> 600 errores de formato y 14 advertencias; baseline
+          histórico: 708 errores y 14 advertencias. Sin reglas desactivadas.
+        </li>
+        <li>
+          <strong>Responsive representativo:</strong> landing y Perps en 320/360/390/430,
+          768/820/844 landscape, 1024/1280 y 1440/1920. No equivale a todas las rutas × idiomas ×
+          temas × estados.
+        </li>
+        <li>
+          <strong>Interacción real de navegador:</strong> touch abre drawer a 320px; Escape cierra y
+          devuelve foco al menú. Contraste de dos avisos de Perps: aproximadamente 7,4:1 en claro.
+        </li>
+        <li>
+          <strong>Flujos demo:</strong> pedido, tostado y redención completados; estados y
+          confirmaciones explícitamente simulados. Passport inspeccionado.
+        </li>
+        <li>
+          <strong>Rendimiento parcial:</strong> FCP de laboratorio ~532ms, sin throttling y con
+          caché. LCP/CLS posteriores contaminados por resize; sin Lighthouse ni Core Web Vitals de
+          campo.
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Capturas de la Preview actualizada</h2>
+      <p class="muted">
+        Imágenes vistas antes de publicarlas. Abre cada captura para ampliar la evidencia; los
+        ejemplos no certifican todos los estados de cada ruta.
+      </p>
+      <div class="filters" role="group" aria-label="Filtrar capturas">
+        <button aria-pressed="true" data-filter="all">Todas</button
+        ><button aria-pressed="false" data-filter="mobile">Móvil</button
+        ><button aria-pressed="false" data-filter="desktop">Desktop</button>
+      </div>
+      <div class="gallery">
+        <details class="shot" data-kind="mobile" open>
+          <summary>Perps · 320px · claro · foco restaurado</summary>
+          <img
+            loading="lazy"
+            alt="Header limpio de Perps y foco visible en Open menu tras Escape"
+            src="https://api.reasonmachines.com/media/pr-screenshots/edc974ca-198a-4cf5-8033-a962f511b19c/e5305269c48b5b41231b4c8a1a67b2f5/8a4ea0ec-cc2d-4bde-b205-e2f27edc1083.png"
+          />
+          <p>Sin Demo Explorer, selector de roles ni popovers demo.</p>
+        </details>
+        <details class="shot" data-kind="desktop" open>
+          <summary>Landing · 1920px · claro</summary>
+          <img
+            loading="lazy"
+            alt="Landing desktop con fotografía editorial y CTA Testnet"
+            src="https://api.reasonmachines.com/media/pr-screenshots/edc974ca-198a-4cf5-8033-a962f511b19c/e4fc08144350917829b5cadd3fa26f9b/976798cf-0041-4a97-9f29-a7dc82327aad.png"
+          />
+          <p>Marca, navegación compacta, fotografía local y copy de Testnet.</p>
+        </details>
+        <details class="shot" data-kind="mobile">
+          <summary>Perps · 320px · oscuro</summary>
+          <img
+            loading="lazy"
+            alt="Perps en oscuro con header limpio"
+            src="https://api.reasonmachines.com/media/pr-screenshots/edc974ca-198a-4cf5-8033-a962f511b19c/247770e008a9ea8f02bb09ba7a5ba9ac/57bf95c6-20e1-42d6-99ef-8e9fe8c0bb3c.png"
+          />
+        </details>
+        <details class="shot" data-kind="mobile">
+          <summary>Landing · 320px · ES / oscuro</summary>
+          <img
+            loading="lazy"
+            alt="Landing española móvil con carrito visible y CTAs completos"
+            src="https://api.reasonmachines.com/media/pr-screenshots/edc974ca-198a-4cf5-8033-a962f511b19c/db73a3dee6fef08323f7780528084491/313e46b4-83ac-4745-b076-45ae2cfba30a.png"
+          />
+        </details>
+        <details class="shot" data-kind="mobile">
+          <summary>Wallet · 390px · selector real</summary>
+          <img
+            loading="lazy"
+            alt="Selector real enumera seis proveedores disponibles y NEAR Testnet"
+            src="https://api.reasonmachines.com/media/pr-screenshots/edc974ca-198a-4cf5-8033-a962f511b19c/6719ce0cfd61d7f6bcadcb8dcecfaec2/53fe18c9-7f83-4368-9547-cda3b3362614.png"
+          />
+          <p>Solo abierto y cancelado: ninguna firma ni conexión externa completada.</p>
+        </details>
+        <details class="shot" data-kind="mobile">
+          <summary>RHEA · 390px · desconectado</summary>
+          <img
+            loading="lazy"
+            alt="Swap RHEA con disclosure Testnet, campos y gates sin wallet"
+            src="https://api.reasonmachines.com/media/pr-screenshots/edc974ca-198a-4cf5-8033-a962f511b19c/22ac9194ba46b54bd31fcdda08f2e623/4ad168ef-1388-4515-8841-38b02402a0fb.png"
+          />
+        </details>
+        <details class="shot" data-kind="desktop">
+          <summary>Redención · 1920px · simulación completada</summary>
+          <img
+            loading="lazy"
+            alt="Redención confirma reserva simulada y que no creó envío"
+            src="https://api.reasonmachines.com/media/pr-screenshots/edc974ca-198a-4cf5-8033-a962f511b19c/58392fe9f8ed5bbce96c36042a5efd30/16287ca6-7bbf-4422-b91a-810d922f8c3a.png"
+          />
+        </details>
+      </div>
+    </section>
+    <section>
+      <h2>Qué sigue pendiente</h2>
+      <ul>
+        <li>
+          <strong>Operación Perps:</strong> tres feeds observados caducados; nuevas aperturas
+          bloqueadas. No se renovó el feed ni se tocó backend.
+        </li>
+        <li>
+          <strong>Wallet E2E:</strong> no hay signer controlado/fondeado del entorno. Firma,
+          finality, explorer, cambios de cuenta/red y redirects siguen sin verificación real.
+        </li>
+        <li>
+          <strong>Accesibilidad:</strong> Escape cierra el selector externo de wallet, pero deja
+          foco en el documento; el drawer propio sí lo restaura.
+        </li>
+        <li>
+          <strong>Resiliencia/copy:</strong> recuperación de manifest vacío y desconexión tras
+          broadcast pendientes; RHEA puede mostrar aviso de quote caducada aunque aún no exista
+          quote.
+        </li>
+        <li>
+          <strong>Idiomas:</strong> superficies públicas EN/ES verificadas de forma representativa;
+          las páginas internas no están completamente traducidas.
+        </li>
+      </ul>
+      <h3>Manual QA required on physical Android/Brave</h3>
+      <ul>
+        <li>
+          Portrait/landscape reales, address bar, teclado y zoom: sin overflow ni contenido
+          cubierto.
+        </li>
+        <li>
+          Perps y navegación entre rutas: header sin controles demo; drawer, Back/Escape, foco y
+          recuperación de scroll.
+        </li>
+        <li>
+          EN/ES público, claro/oscuro, carrito, checkout y demos: confirmaciones explícitamente
+          simuladas.
+        </li>
+        <li>
+          Solo wallet desechable propia en Testnet y fondos no monetarios. Revisar cada acción antes
+          de firmar; verificar hash real en explorer y revisar historial antes de reintentar.
+        </li>
+      </ul>
+    </section>
+    <footer>
+      Informe detallado y reproducción por hallazgo: docs/landing-verification.md · inventario de 50
+      patrones: docs/final-source-review.md · límites y pasos seguros: docs/wallet-final-audit.md.
+      Cobertura amplia, no certificación exhaustiva ni aprobación para producción.
+    </footer>
+    <script>
+      document.querySelectorAll("[data-filter]").forEach((button) =>
+        button.addEventListener("click", () => {
+          document
+            .querySelectorAll("[data-filter]")
+            .forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+          document
+            .querySelectorAll("[data-kind]")
+            .forEach(
+              (s) =>
+                (s.hidden =
+                  button.dataset.filter !== "all" && s.dataset.kind !== button.dataset.filter),
+            );
+        }),
+      );
+    </script>
+  </body>
+</html>

@@ -4,10 +4,18 @@ import { ModulePage } from "@/components/module-page";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/app/vaults/$id")({
-  head: () => seo("Id", "ROASTAKE Id — simulated demo module."),
+  head: ({ params }) =>
+    seo(
+      `Vault ${params.id} — Roadmap / Planned`,
+      "Vault design preview only. Not deployed or operational; no live deposits, withdrawals or yields.",
+    ),
   component: Page,
 });
 
 function Page() {
-  return <AppShell><ModulePage path="/app/vaults/$id" /></AppShell>;
+  return (
+    <AppShell>
+      <ModulePage path="/app/vaults/$id" />
+    </AppShell>
+  );
 }

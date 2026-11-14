@@ -6,14 +6,19 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Compass, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MaturityBadge, Panel, Pill } from "@/components/kit";
-import { MARKET_ARABICA_URL_SLUG, PERPS_CONTRACT_ID, TESTNET_NON_MONETARY_NOTICE } from "@/lib/perps/config";
+import {
+  MARKET_ARABICA_URL_SLUG,
+  PERPS_CONTRACT_ID,
+  TESTNET_NON_MONETARY_NOTICE,
+} from "@/lib/perps/config";
 import { evaluatePerpsOracleStatus, formatBpsAsPercent, formatUsdE8 } from "@/lib/perps/math";
 import type { PerpsProtocolSnapshot } from "@/lib/perps/types";
 
 interface WalkthroughStep {
   stepNumber: number;
   title: string;
-  classification: "REAL ON-CHAIN" | "SYNTHETIC ORACLE" | "PREVIEW" | "PLANNED" | "NON-MONETARY TESTNET";
+  classification:
+    "REAL ON-CHAIN" | "SYNTHETIC ORACLE" | "PREVIEW" | "PLANNED" | "NON-MONETARY TESTNET";
   badgeVariant: "real" | "testnet" | "preview" | "demo";
   routeTo: string;
   routeLabel: string;
@@ -30,7 +35,7 @@ const WALKTHROUGH_STEPS: readonly WalkthroughStep[] = [
     routeTo: "/app/wallet",
     routeLabel: "Open Wallet Hub",
     summary:
-      "Connect a NEAR Testnet wallet (Meteor or HOT Connect selector) with NEAR ranked #1 ahead of Ethereum, Base, Arbitrum, Solana, HyperEVM, and Hyperliquid.",
+      "Connect a supported NEAR Testnet wallet using the current provider selector, with NEAR as the primary execution network ahead of secondary test-network identities.",
     whatToVerify:
       "Connection stays identity-only (no automatic access-key signing transaction). Cross-chain wallets display as identity-only without fake bridging.",
   },
@@ -90,9 +95,9 @@ const WALKTHROUGH_STEPS: readonly WalkthroughStep[] = [
     routeTo: `/app/perps/${MARKET_ARABICA_URL_SLUG}`,
     routeLabel: "Inspect Deposit Form",
     summary:
-      "Calls Circle USDC ft_transfer_call targeting perps-v1.roastake-dev-mta.testnet with exact memo {\"action\":\"trader_collateral\"} and 1 yoctoNEAR.",
+      'Calls Circle USDC ft_transfer_call targeting perps-v1.roastake-dev-mta.testnet with exact memo {"action":"trader_collateral"} and 1 yoctoNEAR.',
     whatToVerify:
-      "RPC verifier explicitly checks ft_resolve_transfer for \"0\" refunds so failed deposits are never misreported as successful.",
+      'RPC verifier explicitly checks ft_resolve_transfer for "0" refunds so failed deposits are never misreported as successful.',
   },
   {
     stepNumber: 7,
@@ -150,7 +155,7 @@ const WALKTHROUGH_STEPS: readonly WalkthroughStep[] = [
     routeTo: `/app/activity`,
     routeLabel: "Inspect Activity & M04.6-G Proof",
     summary:
-      "Verifies async withdraw_collateral callback events (\"settled\" vs \"restored\") alongside auditable M04.6-G hybrid Admin (CLI) + Trader (Meteor Wallet) Explorer proof and post-hackathon roadmap.",
+      'Verifies async withdraw_collateral callback events ("settled" vs "restored") alongside auditable M04.6-G hybrid Admin (CLI) + Trader (Meteor Wallet) Explorer proof and post-hackathon roadmap.',
     whatToVerify:
       "Mainnet decentralization, independent multi-source coffee price feeds, and automated keeper liquidations are clearly delimited as post-hackathon roadmap.",
   },
@@ -187,12 +192,7 @@ export function JudgesWalkthrough({
               {protocol.solvencyInvariant ? "On-Chain Solvency OK" : "Solvency Check Alert"}
             </Pill>
           )}
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={() => setExpanded((v) => !v)}
-          >
+          <Button type="button" size="sm" variant="outline" onClick={() => setExpanded((v) => !v)}>
             {expanded ? "Collapse Guide" : "Expand 11-Step Guide"}
           </Button>
         </div>
@@ -202,8 +202,8 @@ export function JudgesWalkthrough({
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>
             Interactive walkthrough contrasting real on-chain NEAR Testnet execution (
-            <code className="font-mono">{PERPS_CONTRACT_ID}</code>), synthetic oracle ticks,
-            and multi-market isolation across Arabica, Robusta & Gesha without requiring a signature.
+            <code className="font-mono">{PERPS_CONTRACT_ID}</code>), synthetic oracle ticks, and
+            multi-market isolation across Arabica, Robusta & Gesha without requiring a signature.
           </span>
           <Button type="button" size="sm" onClick={() => setExpanded(true)}>
             Start Step {step.stepNumber} / {WALKTHROUGH_STEPS.length}
@@ -249,7 +249,8 @@ export function JudgesWalkthrough({
             {protocol && (
               <div className="flex flex-wrap items-center gap-3 rounded border border-dashed px-3 py-2 text-[11px] text-muted-foreground">
                 <span>
-                  Live Contract Snapshot: <strong className="text-foreground">{protocol.contractId}</strong>
+                  Live Contract Snapshot:{" "}
+                  <strong className="text-foreground">{protocol.contractId}</strong>
                 </span>
                 <span>
                   Arabica Price:{" "}

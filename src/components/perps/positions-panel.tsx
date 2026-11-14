@@ -39,6 +39,7 @@ import type {
   PositionWithHealth,
 } from "@/lib/perps/types";
 import { useWalletHub } from "@/lib/wallet/context";
+import { useDegenMode } from "@/hooks/useDegenMode";
 
 export function LivePositionsPanel({
   protocol,
@@ -52,6 +53,7 @@ export function LivePositionsPanel({
   onTxUpdate?: (record: NearUserTxRecord) => void;
 }) {
   const { near, openHub, sendNearTransaction } = useWalletHub();
+  const { degenMode, copy } = useDegenMode();
   const refreshAll = useRefreshPerpsQueries(near.accountId);
   const headingId = useId();
   const [closingTarget, setClosingTarget] = useState<PositionWithHealth | null>(null);
@@ -289,6 +291,25 @@ export function LivePositionsPanel({
                                 maxFractionDigits: 6,
                               })}
                             </div>
+                            {degenMode && health.unrealized_pnl_e8 !== "0" && (
+                              <div
+                                className={
+                                  "degen-pnl-callout " +
+                                  (health.unrealized_pnl_e8.startsWith("-")
+                                    ? "degen-pnl-bear"
+                                    : "degen-pnl-bull")
+                                }
+                              >
+                                <span aria-hidden="true">
+                                  {health.unrealized_pnl_e8.startsWith("-") ? "🐻" : "🐂"}
+                                </span>
+                                <span>
+                                  {health.unrealized_pnl_e8.startsWith("-")
+                                    ? copy.bobo_hedge
+                                    : copy.mumu_win}
+                                </span>
+                              </div>
+                            )}
                           </>
                         ) : (
                           <span className="text-muted-foreground">Health N/A</span>

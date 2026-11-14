@@ -364,6 +364,148 @@ describe("Multichain WalletInfrastructureProvider", () => {
     expect(nearMock.dispose).toHaveBeenCalledTimes(1);
   });
 
+  it("does not resurrect a NEAR identity when connection resolves after disconnect", async () => {
+    let resolveConnect!: (identity: Awaited<ReturnType<NearAdapterPort["connect"]>>) => void;
+    let listeners!: Parameters<NearAdapterPort["initialize"]>[0];
+    const identity = {
+      accountId: "late-user.testnet",
+      providerId: "meteor-wallet",
+      providerName: "Meteor Wallet",
+      networkId: "testnet",
+    };
+    const factory = (): NearAdapterPort => ({
+      initialize: async (nextListeners) => {
+        listeners = nextListeners;
+        return { wallets: [], existing: null };
+      },
+      connect: () =>
+        new Promise((resolve) => {
+          resolveConnect = resolve;
+        }),
+      disconnect: async () => {},
+      dispose: () => {},
+    });
+    const { result } = renderHook(() => useWalletHub(), {
+      wrapper: createWrapper({ wagmiConfig: createTestWagmiConfig(), nearAdapterFactory: factory }),
+    });
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+    let connecting!: Promise<void>;
+    act(() => {
+      connecting = result.current.connectNear("meteor-wallet");
+    });
+    expect(result.current.near.status).toBe("connecting");
+    await act(async () => {
+      await result.current.disconnectNear();
+    });
+    await act(async () => {
+      listeners.onSignIn(identity);
+      resolveConnect(identity);
+      await connecting;
+    });
+    expect(result.current.near.status).toBe("disconnected");
+    expect(result.current.near.accountId).toBeNull();
+    expect(result.current.connectedAccounts).toHaveLength(0);
+
+    // A fresh, explicit connection remains usable, including event-before-promise adapters.
+    act(() => {
+      result.current.setSelectedEcosystem("evm");
+      connecting = result.current.connectNear("meteor-wallet");
+    });
+    await act(async () => {
+      listeners.onSignIn(identity);
+      resolveConnect(identity);
+      await connecting;
+    });
+    expect(result.current.near.status).toBe("connected");
+    expect(result.current.near.accountId).toBe(identity.accountId);
+    expect(result.current.selectedEcosystem).toBe("near");
+  });
+
+  it("ignores a restored NEAR session delivered after explicit disconnect", async () => {
+    let resolveInitialize!: (value: Awaited<ReturnType<NearAdapterPort["initialize"]>>) => void;
+    const base = createMockNearFactory();
+    const factory = (): NearAdapterPort => ({
+      ...base.factory(),
+      initialize: () =>
+        new Promise((resolve) => {
+          resolveInitialize = resolve;
+        }),
+    });
+    const { result } = renderHook(() => useWalletHub(), {
+      wrapper: createWrapper({ wagmiConfig: createTestWagmiConfig(), nearAdapterFactory: factory }),
+    });
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+    await act(async () => {
+      await result.current.disconnectNear();
+    });
+    await act(async () => {
+      resolveInitialize({
+        wallets: [],
+        existing: {
+          accountId: "restored.testnet",
+          providerId: "meteor-wallet",
+          providerName: "Meteor Wallet",
+          networkId: "testnet",
+        },
+      });
+    });
+    expect(result.current.near.status).toBe("disconnected");
+    expect(result.current.near.accountId).toBeNull();
+  });
+
+  it("surfaces NEAR rejection and blocks signing with a wrong-network identity", async () => {
+    const rejected = createMockNearFactory({ connectError: new Error("User rejected connection") });
+    const first = renderHook(() => useWalletHub(), {
+      wrapper: createWrapper({
+        wagmiConfig: createTestWagmiConfig(),
+        nearAdapterFactory: rejected.factory,
+      }),
+    });
+    await waitFor(() => expect(first.result.current.hydrated).toBe(true));
+    await act(async () => {
+      await first.result.current.connectNear();
+    });
+    expect(first.result.current.near.status).toBe("error");
+    expect(first.result.current.near.error).toMatch(/rejected by user/i);
+    expect(first.result.current.near.accountId).toBeNull();
+    first.unmount();
+
+    const invalid = createMockNearFactory({ accountId: "mainnet.near", networkId: "mainnet" });
+    const sign = vi.fn();
+    const factory = (): NearAdapterPort => ({ ...invalid.factory(), signAndSendTransaction: sign });
+    const { result } = renderHook(() => useWalletHub(), {
+      wrapper: createWrapper({ wagmiConfig: createTestWagmiConfig(), nearAdapterFactory: factory }),
+    });
+    await waitFor(() => expect(result.current.hydrated).toBe(true));
+    await act(async () => {
+      await result.current.connectNear();
+    });
+    expect(result.current.near.unsupportedNetwork).toBe(true);
+    await expect(
+      result.current.sendNearTransaction({ receiverId: "contract.testnet", actions: [] }),
+    ).rejects.toThrow(/not valid for NEAR Testnet/);
+    expect(sign).not.toHaveBeenCalled();
+  });
+
+  it("reports a NEAR connector initialization failure without inventing a connected account", async () => {
+    const factory = (): NearAdapterPort => ({
+      initialize: async () => {
+        throw new Error("Wallet manifest unavailable");
+      },
+      connect: async () => {
+        throw new Error("Wallet manifest unavailable");
+      },
+      disconnect: async () => {},
+      dispose: () => {},
+    });
+    const { result } = renderHook(() => useWalletHub(), {
+      wrapper: createWrapper({ wagmiConfig: createTestWagmiConfig(), nearAdapterFactory: factory }),
+    });
+    await waitFor(() => expect(result.current.near.error).toMatch(/Wallet manifest unavailable/));
+    expect(result.current.near.accountId).toBeNull();
+    expect(result.current.connectedAccounts).toHaveLength(0);
+  });
+
   it("handles EVM connect/disconnect, HyperEVM 998 detection, unsupported chain warning, and chain-switch rejection", async () => {
     const nearMock = createMockNearFactory();
     const wagmiConfig = createTestWagmiConfig({
@@ -554,7 +696,12 @@ describe("Multichain WalletInfrastructureProvider", () => {
         actions: [
           {
             type: "FunctionCall",
-            params: { methodName: "register_account", args: {}, gas: "30000000000000", deposit: "50000000000000000000000" },
+            params: {
+              methodName: "register_account",
+              args: {},
+              gas: "30000000000000",
+              deposit: "50000000000000000000000",
+            },
           },
         ],
       }),
@@ -569,7 +716,12 @@ describe("Multichain WalletInfrastructureProvider", () => {
       actions: [
         {
           type: "FunctionCall",
-          params: { methodName: "register_account", args: {}, gas: "30000000000000", deposit: "50000000000000000000000" },
+          params: {
+            methodName: "register_account",
+            args: {},
+            gas: "30000000000000",
+            deposit: "50000000000000000000000",
+          },
         },
       ],
     });

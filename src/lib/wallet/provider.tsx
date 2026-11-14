@@ -112,17 +112,23 @@ function WalletHubInner({
   const nearRef = useRef<NearSessionState>(INITIAL_NEAR_STATE);
   nearRef.current = near;
   const nearAdapterRef = useRef<NearAdapterPort | null>(null);
+  const nearSessionRevision = useRef(0);
+  const acceptNearSignIn = useRef(true);
 
   useEffect(() => {
     setHydrated(true);
     let mounted = true;
     const adapter = nearAdapterFactory ? nearAdapterFactory() : createHotNearConnectorAdapter();
     nearAdapterRef.current = adapter;
+    acceptNearSignIn.current = true;
+    const initializationRevision = ++nearSessionRevision.current;
 
     adapter
       .initialize({
         onSignIn: (identity) => {
-          if (!mounted) return;
+          if (!mounted || !acceptNearSignIn.current) return;
+          ++nearSessionRevision.current;
+          setSelectedEcosystem("near");
           const isTestnet =
             identity.networkId === "testnet" && isValidNearTestnetAccountId(identity.accountId);
           setNear((prev) => ({
@@ -141,6 +147,8 @@ function WalletHubInner({
         },
         onSignOut: () => {
           if (!mounted) return;
+          ++nearSessionRevision.current;
+          acceptNearSignIn.current = false;
           setNear((prev) => ({
             ...INITIAL_NEAR_STATE,
             availableWallets: prev.availableWallets,
@@ -154,7 +162,7 @@ function WalletHubInner({
       .then(({ wallets, existing }) => {
         if (!mounted) return;
         setNear((prev) => {
-          if (!existing) {
+          if (!existing || nearSessionRevision.current !== initializationRevision) {
             return { ...prev, availableWallets: wallets };
           }
           const isTestnet =
@@ -175,12 +183,21 @@ function WalletHubInner({
           };
         });
       })
-      .catch(() => {
-        // Keep selector gracefully disconnected if offline manifest/adapter bootstrap fails cleanly.
+      .catch((err) => {
+        if (!mounted || nearSessionRevision.current !== initializationRevision) return;
+        setNear((prev) => ({
+          ...prev,
+          status: "error",
+          error: getWalletErrorMessage(
+            err,
+            "NEAR wallet connector could not initialize. Retry connecting.",
+          ),
+        }));
       });
 
     return () => {
       mounted = false;
+      acceptNearSignIn.current = false;
       adapter.dispose();
       nearAdapterRef.current = null;
     };
@@ -197,9 +214,13 @@ function WalletHubInner({
       return;
     }
 
+    const revision = ++nearSessionRevision.current;
+    acceptNearSignIn.current = true;
     setNear((prev) => ({ ...prev, status: "connecting", error: null }));
     try {
       const identity = await adapter.connect(walletId);
+      // An emitted sign-in already sets identity; stale promises must never overwrite it.
+      if (nearAdapterRef.current !== adapter || nearSessionRevision.current !== revision) return;
       const isTestnet =
         identity.networkId === "testnet" && isValidNearTestnetAccountId(identity.accountId);
       setNear((prev) => ({
@@ -217,6 +238,7 @@ function WalletHubInner({
       }));
       setSelectedEcosystem("near");
     } catch (err) {
+      if (nearAdapterRef.current !== adapter || nearSessionRevision.current !== revision) return;
       setNear((prev) => ({
         ...prev,
         status: prev.accountId ? "connected" : "error",
@@ -227,15 +249,20 @@ function WalletHubInner({
 
   const disconnectNear = useCallback(async () => {
     const adapter = nearAdapterRef.current;
+    const revision = ++nearSessionRevision.current;
+    acceptNearSignIn.current = false;
     try {
       await adapter?.disconnect();
     } catch (err) {
+      if (nearAdapterRef.current !== adapter || nearSessionRevision.current !== revision) return;
+      acceptNearSignIn.current = true;
       setNear((prev) => ({
         ...prev,
         error: getWalletErrorMessage(err, "Failed to disconnect NEAR wallet cleanly."),
       }));
       return;
     }
+    if (nearAdapterRef.current !== adapter || nearSessionRevision.current !== revision) return;
     setNear((prev) => ({
       ...INITIAL_NEAR_STATE,
       availableWallets: prev.availableWallets,
@@ -265,7 +292,10 @@ function WalletHubInner({
           ...request,
           signerId: expectedSigner,
         });
-        if (nearRef.current.status !== "connected" || nearRef.current.accountId !== expectedSigner) {
+        if (
+          nearRef.current.status !== "connected" ||
+          nearRef.current.accountId !== expectedSigner
+        ) {
           throw new Error(
             "NEAR wallet session disconnected or switched accounts during transaction signing.",
           );

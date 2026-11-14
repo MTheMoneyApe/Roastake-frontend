@@ -1,10 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { AppShell } from '@/components/shell';
 import { ActivityList } from '@/components/coffee/overview';
 import { PageHeader, Panel, DemoBadge } from '@/components/kit';
 import { TxStatusPanel } from '@/components/perps/tx-status-panel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { useRefreshPerpsQueries } from '@/lib/perps/queries';
 import { useWalletHub } from '@/lib/wallet/context';
 import { seo } from '@/lib/seo';
@@ -29,8 +30,13 @@ function Page() {
         <PageHeader
           demo={false}
           title="Activity & On-Chain Proof"
-          subtitle="Live NEAR Testnet session transactions + auditable M04.6-G hybrid verification hashes above, cleanly isolated from simulated local coffee demo logs below."
-          crumbs={[{ label: 'Dashboard', to: '/app/dashboard' }, { label: 'Activity' }]}
+          subtitle="Live NEAR Testnet receipts, demo coffee orders and local activity — clearly separated by source."
+          crumbs={[{ label: 'Dashboard', to: '/app/dashboard' }, { label: 'Orders & Activity' }]}
+          actions={
+            <Button size="sm" variant="outline" asChild>
+              <Link to="/orders">Demo orders</Link>
+            </Button>
+          }
         />
 
         <TxStatusPanel onAfterVerify={() => void refreshAll()} />
