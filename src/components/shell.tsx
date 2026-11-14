@@ -152,11 +152,7 @@ export function NetworkSelect() {
 }
 
 export function WalletButton() {
-  return (
-    <div className="max-[400px]:[&_button]:size-10 max-[400px]:[&_button]:p-0 max-[400px]:[&_button>span.font-mono]:hidden">
-      <WalletHubHeaderButton />
-    </div>
-  );
+  return <WalletHubHeaderButton />;
 }
 
 function Controls() {
@@ -483,9 +479,7 @@ function LandingShellContent({ children }: { children: ReactNode }) {
                   )}
                 </Link>
               </Button>
-              <div className="hidden sm:block">
-                <WalletButton />
-              </div>
+              <WalletButton />
             </div>
           </div>
         </div>
@@ -514,8 +508,8 @@ function LandingShellContent({ children }: { children: ReactNode }) {
             </p>
             <p className="mt-4 text-xs leading-relaxed text-feature-muted">
               {es
-                ? "Solo NEAR Testnet. Tokens sin valor monetario, precios sintéticos y demos ilustrativas. El oráculo OutLayer es independiente y no alimenta Perps. Sin respaldo físico verificado, envíos reales ni productos de inversión activos."
-                : "NEAR Testnet only. Non-monetary test tokens, synthetic prices and illustrative demos. The separate read-only OutLayer oracle does not power Perps. No verified physical backing, real shipments or live investment products."}
+                ? "ROASTAKE es un prototipo en NEAR Testnet. Los perpetuos usan precios de referencia sintéticos y controlados por un operador; los tokens de prueba no tienen valor monetario. El recorrido de lotes, pasaporte, tueste y canje es demostrativo y no acredita inventario, custodia, respaldo físico, entrega ni canje real. No se ofrecen productos de inversión ni rendimientos."
+                : "ROASTAKE is a NEAR Testnet prototype. Perpetuals use synthetic, operator-controlled reference prices; test tokens have no monetary value. The coffee-lot, passport, roasting and redemption journey is illustrative and does not represent verified inventory, custody, physical backing, delivery or live redemption. No investment products or returns are offered."}
             </p>
           </div>
           <nav aria-label={es ? "Explorar" : "Explore"}>
