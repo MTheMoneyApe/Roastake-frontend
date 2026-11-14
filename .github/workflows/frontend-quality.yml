@@ -35,7 +35,13 @@ jobs:
           src/lib/navigation.ts
           src/components/shell.tsx
           src/components/wallet/wallet-hub.tsx
+          src/components/landing-page.tsx
           src/test/navigation.test.ts
           src/test/shell-design.test.tsx
           src/test/degen-mode.test.tsx
           src/test/perps-ui.test.tsx
+          src/test/coffee-design.test.tsx
+          src/test/landing.test.tsx
+          src/test/oracle-ui.test.tsx
+          src/test/wallet-ui.test.tsx
+          src/test/source-trust-labels.test.tsx
