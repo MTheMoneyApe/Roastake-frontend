@@ -9,6 +9,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Clock,
+  ChevronDown,
   ExternalLink,
   FlaskConical,
   Landmark,
@@ -427,6 +428,33 @@ export function OracleOverviewCard({ contractId = ORACLE_CONTRACT_ID }: { contra
   );
 }
 
+
+function TechnicalDisclosure({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className="group overflow-hidden rounded-lg border border-border bg-card shadow-soft">
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset [&::-webkit-details-marker]:hidden">
+        <span className="min-w-0 space-y-0.5">
+          <span className="block text-sm font-semibold text-foreground">{title}</span>
+          <span className="block text-xs font-normal text-muted-foreground">{description}</span>
+        </span>
+        <ChevronDown
+          className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+          aria-hidden="true"
+        />
+      </summary>
+      <div className="space-y-4 border-t px-4 py-4 sm:px-5">{children}</div>
+    </details>
+  );
+}
+
 function MarketSummaryCard({
   symbol,
   config,
@@ -461,6 +489,13 @@ function MarketSummaryCard({
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="space-y-1">
             <h2 className="font-mono text-sm font-semibold text-foreground">{symbol}</h2>
+            <p className="text-xs text-muted-foreground">
+              {symbol === MARKET_IMF_ARABICA
+                ? "Historical monthly public benchmark"
+                : symbol === MARKET_GESHA_DEMO
+                  ? "Synthetic pipeline demo · not a market price"
+                  : "Stored oracle market reading"}
+            </p>
             <div className="flex flex-wrap items-center gap-1.5">
               <Pill tone={cls.badgeTone}>{cls.shortLabel}</Pill>
               <FreshnessBadge observation={observation} config={config} nowSec={nowSec} />
@@ -483,21 +518,42 @@ function MarketSummaryCard({
           {observation ? (
             <>
               <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                On-chain price ({observation.decimals} decimals)
+                {symbol === MARKET_IMF_ARABICA
+                  ? "Recorded historical benchmark"
+                  : symbol === MARKET_GESHA_DEMO
+                    ? "Synthetic demo value"
+                    : "Recorded on-chain value"}
               </p>
               <p className="num mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                 {formatUsdPerKg(observation.price, observation.decimals, observation.unit)}
               </p>
-              <p className="num mt-1 text-xs text-muted-foreground">
-                Raw integer: {observation.price} · Source: {observation.source}
-                {periodLabel ? ` · Period: ${periodLabel}` : ""}
+              <p className="mt-1 text-xs text-muted-foreground">
+                {symbol === MARKET_IMF_ARABICA ? "Source: International Monetary Fund (IMF)" : "Isolated Testnet fixture"}
+                {periodLabel ? ` · Reference period: ${periodLabel}` : ""}
               </p>
+              <details className="mt-3 border-t pt-2 text-xs">
+                <summary className="cursor-pointer font-medium text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  Technical reading
+                </summary>
+                <dl className="mt-2 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5">
+                  <dt className="text-muted-foreground">Raw on-chain integer</dt>
+                  <dd className="num break-all text-right">{observation.price}</dd>
+                  <dt className="text-muted-foreground">Decimal places</dt>
+                  <dd className="num text-right">{observation.decimals}</dd>
+                  <dt className="text-muted-foreground">Data class</dt>
+                  <dd className="break-all text-right font-mono">{observation.data_class}</dd>
+                  <dt className="text-muted-foreground">Source identifier</dt>
+                  <dd className="break-all text-right font-mono">{observation.source}</dd>
+                  <dt className="text-muted-foreground">Source count</dt>
+                  <dd className="num text-right">{observation.source_count}</dd>
+                </dl>
+              </details>
             </>
           ) : (
             <div className="py-2">
-              <p className="text-sm font-medium text-foreground">No observation yet</p>
+              <p className="text-sm font-medium text-foreground">No reading is stored yet</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                This read-only dashboard never initiates fixture updates automatically.
+                No price is available for this market. Refreshing the page will not create a new reading.
               </p>
             </div>
           )}
@@ -506,7 +562,7 @@ function MarketSummaryCard({
         {nowSec !== null && freshness.isStale && (
           <Alert variant="destructive">
             <AlertTriangle className="size-4" aria-hidden="true" />
-            <AlertTitle>Stale observation</AlertTitle>
+            <AlertTitle>Reading is older than the allowed limit</AlertTitle>
             <AlertDescription className="text-xs">{freshness.detail}</AlertDescription>
           </Alert>
         )}
@@ -514,24 +570,27 @@ function MarketSummaryCard({
 
       <dl className="mt-4 space-y-1.5 border-t pt-3 text-xs">
         <div className="flex justify-between gap-3">
-          <dt className="text-muted-foreground">Observed UTC</dt>
+          <dt className="text-muted-foreground">Source observation time (UTC)</dt>
           <dd className="text-right">
             <TimestampDisplay epochSec={observation?.observed_at_sec} />
           </dd>
         </div>
         <div className="flex justify-between gap-3">
-          <dt className="text-muted-foreground">Stored on-chain UTC</dt>
+          <dt className="text-muted-foreground">Recorded on NEAR (UTC)</dt>
           <dd className="text-right">
             <TimestampDisplay epochSec={observation?.stored_at_sec} />
           </dd>
         </div>
         <div className="flex justify-between gap-3">
-          <dt className="text-muted-foreground">Freshness window</dt>
+          <dt className="text-muted-foreground">Maximum accepted age</dt>
           <dd className="num text-right">
             {config ? formatAgeDuration(config.max_price_age_sec) : "—"}
           </dd>
         </div>
       </dl>
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        The source observation time describes the reading. The NEAR timestamp shows when that reading was recorded on-chain.
+      </p>
     </article>
   );
 }
@@ -706,7 +765,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
         title="Coffee Oracle"
         demo={false}
         crumbs={[{ label: "Dashboard", to: "/app/dashboard" }, { label: "Coffee Oracle" }]}
-        subtitle={`Read-only NEAR Testnet oracle view for ${contractId} backed by OutLayer (${OUTLAYER_CONTRACT_ID}), independent from Perps and its execution feed. Historical benchmarks and synthetic fixtures are not live coffee quotes. No transactions or simulated wallet state are executed here.`}
+        subtitle="A read-only view of coffee data stored on NEAR Testnet. It shows a historical public benchmark and a separate synthetic test feed — not live coffee prices."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Pill tone="gain">Network: {NEAR_TESTNET_NETWORK_ID}</Pill>
@@ -718,26 +777,67 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
               className="min-h-9 gap-1.5"
               onClick={() => query.refetch()}
               disabled={query.isFetching}
-              aria-label="Refresh NEAR Testnet oracle snapshot"
+              aria-label="Refresh stored oracle data from NEAR Testnet"
             >
               <RefreshCw
                 className={cn("size-3.5", query.isFetching && "animate-spin")}
                 aria-hidden="true"
               />
-              <span>{query.isFetching ? "Refreshing…" : "Refresh RPC"}</span>
+              <span>{query.isFetching ? "Refreshing…" : "Refresh data"}</span>
             </Button>
           </div>
         }
       />
+
+      <section className="grid gap-4 rounded-lg border border-border bg-card p-4 sm:p-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.95fr)]">
+        <div className="space-y-2">
+          <h2 className="font-display text-base font-semibold text-foreground">What is an oracle?</h2>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            An oracle brings information from outside a blockchain onto it, so smart contracts can use that information.
+            This page reads records already stored on NEAR Testnet; it does not provide a live coffee quotation.
+          </p>
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            OutLayer is used for a separate read-only data workflow. It does not provide the Perpetuals test price.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-foreground">How to read the status</h2>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <div className="rounded-md border p-3">
+              <Pill tone="gain">Fresh</Pill>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                The saved reading is within that market’s allowed age. It is still historical or synthetic data, not necessarily live.
+              </p>
+            </div>
+            <div className="rounded-md border p-3">
+              <Pill tone="warn">Stale</Pill>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                The reading is older than allowed. Do not treat it as a current or usable price.
+              </p>
+            </div>
+            <div className="rounded-md border p-3">
+              <Pill tone="muted">No observation</Pill>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                No reading has been stored for that market yet. Refreshing does not generate one.
+              </p>
+            </div>
+          </div>
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            “Connected” only means NEAR Testnet answered. It does not mean every market reading is fresh.
+            “Observed” is the source reading time; “Recorded on NEAR” is when it was saved on-chain.
+          </p>
+        </div>
+      </section>
 
       {/* Explicit Testnet-only and data classification disclosure bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-brass/40 bg-card/70 px-4 py-2.5 text-xs">
         <div className="flex flex-wrap items-center gap-2">
           <FlaskConical className="size-4 shrink-0 text-brass" aria-hidden="true" />
           <span>
-            <strong className="text-foreground">Testnet Demonstration Only:</strong> Queries{" "}
-            <span className="font-mono text-foreground">{contractId}</span> strictly read-only every
-            60s. Simulated demo balances and trading modules elsewhere in ROASTAKE remain isolated.
+            <strong className="text-foreground">Testnet demo · read-only:</strong> Checks records already stored in{" "}
+            <span className="font-mono text-foreground">{contractId}</span> every 60 seconds. Refreshing reads the
+            saved record again; it does not create a new observation, submit a transaction or use simulated
+            balances from other ROASTAKE demo modules.
           </span>
         </div>
         {snapshot && (
@@ -775,6 +875,13 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
 
       {snapshot && (
         <>
+          <div className="space-y-1">
+            <h2 className="font-display text-lg font-semibold text-foreground">Coffee data readings</h2>
+            <p className="text-sm text-muted-foreground">
+              These cards show different kinds of data. The Arabica record is a historical IMF monthly benchmark;
+              Gesha is an isolated synthetic demo fixture. Neither is a live coffee-market quote.
+            </p>
+          </div>
           {/* Distinct cards separating IMF Benchmark vs Gesha Synthetic Fixture */}
           <section aria-label="Registered Oracle Markets" className="grid gap-4 md:grid-cols-2">
             {snapshot.markets.map((symbol) => (
@@ -790,7 +897,113 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
             ))}
           </section>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <Panel
+            title={
+              <span className="flex flex-wrap items-center gap-2">
+                <span>Separate Perpetuals test feed</span>
+                <Pill tone="warn">Synthetic · separate from OutLayer</Pill>
+              </span>
+            }
+            actions={
+              <Link
+                to="/app/perps/$market"
+                params={{ market: MARKET_ARABICA_URL_SLUG }}
+                className="text-xs font-medium text-primary hover:underline"
+              >
+                Open Arabica Terminal →
+              </Link>
+            }
+          >
+            {(() => {
+              const p = perpsQuery.data;
+              const status = evaluatePerpsOracleStatus(
+                p?.arabicaMarket,
+                p?.blockTimestampSec ?? null,
+              );
+              return (
+                <div className="space-y-3 text-xs">
+                  <p className="text-muted-foreground">
+                    Perpetuals uses a different, operator-controlled test price. It does not use the IMF historical
+                    benchmark or OutLayer observations. This value is synthetic and is not a real
+                    coffee quotation. Testnet USDC has no monetary value.
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded border p-3">
+                      <div className="text-[11px] text-muted-foreground">
+                        Synthetic test price
+                      </div>
+                      <div className="num mt-1 text-base font-semibold">
+                        {status.priceE8 ? `${formatUsdE8(status.priceE8)}/kg` : "Unavailable"}
+                      </div>
+                    </div>
+                    <div className="rounded border p-3">
+                      <div className="text-[11px] text-muted-foreground">
+                        Freshness check · limit {status.maxAgeSec}s
+                      </div>
+                      <div className="mt-1 flex items-center gap-1.5 font-semibold">
+                        <Pill
+                          tone={
+                            status.isValidForOpen
+                              ? "gain"
+                              : status.status === "STALE"
+                                ? "warn"
+                                : "loss"
+                          }
+                        >
+                          {status.status}
+                        </Pill>
+                        {status.ageSec !== null && (
+                          <span className="num text-muted-foreground">({status.ageSec}s old)</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="rounded border p-3">
+                      <div className="text-[11px] text-muted-foreground">Feed update</div>
+                      <div className="num mt-1 text-base font-semibold">
+                        {status.sequence !== null ? `#${status.sequence}` : "—"}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    {status.status === "STALE"
+                      ? "This saved test price is older than its configured limit. It is stale and must not be treated as a usable current price."
+                      : status.isValidForOpen
+                        ? "This test price is within its configured age limit, but it remains synthetic and is not a real coffee quotation."
+                        : "A currently usable test price is not available. This feed remains synthetic and separate from OutLayer."}
+                  </p>
+                  <TechnicalDisclosure
+                    title="Feed identifiers & policy"
+                    description="Contract addresses and execution-feed rules for technical reviewers."
+                  >
+                    <dl className="grid gap-2 text-xs sm:grid-cols-2">
+                      <div>
+                        <dt className="text-muted-foreground">Perpetuals contract</dt>
+                        <dd className="break-all font-mono">{PERPS_CONTRACT_ID}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted-foreground">Market identifier</dt>
+                        <dd className="break-all font-mono">{MARKET_ARABICA_PERPS_ID}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted-foreground">Feed classification</dt>
+                        <dd className="font-mono">TESTNET_SANDBOX_FEED</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted-foreground">Maximum accepted age</dt>
+                        <dd className="num">{status.maxAgeSec} seconds</dd>
+                      </div>
+                    </dl>
+                  </TechnicalDisclosure>
+                </div>
+              );
+            })()}
+          </Panel>
+
+          <TechnicalDisclosure
+            title="On-chain record & market configuration"
+            description="Block, contract, source timestamps, market limits and worker details."
+          >
+            <div className="grid gap-6 lg:grid-cols-2">
             {/* Oracle overview */}
             <Panel
               title={
@@ -824,6 +1037,12 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
                     "Contract address",
                     <span key="ctr" className="font-mono text-xs break-all">
                       {snapshot.contractId}
+                    </span>,
+                  ],
+                  [
+                    "OutLayer account",
+                    <span key="out" className="font-mono text-xs break-all">
+                      {OUTLAYER_CONTRACT_ID}
                     </span>,
                   ],
                   [
@@ -1001,88 +1220,21 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
               )}
             </Panel>
           </div>
+          </TechnicalDisclosure>
 
-          <ProtocolHealthPanel snapshot={snapshot} accounting={snapshot.accounting} />
-
-          <Panel
-            title={
-              <span className="flex flex-wrap items-center gap-2">
-                <span>Perpetuals Execution Feed ({PERPS_CONTRACT_ID})</span>
-                <Pill tone="warn">TESTNET_SANDBOX_FEED · SYNTHETIC ORACLE</Pill>
-              </span>
-            }
-            actions={
-              <Link
-                to="/app/perps/$market"
-                params={{ market: MARKET_ARABICA_URL_SLUG }}
-                className="text-xs font-medium text-primary hover:underline"
-              >
-                Open Arabica Terminal →
-              </Link>
-            }
+          <TechnicalDisclosure
+            title="Contract reserve accounting"
+            description="This checks the contract’s reserve-accounting invariant only; it is not a full security audit or an independent TEE attestation check."
           >
-            {(() => {
-              const p = perpsQuery.data;
-              const status = evaluatePerpsOracleStatus(
-                p?.arabicaMarket,
-                p?.blockTimestampSec ?? null,
-              );
-              return (
-                <div className="space-y-3 text-xs">
-                  <p className="text-muted-foreground">
-                    NEAR Testnet Perpetuals execution on{" "}
-                    <code className="font-mono">{PERPS_CONTRACT_ID}</code> (
-                    <code className="font-mono">{MARKET_ARABICA_PERPS_ID}</code>) is decoupled from
-                    the monthly IMF public benchmark above and runs on{" "}
-                    <strong className="text-foreground">TESTNET_SANDBOX_FEED</strong> with a{" "}
-                    {status.maxAgeSec}s maximum age policy. These are operator-controlled synthetic
-                    Testnet references, not live coffee quotes. Testnet USDC has no monetary value;
-                    OutLayer observations do not price or settle these positions.
-                  </p>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className="rounded border p-3">
-                      <div className="text-[11px] text-muted-foreground">
-                        Synthetic Reference Price
-                      </div>
-                      <div className="num mt-1 text-base font-semibold">
-                        {status.priceE8 ? `${formatUsdE8(status.priceE8)}/kg` : "Unavailable"}
-                      </div>
-                    </div>
-                    <div className="rounded border p-3">
-                      <div className="text-[11px] text-muted-foreground">
-                        Policy Status (Max {status.maxAgeSec}s)
-                      </div>
-                      <div className="mt-1 flex items-center gap-1.5 font-semibold">
-                        <Pill
-                          tone={
-                            status.isValidForOpen
-                              ? "gain"
-                              : status.status === "STALE"
-                                ? "warn"
-                                : "loss"
-                          }
-                        >
-                          {status.status}
-                        </Pill>
-                        {status.ageSec !== null && (
-                          <span className="num text-muted-foreground">({status.ageSec}s old)</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="rounded border p-3">
-                      <div className="text-[11px] text-muted-foreground">Feed Sequence</div>
-                      <div className="num mt-1 text-base font-semibold">
-                        {status.sequence !== null ? `#${status.sequence}` : "—"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </Panel>
+            <ProtocolHealthPanel snapshot={snapshot} accounting={snapshot.accounting} />
+          </TechnicalDisclosure>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Execution proof panel */}
+          <TechnicalDisclosure
+            title="Historical execution proof & data methodology"
+            description="Static OutLayer execution evidence, source attribution, licensing and benchmark limitations."
+          >
+            <div className="grid gap-6 lg:grid-cols-2">
+
             <Panel
               title="Execution proof (historical first Testnet run)"
               actions={
@@ -1214,6 +1366,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
               </div>
             </Panel>
           </div>
+          </TechnicalDisclosure>
         </>
       )}
     </div>
