@@ -280,10 +280,6 @@ export function CoffeeMiniSwap() {
   }, [pool, parsedAmount, route.tokenIn, route.tokenOut, slippagePct]);
 
   const requiresImpactAcknowledgement = (math?.priceImpactPct ?? 0) >= 10;
-  const inputReserveMultiple =
-    parsedAmount !== null && liveReserves.reserveIn > 0n
-      ? Number(parsedAmount) / Number(liveReserves.reserveIn)
-      : null;
 
   const minAmountOut = useMemo(() => {
     if (!quote) return 0n;
@@ -298,6 +294,11 @@ export function CoffeeMiniSwap() {
     if (indexIn < 0 || indexOut < 0) return { reserveIn: 0n, reserveOut: 0n };
     return { reserveIn: pool.amounts[indexIn], reserveOut: pool.amounts[indexOut] };
   }, [pool, route.tokenIn, route.tokenOut]);
+
+  const inputReserveMultiple =
+    parsedAmount !== null && liveReserves.reserveIn > 0n
+      ? Number(parsedAmount) / Number(liveReserves.reserveIn)
+      : null;
 
   const gateReasons = evaluateSwapGate({
     walletConnected: Boolean(accountId),
