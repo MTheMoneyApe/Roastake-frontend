@@ -433,16 +433,16 @@ export function CoffeeMiniSwap() {
   }, [asset.referenceUsdPerKg, poolReserves]);
 
   return (
-    <section className="space-y-5">
+    <section className="space-y-4">
       <PageHeader
         title="Live Mini Swap · RHEA Testnet"
         subtitle="Real NEP-141 swaps on RHEA pools (NEAR Testnet). Prices, reserves, fees and finality read from chain."
         demo={false}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)]">
         <form
-          className="brand-surface space-y-4 p-5"
+          className="brand-surface space-y-3 p-4"
           onSubmit={(event) => {
             event.preventDefault();
             setReviewing(true);
@@ -672,7 +672,7 @@ export function CoffeeMiniSwap() {
           )}
         </form>
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div className="rounded-lg border bg-card p-5">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
