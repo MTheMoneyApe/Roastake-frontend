@@ -90,7 +90,7 @@ export function WalletHubHeaderButton() {
       onClick={() => openHub(nearConnected ? "near" : undefined)}
       aria-label={ariaLabel}
       className={cn(
-        "min-h-8 gap-1.5 px-2.5 text-xs",
+        "min-h-11 gap-1.5 px-2.5 text-xs sm:min-h-8",
         nearConnected && "border-gain/50 bg-forest/30 hover:bg-forest/50",
         !nearConnected && connectedAccounts.length > 0 && "border-brass/60",
       )}
@@ -102,14 +102,17 @@ export function WalletHubHeaderButton() {
       ) : (
         <Wallet className="size-3.5 shrink-0" aria-hidden="true" />
       )}
-      <span className="max-w-[125px] truncate font-mono sm:max-w-[165px]">{buttonText}</span>
+      <span className="hidden max-w-[125px] truncate font-mono sm:inline sm:max-w-[165px]">{buttonText}</span>
+      <span className="inline rounded bg-forest/30 px-1.5 py-1 font-mono text-[10px] uppercase tracking-wider sm:hidden">
+        NEAR
+      </span>
       {!nearConnected && connectedAccounts.length === 0 && (
         <span className="hidden rounded bg-forest/30 px-1 py-0.5 font-mono text-[10px] uppercase tracking-wider sm:inline">
           NEAR
         </span>
       )}
       {nearConnected && extraCount > 0 && (
-        <span className="num rounded bg-muted px-1 py-0.5 font-mono text-[10px]">
+        <span className="hidden rounded bg-muted px-1 py-0.5 font-mono text-[10px] sm:inline">
           +{extraCount}
         </span>
       )}
