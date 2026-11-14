@@ -209,10 +209,10 @@ const copy = {
     rwaTitle: "El ciclo de vida del activo café",
     rwaText: "Recorre el ciclo propuesto de un lote: pasaporte digital, actividad en el marketplace, tueste y canje.",
     rwaSteps: [
-      ["Mint & Passport", "Inicia la identidad digital y el pasaporte de un lote.", [["Abrir pasaporte", "/app/coffee-passport"]]],
-      ["Hedge / Trade", "Explora la exposición al precio y los lotes de café de especialidad.", [["Abrir Perps", "/app/perps"], ["Ver marketplace", "/market"]]],
-      ["Roast · −15% de peso", "Modela la conversión de café verde a tostado y su cambio de peso del 15%.", [["Abrir laboratorio de tueste", "/app/roast"]]],
-      ["Physical Redeem", "Explora el recorrido propuesto desde el registro digital hasta la entrega física.", [["Abrir canje", "/app/redeem"]]],
+      ["Tokenización y pasaporte", "Inicia la identidad digital y el pasaporte de un lote.", [["Abrir pasaporte", "/app/coffee-passport"]]],
+      ["Cobertura / Trading", "Explora la exposición al precio y los lotes de café de especialidad.", [["Abrir Perps", "/app/perps"], ["Ver marketplace", "/market"]]],
+      ["Tueste · −15% de peso", "Modela la conversión de café verde a tostado y su cambio de peso del 15%.", [["Abrir laboratorio de tueste", "/app/roast"]]],
+      ["Canje físico", "Explora el recorrido propuesto desde el registro digital hasta la entrega física.", [["Abrir canje", "/app/redeem"]]],
     ],
     secondaryToolsTitle: "Más infraestructura Testnet",
     secondaryTools: [
@@ -494,7 +494,10 @@ export function LandingPage() {
                       <div className="landing-rwa-links">
                         {links.map(([label, route]) => (
                           <Link to={route} key={route}>
-                            {label}
+                            <span>
+                              {label}
+                              <small className="landing-route-path">{route}</small>
+                            </span>
                             <ArrowRight aria-hidden="true" />
                           </Link>
                         ))}
