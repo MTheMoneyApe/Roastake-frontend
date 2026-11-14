@@ -52,7 +52,6 @@ const copy = {
     workflowKicker: "FUTURE FORWARD-CONTRACT WORKFLOW",
     secondary: "Open the documentation",
     workflowKicker: "A future workflow",
-    workflowStatus: "PLANNED · NOT LIVE",
     workflowTitle: "From harvest to a clearer price agreement.",
     workflowLead:
       "A producer in Huila could agree a visible price and delivery terms with a roaster before harvest. The producer gets a clearer commercial reference; the roaster can plan purchase costs before the crop ships. This producer-to-roaster forward-contract workflow is a future goal—not a live ROASTAKE service.",
@@ -230,7 +229,6 @@ const copy = {
     workflowKicker: "FLUJO FUTURO DE CONTRATOS A PLAZO",
     secondary: "Abrir documentación",
     workflowKicker: "Un flujo de trabajo futuro",
-    workflowStatus: "PLANIFICADO · NO ACTIVO",
     workflowTitle: "De la cosecha a un precio acordado.",
     workflowLead:
       "Un productor de Huila podría acordar con un tostador un precio visible y las condiciones de entrega antes de la cosecha. El productor tendría una referencia comercial más clara; el tostador podría planificar el coste de compra antes del envío. Este flujo de contratos a plazo entre productores y tostadores es un objetivo futuro, no un servicio activo de ROASTAKE.",
@@ -538,9 +536,6 @@ export function LandingPage() {
               <h2 id="workflow-title">{c.workflowTitle}</h2>
             </div>
             <div className="landing-prose">
-              <MaturityBadge variant="preview">
-                <span>{c.workflowStatus}</span>
-              </MaturityBadge>
               <p className="landing-lead-strong">{c.workflowLead}</p>
             </div>
           </div>
