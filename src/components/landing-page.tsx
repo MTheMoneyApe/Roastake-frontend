@@ -16,8 +16,42 @@ const copy = {
     emphasis: "global coffee economy.",
     intro:
       "Coffee connects the world. We’re building a bridge from its real economy to digital assets and decentralized markets — starting on NEAR Testnet.",
-    primary: "Launch App",
+    primary: "Explore Testnet Markets",
     secondary: "Open the documentation",
+    workflowKicker: "A future workflow",
+    workflowStatus: "PLANNED · NOT LIVE",
+    workflowTitle: "From harvest to a clearer price agreement.",
+    workflowLead:
+      "A producer in Huila could agree a visible price and delivery terms with a roaster before harvest. The producer gets a clearer commercial reference; the roaster can plan purchase costs before the crop ships. This producer-to-roaster forward-contract workflow is a future goal—not a live ROASTAKE service.",
+    workflowPrototype:
+      "The current NEAR Testnet prototype validates parts of the market infrastructure. Prices are synthetic and operator-controlled; verified inventory, forward-contract execution and commercial settlement are not live.",
+    workflowSteps: [
+      [
+        "Propose a coffee lot",
+        "A producer submits origin, expected harvest, quality and volume for review. These details are not independently verified today.",
+      ],
+      [
+        "Agree on price and terms",
+        "Producer and roaster agree a visible reference price, volume, grade and delivery window.",
+      ],
+      [
+        "Record a forward contract",
+        "The planned on-chain workflow records the agreed terms and obligations. Forward-contract creation and execution are not live.",
+      ],
+      [
+        "Verify the lot and test settlement",
+        "The pilot would test coffee-lot verification and end-to-end settlement on NEAR Testnet—before any real-world delivery or commercial claim.",
+      ],
+    ],
+    pilotKicker: "Pilot target · 2027",
+    pilotTitle: "Test the workflow with three producers and two roasters.",
+    pilotNote:
+      "Target scope, not confirmed partners or committed participation. The pilot is intended to test contract creation, price agreement, lot verification and end-to-end Testnet settlement. Physical delivery and commercial settlement are not part of the current prototype.",
+    pilotMetrics: [
+      ["3", "producers"],
+      ["2", "roasters"],
+      ["2027", "target year"],
+    ],
     foundation: "Rooted in the real world",
     thesisKicker: "The foundation",
     thesisTitle: "Coffee is more than a commodity.",
@@ -44,7 +78,7 @@ const copy = {
       ],
     ],
     layersKicker: "From coffee to capital",
-    layersTitle: "One economy. Three connected layers.",
+    layersTitle: "One economy. Three layers to connect.",
     layersLead:
       "Physical coffee is the foundation. Digital assets are a proposed representation layer. Markets are the financial layer — not a substitute for the coffee behind them.",
     layers: [
@@ -69,7 +103,7 @@ const copy = {
     exploreKicker: "Product, with context",
     exploreTitle: "What you can explore today.",
     exploreLead:
-      "Three ways to test the financial mechanics. Then explore the illustrative coffee experience and the longer-term vision.",
+      "Explore the Testnet infrastructure available today, then see the illustrative coffee experience and longer-term vision.",
     products: [
       [
         "Coffee Perpetuals",
@@ -112,7 +146,7 @@ const copy = {
     roadmapKicker: "Build with clarity",
     roadmapTitle: "Understand today. Shape what comes next.",
     roadmapText:
-      "The Testnet foundation is available to explore. Physical integrations, asset backing and real settlement remain future work — without implied dates, partners or delivery promises.",
+      "The Testnet foundation is available to explore. Physical integrations, asset backing and real settlement remain future work. The 2027 pilot is a target, not a confirmed launch or delivery promise.",
     docsTitle: "Read before you connect.",
     docsText:
       "Understand the architecture, product status, data sources and limits before exploring the app.",
@@ -127,8 +161,42 @@ const copy = {
     emphasis: "economía global del café.",
     intro:
       "El café conecta al mundo. Construimos un puente entre su economía real, los activos digitales y los mercados descentralizados — empezando en NEAR Testnet.",
-    primary: "Iniciar app",
+    primary: "Explorar mercados Testnet",
     secondary: "Abrir documentación",
+    workflowKicker: "Un flujo de trabajo futuro",
+    workflowStatus: "PLANIFICADO · NO ACTIVO",
+    workflowTitle: "De la cosecha a un precio acordado.",
+    workflowLead:
+      "Un productor de Huila podría acordar con un tostador un precio visible y las condiciones de entrega antes de la cosecha. El productor tendría una referencia comercial más clara; el tostador podría planificar el coste de compra antes del envío. Este flujo de contratos a plazo entre productores y tostadores es un objetivo futuro, no un servicio activo de ROASTAKE.",
+    workflowPrototype:
+      "El prototipo actual en NEAR Testnet valida partes de la infraestructura de mercado. Los precios son sintéticos y controlados por un operador; el inventario verificado, la ejecución de contratos a plazo y la liquidación comercial no están activos.",
+    workflowSteps: [
+      [
+        "Proponer un lote de café",
+        "El productor presenta el origen, la cosecha estimada, la calidad y el volumen para su revisión. Hoy estos datos no cuentan con verificación independiente.",
+      ],
+      [
+        "Acordar precio y condiciones",
+        "Productor y tostador acuerdan un precio de referencia visible, volumen, calidad y ventana de entrega.",
+      ],
+      [
+        "Registrar un contrato a plazo",
+        "El flujo on-chain previsto registraría las condiciones y obligaciones acordadas. La creación y ejecución del contrato aún no están activas.",
+      ],
+      [
+        "Verificar el lote y probar la liquidación",
+        "El piloto probaría la verificación del lote y la liquidación integral en NEAR Testnet, antes de cualquier entrega física o afirmación comercial.",
+      ],
+    ],
+    pilotKicker: "Objetivo del piloto · 2027",
+    pilotTitle: "Probar el flujo con tres productores y dos tostadores.",
+    pilotNote:
+      "Alcance objetivo, no socios confirmados ni participación comprometida. El piloto busca probar la creación de contratos, el acuerdo de precio, la verificación del lote y la liquidación integral en Testnet. La entrega física y la liquidación comercial no forman parte del prototipo actual.",
+    pilotMetrics: [
+      ["3", "productores"],
+      ["2", "tostadores"],
+      ["2027", "año objetivo"],
+    ],
     foundation: "Con raíces en el mundo real",
     thesisKicker: "El fundamento",
     thesisTitle: "El café es más que una materia prima.",
@@ -155,7 +223,7 @@ const copy = {
       ],
     ],
     layersKicker: "Del café al capital",
-    layersTitle: "Una economía. Tres capas conectadas.",
+    layersTitle: "Una economía. Tres capas por conectar.",
     layersLead:
       "El café físico es el fundamento. Los activos digitales son una capa de representación propuesta. Los mercados son la capa financiera, no un sustituto del café que habría detrás.",
     layers: [
@@ -180,7 +248,7 @@ const copy = {
     exploreKicker: "Producto, con contexto",
     exploreTitle: "Lo que puedes explorar hoy.",
     exploreLead:
-      "Tres formas de probar la mecánica financiera. Después, explora la experiencia ilustrativa del café y la visión a largo plazo.",
+      "Explora la infraestructura disponible hoy en Testnet y después la experiencia ilustrativa del café y la visión a largo plazo.",
     products: [
       [
         "Coffee Perpetuals",
@@ -223,7 +291,7 @@ const copy = {
     roadmapKicker: "Construir con claridad",
     roadmapTitle: "Entiende el presente. Da forma al futuro.",
     roadmapText:
-      "La base Testnet está disponible para explorar. Las integraciones físicas, el respaldo de activos y la liquidación real son trabajo futuro, sin fechas, socios ni promesas de entrega implícitos.",
+      "La base Testnet está disponible para explorar. Las integraciones físicas, el respaldo de activos y la liquidación real siguen siendo trabajo futuro. El piloto de 2027 es un objetivo, no una fecha de lanzamiento confirmada ni una promesa de entrega.",
     docsTitle: "Lee antes de conectar.",
     docsText:
       "Conoce la arquitectura, el estado del producto, las fuentes de datos y los límites antes de explorar la app.",
@@ -289,6 +357,55 @@ export function LandingPage() {
           <a href="#why-coffee">
             {c.foundation} <span aria-hidden="true">↓</span>
           </a>
+        </Section>
+      </section>
+      <section
+        id="harvest-workflow"
+        className="landing-section landing-tinted"
+        aria-labelledby="workflow-title"
+      >
+        <Section>
+          <div className="landing-workflow-heading">
+            <div>
+              <p className="brand-eyebrow">{c.workflowKicker}</p>
+              <h2 id="workflow-title">{c.workflowTitle}</h2>
+            </div>
+            <div className="landing-prose">
+              <MaturityBadge variant="preview">
+                <span>{c.workflowStatus}</span>
+              </MaturityBadge>
+              <p className="landing-lead-strong">{c.workflowLead}</p>
+              <p className="landing-small">{c.workflowPrototype}</p>
+            </div>
+          </div>
+          <ol className="landing-forward-steps" role="list">
+            {c.workflowSteps.map(([title, text], i) => (
+              <li key={title}>
+                <article>
+                  <span className="landing-step-number" aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              </li>
+            ))}
+          </ol>
+          <article className="landing-planned landing-pilot">
+            <div>
+              <p className="brand-eyebrow">{c.pilotKicker}</p>
+              <h3>{c.pilotTitle}</h3>
+              <p className="landing-small">{c.pilotNote}</p>
+            </div>
+            <div className="landing-pilot-metrics" aria-label={c.pilotKicker}>
+              {c.pilotMetrics.map(([value, label]) => (
+                <div className="landing-pilot-metric" key={label}>
+                  <strong>{value}</strong>
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+          </article>
         </Section>
       </section>
       <section id="why-coffee" className="landing-section" aria-labelledby="thesis-title">
