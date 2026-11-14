@@ -46,7 +46,7 @@ const copy = {
     pilotKicker: "Pilot target · 2027",
     pilotTitle: "Test the workflow with three producers and two roasters.",
     pilotNote:
-      "Target scope, not confirmed partners or committed participation. The pilot is intended to test contract creation, price agreement, lot verification and end-to-end Testnet settlement. Physical delivery and commercial settlement are not part of the current prototype.",
+      "NEAR ecosystem support would help build the on-chain forward-contract workflow and verifiable coffee-lot records, then test contract creation, price agreement, lot verification and end-to-end Testnet settlement. Three producers and two roasters are the 2027 target cohort—not confirmed partners or committed participants. Physical delivery and commercial settlement are outside the current prototype.",
     pilotMetrics: [
       ["3", "producers"],
       ["2", "roasters"],
@@ -191,7 +191,7 @@ const copy = {
     pilotKicker: "Objetivo del piloto · 2027",
     pilotTitle: "Probar el flujo con tres productores y dos tostadores.",
     pilotNote:
-      "Alcance objetivo, no socios confirmados ni participación comprometida. El piloto busca probar la creación de contratos, el acuerdo de precio, la verificación del lote y la liquidación integral en Testnet. La entrega física y la liquidación comercial no forman parte del prototipo actual.",
+      "El apoyo del ecosistema NEAR permitiría construir el flujo on-chain de contratos a plazo y los registros verificables de lotes de café, y después probar la creación de contratos, el acuerdo de precio, la verificación de lotes y la liquidación integral en Testnet. Tres productores y dos tostadores son el objetivo para 2027, no socios ni participantes confirmados. La entrega física y la liquidación comercial quedan fuera del prototipo actual.",
     pilotMetrics: [
       ["3", "productores"],
       ["2", "tostadores"],
