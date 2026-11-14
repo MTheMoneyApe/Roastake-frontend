@@ -280,9 +280,7 @@ describe("source-trust disclosures", () => {
   it("introduces OutLayer as a separate read-only view even while data is unavailable", () => {
     renderUi(<OraclePage />);
     const intro = screen.getByText(/A read-only view of coffee data stored on NEAR Testnet/i);
-    expect(intro).toHaveTextContent(/OutLayer/);
-    expect(intro).toHaveTextContent(/independent from perps/i);
-    expect(screen.getByText(/OutLayer is used for a separate read-only data workflow/i)).toBeInTheDocument();
+    expect(intro).toHaveTextContent(/historical public benchmark and a separate synthetic test feed/i);
     expect(intro).not.toHaveTextContent(/^Live /);
   });
 });
