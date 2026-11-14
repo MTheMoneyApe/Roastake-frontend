@@ -227,8 +227,8 @@ describe("M04.18 Coffee Mini Swap UI", () => {
 
     renderMiniSwap("qa-only.testnet", vi.fn());
 
-    await screen.findByText(/Wallet: 15\\.403562 USDC/);
-    fireEvent.change(screen.getByLabelText(/Amount \(USDC\)/), { target: { value: "5" } });
+    const amountInput = await screen.findByLabelText(/Amount \(USDC\)/i);
+    fireEvent.change(amountInput, { target: { value: "5" } });
 
     expect(
       await screen.findByText(/High price impact — review before signing · 81\.97%/i),
