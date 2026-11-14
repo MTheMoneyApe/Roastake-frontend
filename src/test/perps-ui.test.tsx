@@ -487,6 +487,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     });
 
     expect(await screen.findByText(/^12\.000000 USDC$/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Account margin & collateral"));
     const depositInput = screen.getByLabelText(/Deposit Amount \(Circle Testnet USDC\)/i);
     fireEvent.change(depositInput, { target: { value: "5.00" } });
     fireEvent.blur(depositInput);
@@ -705,6 +706,7 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     });
 
     expect(await screen.findByText(/Testnet Operator Controls/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Operator controls"));
 
     // Trigger Oracle refresh modal -> sign push_sandbox_oracle_price seq #3
     fireEvent.click(screen.getByRole("button", { name: /Review Oracle Refresh/i }));
@@ -776,6 +778,8 @@ describe("ROASTAKE Perpetuals UI, Three-Market Catalog & Transaction Flows", () 
     });
 
     expect(await screen.findByText(/Robusta \/ USD/i)).toBeInTheDocument();
+    expect(screen.getByText("Account margin & collateral").closest("details")).not.toHaveAttribute("open");
+    expect(screen.getByRole("heading", { name: /Open Position Order/i })).toBeInTheDocument();
     expect(screen.getAllByText(/\$5\.000000/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/COFFEE-ROBUSTA-TESTNET\/USD/i).length).toBeGreaterThanOrEqual(1);
     expect(robustaHistorySpy).toHaveBeenCalledWith(

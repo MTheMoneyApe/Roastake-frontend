@@ -67,6 +67,15 @@ import {
 } from "@/lib/coffee-assets/rpc";
 
 const QUOTE_DEBOUNCE_MS = 350;
+const PRICE_E8_SCALE = 100_000_000n;
+const USDC_TO_PRICE_E8_MULTIPLIER = 10_000_000_000n;
+
+function formatUsdPerKgPriceE8(value: bigint | null): string {
+  if (value === null || value < 0n) return "—";
+  const whole = value / PRICE_E8_SCALE;
+  const fraction = (value % PRICE_E8_SCALE).toString().padStart(8, "0").slice(0, 4);
+  return `${whole.toLocaleString("en-US")}.${fraction}/kg`;
+}
 
 type QuoteState = {
   amountOut: bigint;
@@ -102,6 +111,7 @@ export function CoffeeMiniSwap() {
   const [balanceOut, setBalanceOut] = useState<bigint>(0n);
   const [outputRegistered, setOutputRegistered] = useState<boolean | null>(null);
   const [reviewing, setReviewing] = useState(false);
+  const [impactAcknowledged, setImpactAcknowledged] = useState(false);
   const [tx, setTx] = useState<TxState>({ phase: "idle" });
   const [refreshKey, setRefreshKey] = useState(0);
   const swapInFlight = useRef(false);
@@ -192,6 +202,7 @@ export function CoffeeMiniSwap() {
     setQuote(null);
     setQuoteError(null);
     setReviewing(false);
+    setImpactAcknowledged(false);
     if (parsedAmount === null || poolLoading || poolReadError || !pool?.exists) return;
 
     const reserves = pool && pool.exists ? pool.amounts : [];
@@ -268,6 +279,8 @@ export function CoffeeMiniSwap() {
     });
   }, [pool, parsedAmount, route.tokenIn, route.tokenOut, slippagePct]);
 
+  const requiresImpactAcknowledgement = (math?.priceImpactPct ?? 0) >= 10;
+
   const minAmountOut = useMemo(() => {
     if (!quote) return 0n;
     const basis = BigInt(Math.round((100 - Math.min(Math.max(slippagePct, 0), 100)) * 100));
@@ -281,6 +294,11 @@ export function CoffeeMiniSwap() {
     if (indexIn < 0 || indexOut < 0) return { reserveIn: 0n, reserveOut: 0n };
     return { reserveIn: pool.amounts[indexIn], reserveOut: pool.amounts[indexOut] };
   }, [pool, route.tokenIn, route.tokenOut]);
+
+  const inputReserveMultiple =
+    parsedAmount !== null && liveReserves.reserveIn > 0n
+      ? Number(parsedAmount) / Number(liveReserves.reserveIn)
+      : null;
 
   const gateReasons = evaluateSwapGate({
     walletConnected: Boolean(accountId),
@@ -313,7 +331,13 @@ export function CoffeeMiniSwap() {
   }, []);
 
   const runSwap = useCallback(async () => {
-    if (!accountId || !quote || blocked || swapInFlight.current) return;
+    if (
+      !accountId ||
+      !quote ||
+      blocked ||
+      swapInFlight.current ||
+      (requiresImpactAcknowledgement && !impactAcknowledged)
+    ) return;
     // Lock synchronously as well as disabling controls: two taps can precede a render.
     swapInFlight.current = true;
     setTx({ phase: "signing" });
@@ -383,6 +407,8 @@ export function CoffeeMiniSwap() {
     minAmountOut,
     outputRegistered,
     quote,
+    requiresImpactAcknowledgement,
+    impactAcknowledged,
     refresh,
     route.poolId,
     route.tokenIn,
@@ -400,23 +426,40 @@ export function CoffeeMiniSwap() {
     const coffeeIndex = pool.tokenIds.indexOf(asset.tokenId);
     const usdcIndex = pool.tokenIds.indexOf(CIRCLE_USDC_ID);
     if (coffeeIndex < 0 || usdcIndex < 0) return null;
-    return {
-      coffee: pool.amounts[coffeeIndex],
-      usdc: pool.amounts[usdcIndex],
-    };
+    const coffee = pool.amounts[coffeeIndex];
+    const usdc = pool.amounts[usdcIndex];
+    // NEP-141 decimals: coffee 8, USDC 6. Express reserve ratio in USD/kg at 1e8.
+    const spotPriceE8 = coffee > 0n && usdc > 0n ? (usdc * USDC_TO_PRICE_E8_MULTIPLIER) / coffee : null;
+    return { coffee, usdc, spotPriceE8 };
   }, [pool, asset.tokenId]);
 
+  const quotedExecutionPriceE8 = useMemo(() => {
+    if (!quote || quote.amountIn <= 0n || quote.amountOut <= 0n) return null;
+    const coffeeUnits = direction === "usdc-to-coffee" ? quote.amountOut : quote.amountIn;
+    const usdcUnits = direction === "usdc-to-coffee" ? quote.amountIn : quote.amountOut;
+    return (usdcUnits * USDC_TO_PRICE_E8_MULTIPLIER) / coffeeUnits;
+  }, [direction, quote]);
+
+  const spotReferenceDeviationPct = useMemo(() => {
+    const spot = poolReserves?.spotPriceE8;
+    if (spot === null || spot === undefined || spot <= 0n) return null;
+    const reference = BigInt(Math.round(asset.referenceUsdPerKg * Number(PRICE_E8_SCALE)));
+    if (reference <= 0n) return null;
+    const difference = spot >= reference ? spot - reference : reference - spot;
+    return Number((difference * 10_000n) / reference) / 100;
+  }, [asset.referenceUsdPerKg, poolReserves]);
+
   return (
-    <section className="space-y-5">
+    <section className="space-y-4">
       <PageHeader
         title="Live Mini Swap · RHEA Testnet"
         subtitle="Real NEP-141 swaps on RHEA pools (NEAR Testnet). Prices, reserves, fees and finality read from chain."
         demo={false}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)]">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)]">
         <form
-          className="brand-surface space-y-4 p-5"
+          className="brand-surface space-y-3 p-4"
           onSubmit={(event) => {
             event.preventDefault();
             setReviewing(true);
@@ -560,6 +603,31 @@ export function CoffeeMiniSwap() {
           )}
           {quoteError && <p className="text-xs text-loss">{quoteError}</p>}
 
+          {math && math.priceImpactPct >= 5 && (
+            <div
+              role="alert"
+              className="rounded-md border border-[var(--warn)]/60 bg-[var(--warn-soft)]/25 px-3 py-2.5 text-xs"
+            >
+              <p className="font-semibold text-[var(--warn)]">
+                {math.priceImpactPct >= 10 ? "High price impact — review before signing" : "Price impact is elevated"}
+                {" "}· {math.priceImpactPct.toFixed(2)}%
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                {quotedExecutionPriceE8 !== null && poolReserves?.spotPriceE8
+                  ? `Average quote ${formatUsdPerKgPriceE8(quotedExecutionPriceE8)} vs pre-trade pool spot ${formatUsdPerKgPriceE8(poolReserves.spotPriceE8)}. `
+                  : ""}
+                {inputReserveMultiple !== null
+                  ? `This input is ${inputReserveMultiple.toFixed(2)}× the current input-token reserve.`
+                  : "The trade is large relative to current pool depth."}
+              </p>
+              {requiresImpactAcknowledgement && (
+                <p className="mt-1 font-medium text-foreground">
+                  A separate acknowledgement is required before the wallet can be opened.
+                </p>
+              )}
+            </div>
+          )}
+
           {!blocked && !reviewing && (
             <Button type="submit" className="w-full" disabled={txBusy}>
               Review transaction
@@ -601,15 +669,31 @@ export function CoffeeMiniSwap() {
                   <dd className="num">1 yoctoNEAR</dd>
                 </div>
               </dl>
+              {requiresImpactAcknowledgement && (
+                <label className="flex cursor-pointer items-start gap-2 rounded-md border border-[var(--warn)]/60 bg-[var(--warn-soft)]/25 p-3 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={impactAcknowledged}
+                    onChange={(event) => setImpactAcknowledged(event.target.checked)}
+                    className="mt-0.5 size-4 shrink-0 accent-current"
+                  />
+                  <span>
+                    I understand this quote has {math?.priceImpactPct.toFixed(2)}% price impact and
+                    accept the displayed minimum received amount.
+                  </span>
+                </label>
+              )}
               <div className="flex gap-2">
                 <Button
                   type="button"
                   className="flex-1"
                   onClick={() => void runSwap()}
-                  disabled={!hydrated || txBusy}
+                  disabled={!hydrated || txBusy || (requiresImpactAcknowledgement && !impactAcknowledged)}
                 >
                   {tx.phase === "signing" ? <Loader2 className="animate-spin" /> : null}
-                  Sign &amp; send swap
+                  {requiresImpactAcknowledgement && !impactAcknowledged
+                    ? "Acknowledge price impact"
+                    : "Sign & send swap"}
                 </Button>
                 <Button
                   type="button"
@@ -646,7 +730,7 @@ export function CoffeeMiniSwap() {
           )}
         </form>
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div className="rounded-lg border bg-card p-5">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
@@ -679,10 +763,29 @@ export function CoffeeMiniSwap() {
               />
               <Row label="Pool fee" value={`${RHEA_POOL_FEE_PCT.toFixed(2)}%`} />
               <Row
-                label="Reference price"
-                value={`$${asset.referenceUsdPerKg.toFixed(2)} / kg (synthetic Testnet reference)`}
+                label="RHEA spot · live reserve ratio"
+                value={formatUsdPerKgPriceE8(poolReserves?.spotPriceE8 ?? null)}
               />
-              <Row label="Price impact" value={math ? `${math.priceImpactPct.toFixed(3)}%` : "—"} />
+              <Row
+                label="Quoted execution · on-chain"
+                value={formatUsdPerKgPriceE8(quotedExecutionPriceE8)}
+              />
+              <Row
+                label="Synthetic reference · not pool price"
+                value={`${asset.referenceUsdPerKg.toFixed(2)}/kg`}
+              />
+              <Row
+                label="Price impact · execution vs spot"
+                value={math ? `${math.priceImpactPct.toFixed(3)}%` : "—"}
+              />
+              <Row
+                label="Input reserve depth"
+                value={
+                  inputReserveMultiple !== null
+                    ? `${inputReserveMultiple.toFixed(2)}× current input reserve`
+                    : "—"
+                }
+              />
               <Row
                 label="Minimum received"
                 value={quote ? `${formatOut(minAmountOut)} ${outputSymbol}` : "—"}
@@ -700,6 +803,13 @@ export function CoffeeMiniSwap() {
                 value={`${inputSymbol} → ${outputSymbol} · pool ${route.poolId}`}
               />
             </dl>
+            {spotReferenceDeviationPct !== null && spotReferenceDeviationPct > 1 && (
+              <p className="mt-3 rounded-md border border-[var(--warn)]/50 bg-[var(--warn-soft)]/20 px-3 py-2 text-xs text-muted-foreground">
+                RHEA pool spot is {spotReferenceDeviationPct.toFixed(2)}% away from the configured
+                synthetic reference. Swaps execute against the live RHEA quote; pool reserves are
+                not automatically rebalanced.
+              </p>
+            )}
             <p className="mt-3 text-xs font-medium text-foreground">
               Backing classification:{" "}
               <span className="font-semibold">{BACKING_CLASSIFICATION}</span>. Tokens are not backed

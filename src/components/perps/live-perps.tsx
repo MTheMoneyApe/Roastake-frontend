@@ -2,6 +2,7 @@
 // Copyright © 2026 @MTheMoneyApe. All rights reserved.
 
 import { useId, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Activity,
@@ -109,24 +110,51 @@ function SyntheticOracleBanner({
   logicalId?: string;
 }) {
   return (
-    <Alert className="border-[var(--warn)]/50 bg-[var(--warn-soft)]/25">
-      <Flame className="h-4 w-4 text-[var(--warn)]" aria-hidden="true" />
+    <Alert className="border-[var(--warn)]/50 bg-[var(--warn-soft)]/25 py-2">
+      <Flame className="mt-0.5 h-4 w-4 text-[var(--warn)]" aria-hidden="true" />
       <AlertTitle className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-        <span>Synthetic execution prices</span>
-        <MaturityBadge variant="testnet">TESTNET · SYNTHETIC</MaturityBadge>
+        <span>Synthetic Testnet price</span>
+        <MaturityBadge variant="testnet">NOT A LIVE COFFEE QUOTE</MaturityBadge>
       </AlertTitle>
-      <AlertDescription className="mt-1 space-y-1 text-xs text-muted-foreground">
-        <p>
-          {marketId} uses an operator-controlled test price on NEAR Testnet. It is not a live coffee
-          quotation or an independent exchange feed. OutLayer is a separate read-only benchmark and
-          does not provide this Perpetuals price. Testnet USDC has no monetary value.
-        </p>
-        <p className="text-foreground/90">{oracleStatus.detail}</p>
+      <AlertDescription className="mt-0.5 flex flex-wrap gap-x-2 text-xs text-muted-foreground">
+        <span>
+          {marketId}
+          {logicalId && logicalId !== marketId ? ` (logical ${logicalId})` : ""} · operator-controlled
+          NEAR Testnet reference. OutLayer is a separate benchmark; Testnet USDC has no monetary value.
+        </span>
+        <span className="text-foreground/90">{oracleStatus.detail}</span>
       </AlertDescription>
     </Alert>
   );
 }
 
+function PerpsDisclosure({
+  title,
+  detail,
+  children,
+}: {
+  title: string;
+  detail: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className="group min-w-0">
+      <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-lg border bg-card px-3 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">{title}</span>
+          <span className="block truncate text-[11px] font-normal text-muted-foreground">
+            {detail}
+          </span>
+        </span>
+        <ChevronDown
+          className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+          aria-hidden="true"
+        />
+      </summary>
+      <div className="pt-2">{children}</div>
+    </details>
+  );
+}
 function LpVaultTelemetryPanel({ protocol }: { protocol: PerpsProtocolSnapshot }) {
   const lp = protocol.lpSnapshot;
   const maxUtilBps = protocol.arabicaMarket?.risk.max_utilization_bps ?? 7500;
@@ -367,26 +395,15 @@ function LiveMarketOpenOrderForm({
                   : "text-muted-foreground hover:text-foreground")
               }
             >
-              {degenMode ? (
-                <img
-                  src={
-                    option === "Long"
-                      ? "/images/mascots/mumu-near.webp"
-                      : "/images/mascots/bobo-near.webp"
-                  }
-                  alt=""
-                  aria-hidden="true"
-                  width={32}
-                  height={32}
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                  className="degen-hover-mascot"
-                />
-              ) : option === "Long" ? (
+              {option === "Long" ? (
                 <TrendingUp className="size-3.5" aria-hidden="true" />
               ) : (
                 <TrendingDown className="size-3.5" aria-hidden="true" />
+              )}
+              {degenMode && (
+                <span className="degen-hover-face" aria-hidden="true">
+                  {option === "Long" ? "🐂" : "🐻"}
+                </span>
               )}
               {degenMode ? (option === "Long" ? copy.long : copy.short) : option}
             </button>
@@ -657,7 +674,7 @@ export function ThreeMarketPerpsIndex() {
   const utilBps = protocol ? computeUtilizationBps(reservedE8, lpMtmE8) : 0n;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         demo={false}
         title="Coffee Index Perpetuals"
@@ -700,8 +717,8 @@ export function ThreeMarketPerpsIndex() {
         </Alert>
       )}
 
-      <section aria-label="NEAR Testnet execution status" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+      <section aria-label="NEAR Testnet execution status" className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-medium text-muted-foreground">Execution contract</p>
             <Pill tone={protocol ? "gain" : error ? "loss" : "muted"}>
@@ -715,7 +732,7 @@ export function ThreeMarketPerpsIndex() {
             Finalized NEAR Testnet contract state
           </p>
         </div>
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <p className="text-xs font-medium text-muted-foreground">Markets registered</p>
           <p className="num mt-2 text-2xl font-semibold">
             {protocol ? `${registeredMarketCount}/3` : "—"}
@@ -724,7 +741,7 @@ export function ThreeMarketPerpsIndex() {
             {protocol ? "Confirmed by the on-chain registry" : "Awaiting finalized registry read"}
           </p>
         </div>
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <p className="text-xs font-medium text-muted-foreground">Price-feed freshness</p>
           <p className="num mt-2 text-2xl font-semibold">
             {protocol
@@ -739,7 +756,7 @@ export function ThreeMarketPerpsIndex() {
               : "Feed state not yet verified"}
           </p>
         </div>
-        <div className="min-w-0 rounded-lg border bg-card p-3.5">
+        <div className="min-w-0 rounded-lg border bg-card p-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs font-medium text-muted-foreground">New-position feed gate</p>
             <Pill tone={!protocol || registeredMarketCount === 0 ? "muted" : protocol.pausedGlobal || freshMarketCount === 0 ? "warn" : "gain"}>
@@ -822,7 +839,7 @@ export function ThreeMarketPerpsIndex() {
 
       <SyntheticOracleBanner oracleStatus={arabicaOracleStatus} />
 
-      <section aria-labelledby="three-markets-heading" className="space-y-3">
+      <section aria-labelledby="three-markets-heading" className="space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 id="three-markets-heading" className="text-sm font-semibold">
             {protocol
@@ -843,7 +860,7 @@ export function ThreeMarketPerpsIndex() {
           feed is current or that new positions can open.
         </p>
 
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-3 lg:grid-cols-3">
           {marketCatalogStates.map(
             ({
               entry,
@@ -887,7 +904,7 @@ export function ThreeMarketPerpsIndex() {
                     </div>
                   }
                 >
-                  <div className="flex h-full flex-col justify-between gap-4">
+                  <div className="flex h-full flex-col justify-between gap-3">
                     <div className="space-y-3">
                       <p className="text-xs text-muted-foreground">
                         {entry.variety} perpetual market on NEAR Testnet. Its price is an
@@ -1118,24 +1135,47 @@ export function PerpsLiveMarketView({
         : ("testnet" as const);
   const oracleStatus = evaluatePerpsOracleStatus(market, protocol?.blockTimestampSec ?? null);
 
+  const orderPanel =
+    protocol && market ? (
+      <LiveMarketOpenOrderForm
+        marketEntry={marketEntry}
+        market={market}
+        protocol={protocol}
+        trader={trader}
+        oracleStatus={oracleStatus}
+        onTxUpdate={setLatestTx}
+      />
+    ) : protocol && !market ? (
+      <Panel title="Open Position Order">
+        <p className="text-xs text-muted-foreground">
+          Market <code className="font-mono">{marketEntry.marketId}</code> is not registered
+          on <code className="font-mono">{PERPS_CONTRACT_ID}</code>; order placement is disabled
+          until on-chain registration is verified. Prices use operator-controlled synthetic
+          Testnet references, not live coffee quotes. Testnet USDC has no monetary value.
+        </p>
+      </Panel>
+    ) : (
+      <Panel title="Open Position Order">
+        <p className="text-xs text-muted-foreground">
+          Waiting for finalized market parameters from NEAR Testnet RPC.
+        </p>
+      </Panel>
+    );
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         demo={false}
         crumbs={[{ label: "Perpetuals", to: "/app/perps" }, { label: marketEntry.marketId }]}
         title={marketEntry.displayName}
-        subtitle={`${marketEntry.marketId}${
-          marketEntry.logicalId !== marketEntry.marketId
-            ? ` (logical ID ${marketEntry.logicalId})`
-            : ""
-        } · NEAR Testnet Perpetuals Terminal. Operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has no monetary value.`}
+        subtitle={`${marketEntry.marketId} · NEAR Testnet · synthetic USD/kg reference`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <MaturityBadge variant={registryVariant}>{registryLabel}</MaturityBadge>
             <MaturityBadge variant="testnet">SYNTHETIC ORACLE</MaturityBadge>
             <Button type="button" size="sm" variant="outline" onClick={() => void refreshAll()}>
               <RefreshCw className="mr-1.5 size-3.5" aria-hidden="true" />
-              Refresh RPC
+              Refresh
             </Button>
           </div>
         }
@@ -1143,19 +1183,14 @@ export function PerpsLiveMarketView({
 
       <DegenModeBanner />
       {protocolError && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="py-2">
           <AlertTriangle className="h-4 w-4" aria-hidden="true" />
           <AlertTitle className="text-xs font-semibold">
-            Failed to Load {marketEntry.displayName} Market State from NEAR Testnet RPC
+            {marketEntry.displayName} market state unavailable
           </AlertTitle>
           <AlertDescription className="mt-1 flex flex-wrap items-center justify-between gap-2 text-xs">
             <span>{protocolError.message}</span>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => void refetchProtocol()}
-            >
+            <Button type="button" size="sm" variant="outline" onClick={() => void refetchProtocol()}>
               Retry RPC
             </Button>
           </AlertDescription>
@@ -1180,13 +1215,13 @@ export function PerpsLiveMarketView({
           }
           sub={
             <>
-              <span className="block">
+              <span className="block text-[10px]">
                 Operator-controlled synthetic Testnet reference · not live coffee quotes.
               </span>
-              <span className="block">Testnet USDC has no monetary value.</span>
-              <span className="block">
+              <span className="block text-[10px]">Testnet USDC has no monetary value.</span>
+              <span className="block text-[11px]">
                 {oracleStatus.observedAtSec
-                  ? `Seq #${oracleStatus.sequence ?? 0} · Age ${oracleStatus.ageSec ?? 0}s / ${oracleStatus.maxAgeSec}s`
+                  ? `Seq #${oracleStatus.sequence ?? 0} · ${oracleStatus.ageSec ?? 0}s / ${oracleStatus.maxAgeSec}s`
                   : "No tick recorded"}
               </span>
             </>
@@ -1208,120 +1243,114 @@ export function PerpsLiveMarketView({
               ? `${formatUsdE8(market.long_oi_e8, { decimalsShown: 2 })} / ${formatUsdE8(market.short_oi_e8, { decimalsShown: 2 })}`
               : "—"
           }
-          sub={
-            market
-              ? `${market.open_positions} open positions · Funding idx ${market.cum_funding_index_e12}`
-              : "Loading OI"
-          }
+          sub={market ? `${market.open_positions} open · Funding idx ${market.cum_funding_index_e12}` : "Loading OI"}
         />
         <Stat
           label="LP Available Liquidity"
           value={protocol ? formatUsdE8(protocol.lpSnapshot.lp_available_liquidity_e8) : "—"}
-          sub={
-            protocol
-              ? `MTM Equity ${formatUsdE8(protocol.lpSnapshot.lp_mtm_equity_e8)}`
-              : "Peer-to-Pool"
-          }
+          sub={protocol ? `MTM Equity ${formatUsdE8(protocol.lpSnapshot.lp_mtm_equity_e8)}` : "Peer-to-Pool"}
         />
       </Stats>
 
-      <PerpsMarketChart
-        market={market}
-        marketId={marketEntry.marketId}
-        blockTimestampSec={protocol?.blockTimestampSec ?? null}
-      />
+      <div className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="min-w-0 xl:col-span-7">
+          <PerpsMarketChart
+            market={market}
+            marketId={marketEntry.marketId}
+            blockTimestampSec={protocol?.blockTimestampSec ?? null}
+          />
+        </div>
+        <div className="min-w-0 space-y-3 xl:col-span-5">
+          {orderPanel}
+          <PerpsDisclosure
+            title="Account margin & collateral"
+            detail={
+              trader?.account
+                ? `${formatUsdE8(trader.account.free_collateral_e8)} free contract margin · wallet & registration`
+                : "Wallet balance, registration, USDC deposits and withdrawals"
+            }
+          >
+            <PerpsMarginPanel
+              protocol={protocol}
+              trader={trader}
+              traderLoading={traderLoading}
+              onTxUpdate={setLatestTx}
+            />
+          </PerpsDisclosure>
+        </div>
+      </div>
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="space-y-6 lg:col-span-7">
+      <div className="grid items-start gap-4 xl:grid-cols-12">
+        <div className="min-w-0 xl:col-span-7">
           <LivePositionsPanel
             protocol={protocol}
             trader={trader}
             traderLoading={traderLoading}
             onTxUpdate={setLatestTx}
           />
-
-          {protocol && <LpVaultTelemetryPanel protocol={protocol} />}
-
-          <TxStatusPanel activeTx={latestTx} onAfterVerify={() => void refreshAll()} />
         </div>
-
-        <div className="space-y-6 lg:col-span-5">
-          {protocol && market ? (
-            <LiveMarketOpenOrderForm
-              marketEntry={marketEntry}
-              market={market}
+        <div className="min-w-0 space-y-3 xl:col-span-5">
+          {protocol && (
+            <PerpsDisclosure
+              title="LP vault & liquidity accounting"
+              detail={`${formatUsdE8(protocol.lpSnapshot.lp_available_liquidity_e8)} available · contract accounting only`}
+            >
+              <LpVaultTelemetryPanel protocol={protocol} />
+            </PerpsDisclosure>
+          )}
+          <PerpsDisclosure
+            title="Operator controls"
+            detail="Oracle refresh and LP administration · restricted Testnet wallet actions"
+          >
+            <TestnetOperatorControls
               protocol={protocol}
               trader={trader}
-              oracleStatus={oracleStatus}
+              marketId={marketEntry.marketId}
               onTxUpdate={setLatestTx}
             />
-          ) : protocol && !market ? (
-            <Panel title="Open Position Order">
-              <p className="text-xs text-muted-foreground">
-                Market <code className="font-mono">{marketEntry.marketId}</code> is not registered
-                on <code className="font-mono">{PERPS_CONTRACT_ID}</code>; order placement is
-                disabled until on-chain registration is verified. Prices use operator-controlled
-                synthetic Testnet references, not live coffee quotes. Testnet USDC has no monetary
-                value.
-              </p>
-            </Panel>
-          ) : (
-            <Panel title="Open Position Order">
-              <p className="text-xs text-muted-foreground">
-                Waiting for finalized market parameters from NEAR Testnet RPC. Prices use
-                operator-controlled synthetic Testnet references, not live coffee quotes. Testnet
-                USDC has no monetary value.
-              </p>
-            </Panel>
+          </PerpsDisclosure>
+          {market && (
+            <PerpsDisclosure
+              title="On-chain risk parameters"
+              detail={`${market.risk.max_leverage}x max leverage · ${formatBpsAsPercent(market.risk.initial_margin_bps)} initial margin · ${formatBpsAsPercent(market.risk.maintenance_margin_bps)} maintenance`}
+            >
+              <Panel
+                title={
+                  <span className="flex items-center gap-2">
+                    <Activity className="size-4 text-primary" aria-hidden="true" />
+                    <span>Risk Configuration · {marketEntry.displayName}</span>
+                  </span>
+                }
+              >
+                <KV
+                  rows={[
+                    ["Market ID", market.market_id],
+                    ["Max Leverage", `${market.risk.max_leverage}x`],
+                    ["Initial Margin (IM)", formatBpsAsPercent(market.risk.initial_margin_bps)],
+                    ["Maintenance Margin (MM)", formatBpsAsPercent(market.risk.maintenance_margin_bps)],
+                    ["Trade Fee", formatBpsAsPercent(market.risk.trade_fee_bps)],
+                    ["Execution Spread", formatBpsAsPercent(market.exec_spread_bps)],
+                    ["Max Pool Utilization", formatBpsAsPercent(market.risk.max_utilization_bps)],
+                    ["Matched Gap Buffer", formatBpsAsPercent(market.risk.matched_gap_buffer_bps)],
+                    [
+                      "Liquidation Keeper / Insurance Fee",
+                      `${formatBpsAsPercent(market.risk.liq_keeper_fee_bps)} / ${formatBpsAsPercent(market.risk.liq_insurance_fee_bps)}`,
+                    ],
+                    ["Max Execution Oracle Age", `${market.oracle_policy.max_execution_age_sec}s`],
+                    ["Oracle Feed Classification", market.feed_classification],
+                  ]}
+                />
+              </Panel>
+            </PerpsDisclosure>
           )}
-
-          <PerpsMarginPanel
-            protocol={protocol}
-            trader={trader}
-            traderLoading={traderLoading}
-            onTxUpdate={setLatestTx}
-          />
-
-          <TestnetOperatorControls
-            protocol={protocol}
-            trader={trader}
-            marketId={marketEntry.marketId}
-            onTxUpdate={setLatestTx}
-          />
+          <PerpsDisclosure
+            title="Transaction history & proof"
+            detail="Wallet-signed actions, finality status and M04.6-G evidence"
+          >
+            <TxStatusPanel activeTx={latestTx} onAfterVerify={() => void refreshAll()} />
+          </PerpsDisclosure>
         </div>
       </div>
-
-      {market && (
-        <Panel
-          title={
-            <span className="flex items-center gap-2">
-              <Activity className="size-4 text-primary" aria-hidden="true" />
-              <span>
-                On-Chain Risk Parameters (<code className="font-mono">{marketEntry.marketId}</code>)
-              </span>
-            </span>
-          }
-        >
-          <KV
-            rows={[
-              ["Market ID", market.market_id],
-              ["Max Leverage", `${market.risk.max_leverage}x`],
-              ["Initial Margin (IM)", formatBpsAsPercent(market.risk.initial_margin_bps)],
-              ["Maintenance Margin (MM)", formatBpsAsPercent(market.risk.maintenance_margin_bps)],
-              ["Trade Fee", formatBpsAsPercent(market.risk.trade_fee_bps)],
-              ["Execution Spread", formatBpsAsPercent(market.exec_spread_bps)],
-              ["Max Pool Utilization", formatBpsAsPercent(market.risk.max_utilization_bps)],
-              ["Matched Gap Buffer", formatBpsAsPercent(market.risk.matched_gap_buffer_bps)],
-              [
-                "Liquidation Keeper / Insurance Fee",
-                `${formatBpsAsPercent(market.risk.liq_keeper_fee_bps)} / ${formatBpsAsPercent(market.risk.liq_insurance_fee_bps)}`,
-              ],
-              ["Max Execution Oracle Age", `${market.oracle_policy.max_execution_age_sec}s`],
-              ["Oracle Feed Classification", market.feed_classification],
-            ]}
-          />
-        </Panel>
-      )}
     </div>
   );
 }
