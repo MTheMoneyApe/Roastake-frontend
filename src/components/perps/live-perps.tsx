@@ -1148,8 +1148,8 @@ export function PerpsLiveMarketView({
     ) : protocol && !market ? (
       <Panel title="Open Position Order">
         <p className="text-xs text-muted-foreground">
-          Market <code className="font-mono">{marketEntry.marketId}</code> is not registered on{" "}
-          <code className="font-mono">{PERPS_CONTRACT_ID}</code>. Order placement remains disabled
+          Market <code className="font-mono">{marketEntry.marketId}</code> is not registered
+          on <code className="font-mono">{PERPS_CONTRACT_ID}</code>; order placement is disabled
           until on-chain registration is verified.
         </p>
       </Panel>
