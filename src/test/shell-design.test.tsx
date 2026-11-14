@@ -306,7 +306,8 @@ describe("Shared brand shells", () => {
         .filter((link) => link.getAttribute("aria-label") !== "ROASTAKE home")
         .map((link) => link.getAttribute("href")),
     ).toEqual(PUBLIC_NAV.map(({ to }) => to));
-    expect(within(footer).getByText(/OutLayer oracle does not power Perps/)).toBeInTheDocument();
+    expect(within(footer).getByText(/NEAR Testnet prototype/)).toBeInTheDocument();
+    expect(within(footer).getByText(/does not represent verified inventory, custody, physical backing/)).toBeInTheDocument();
   });
 
   it.each([
