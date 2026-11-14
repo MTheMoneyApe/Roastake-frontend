@@ -450,7 +450,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
         </span>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-3">
         <p className="rounded border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
           Operator-controlled synthetic Testnet references, not live coffee quotes. Testnet USDC has
           no monetary value. Receipt verification does not verify market prices; it confirms
@@ -571,7 +571,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
         {status === "loading" ? (
           <div
             role="status"
-            className="flex h-[300px] flex-col items-center justify-center gap-2 rounded-md border bg-card px-4 text-center text-sm text-foreground"
+            className="flex h-[230px] flex-col items-center justify-center gap-2 rounded-md border bg-card px-4 text-center text-sm text-foreground"
           >
             <Loader2 className="size-5 animate-spin text-primary" aria-hidden="true" />
             <p>Loading verified on-chain observations...</p>
@@ -582,7 +582,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
         ) : status === "error" ? (
           <div
             role="alert"
-            className="flex h-[300px] flex-col items-center justify-center gap-3 rounded-md border border-loss/50 bg-card px-4 text-center text-sm text-foreground"
+            className="flex h-[230px] flex-col items-center justify-center gap-3 rounded-md border border-loss/50 bg-card px-4 text-center text-sm text-foreground"
           >
             <AlertTriangle className="size-6 text-loss" aria-hidden="true" />
             <div className="space-y-1">
@@ -599,7 +599,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
             </Button>
           </div>
         ) : status === "empty" ? (
-          <div className="flex h-[300px] flex-col items-center justify-center gap-2 rounded-md border bg-card px-4 text-center text-sm text-foreground">
+          <div className="flex h-[230px] flex-col items-center justify-center gap-2 rounded-md border bg-card px-4 text-center text-sm text-foreground">
             <Info className="size-5 text-muted-foreground" aria-hidden="true" />
             <p className="font-medium">No verified historical observations available yet.</p>
             <p className="max-w-md text-xs text-muted-foreground">
@@ -608,7 +608,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
             </p>
           </div>
         ) : !timeframeAvailability.canRenderLine && !timeframeAvailability.canRenderCandles ? (
-          <div className="flex h-[300px] flex-col items-center justify-center gap-3 rounded-md border bg-card px-6 text-center text-sm text-foreground">
+          <div className="flex h-[230px] flex-col items-center justify-center gap-3 rounded-md border bg-card px-6 text-center text-sm text-foreground">
             <Info className="size-5 text-brass" aria-hidden="true" />
             <div className="max-w-lg space-y-1.5">
               <p className="font-medium text-foreground">
@@ -655,7 +655,7 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
             <div
               ref={chartHostRef}
               data-testid="arabica-lightweight-chart"
-              className="relative h-[300px] w-full sm:h-[340px]"
+              className="relative h-[230px] w-full sm:h-[260px]"
             >
               {canvasUnavailable && (
                 <div className="flex h-full items-center justify-center px-4 text-center text-xs text-muted-foreground">
@@ -689,12 +689,19 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
           </div>
         )}
 
-        {/* Expandable Verified Oracle Ticks Ledger + Honest Methodology & TradingView Attribution */}
-        <div className="space-y-2 rounded-md border bg-muted/20 p-3 text-xs text-muted-foreground">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-medium text-foreground">
-              Honest Historical Methodology & Indexer-Ready Boundary
-            </p>
+        {/* Methodology and the full verified ledger stay available without expanding the default terminal. */}
+        <details className="group rounded-md border bg-muted/20">
+          <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-xs font-medium text-foreground [&::-webkit-details-marker]:hidden">
+            <span>Historical methodology, indexer coverage & verified tick ledger</span>
+            <span className="font-mono text-[11px] text-muted-foreground">
+              {observations.length} ticks
+            </span>
+          </summary>
+          <div className="space-y-2 border-t p-3 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-medium text-foreground">
+                Honest Historical Methodology & Indexer-Ready Boundary
+              </p>
             {observations.length > 0 && (
               <button
                 type="button"
@@ -793,7 +800,8 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
               Source: {snapshot?.sourceMode ?? "verified_testnet_tx_receipts"}
             </span>
           </div>
-        </div>
+          </div>
+        </details>
       </div>
     </Panel>
   );
