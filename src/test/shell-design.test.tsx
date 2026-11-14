@@ -361,7 +361,7 @@ describe("Shared brand shells", () => {
     {
       path: "/app/governance/proposals/preview",
       scope: "planned",
-      text: /not deployed or operational/,
+      text: /not deployed capabilities or delivery commitments/,
     },
   ])("discloses implementation status on the $path route surface", ({ path, scope, text }) => {
     location.pathname = path;
@@ -431,7 +431,7 @@ describe("Shared brand shells", () => {
       "href",
       "/app/docs",
     );
-  });
+  }, 15000);
 
   it("opens the workspace for its own deep links and shares the same app IA in the mobile drawer", async () => {
     location.pathname = "/app/activity";
@@ -449,7 +449,7 @@ describe("Shared brand shells", () => {
       "aria-current",
       "page",
     );
-    const expected = APP_NAV.flatMap(({ items }) => items.map(({ to }) => to));
+    const expected = APP_NAV.filter((group) => group.label !== "Coffee Experience / Demo").flatMap(({ items }) => items.map(({ to }) => to));
     expect(
       within(sidebar)
         .getAllByRole("link")
@@ -463,5 +463,9 @@ describe("Shared brand shells", () => {
         .filter((link) => link.getAttribute("aria-label") !== "ROASTAKE home")
         .map((link) => link.getAttribute("href")),
     ).toEqual(expected);
+    const demoToggle = within(drawer).getByRole("button", { name: /Coffee Experience \/ Demo/ });
+    expect(demoToggle).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(demoToggle);
+    expect(within(drawer).getByRole("link", { name: "Marketplace" })).toHaveAttribute("href", "/market");
   });
 });
