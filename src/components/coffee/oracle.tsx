@@ -760,7 +760,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
   const activePeriod = activeObs ? inferMonthlyPeriodLabel(activeObs.observed_at_sec) : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         title="Coffee Oracle"
         demo={false}
@@ -789,7 +789,7 @@ export function OraclePage({ contractId = ORACLE_CONTRACT_ID }: { contractId?: s
         }
       />
 
-      <section className="grid gap-4 rounded-lg border border-border bg-card p-4 sm:p-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.95fr)]">
+      <section className="grid gap-3 rounded-lg border border-border bg-card p-3 sm:p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.95fr)]">
         <div className="space-y-2">
           <h2 className="font-display text-base font-semibold text-foreground">What is an oracle?</h2>
           <p className="text-sm leading-relaxed text-muted-foreground">

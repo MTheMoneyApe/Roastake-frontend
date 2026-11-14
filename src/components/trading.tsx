@@ -219,7 +219,7 @@ function PerpsPriceSourceStrip() {
 export function PerpsIndex() {
   const s = useDemo();
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PerpsNearExecutionBanner />
       <ThreeMarketPerpsIndex />
 

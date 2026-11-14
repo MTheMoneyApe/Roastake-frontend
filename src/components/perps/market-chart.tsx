@@ -180,7 +180,11 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
   const effectiveAgeSec =
     latestObservation && effectiveNowSec !== null
       ? Math.max(0, effectiveNowSec - latestObservation.timestampSec)
-      : (snapshot?.latestAgeSec ?? null);
+      : market?.last_valid_observed_sec !== null &&
+          market?.last_valid_observed_sec !== undefined &&
+          effectiveNowSec !== null
+        ? Math.max(0, effectiveNowSec - market.last_valid_observed_sec)
+        : (snapshot?.latestAgeSec ?? null);
   const effectiveIsStale = effectiveAgeSec !== null && effectiveAgeSec > maxAgeSec;
 
   const effectiveSnapshot = useMemo(
@@ -458,6 +462,9 @@ export function PerpsMarketChart({ market, marketId, blockTimestampSec }: PerpsM
           effectiveAgeSec={effectiveAgeSec}
           effectiveIsStale={effectiveIsStale}
           maxAgeSec={maxAgeSec}
+          marketReferencePriceE8={market?.last_valid_price_e8 ?? null}
+          marketSequence={market?.sandbox_sequence ?? null}
+          marketObservedAtSec={market?.last_valid_observed_sec ?? null}
           timeframe={timeframe}
           onTimeframeChange={setTimeframe}
           timeframeAvailability={timeframeAvailability}
