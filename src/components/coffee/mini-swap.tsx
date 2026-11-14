@@ -67,6 +67,15 @@ import {
 } from "@/lib/coffee-assets/rpc";
 
 const QUOTE_DEBOUNCE_MS = 350;
+const PRICE_E8_SCALE = 100_000_000n;
+const USDC_TO_PRICE_E8_MULTIPLIER = 10_000_000_000n;
+
+function formatUsdPerKgPriceE8(value: bigint | null): string {
+  if (value === null || value < 0n) return "—";
+  const whole = value / PRICE_E8_SCALE;
+  const fraction = (value % PRICE_E8_SCALE).toString().padStart(8, "0").slice(0, 4);
+  return `${whole.toLocaleString("en-US")}.${fraction}/kg`;
+}
 
 type QuoteState = {
   amountOut: bigint;
@@ -400,11 +409,28 @@ export function CoffeeMiniSwap() {
     const coffeeIndex = pool.tokenIds.indexOf(asset.tokenId);
     const usdcIndex = pool.tokenIds.indexOf(CIRCLE_USDC_ID);
     if (coffeeIndex < 0 || usdcIndex < 0) return null;
-    return {
-      coffee: pool.amounts[coffeeIndex],
-      usdc: pool.amounts[usdcIndex],
-    };
+    const coffee = pool.amounts[coffeeIndex];
+    const usdc = pool.amounts[usdcIndex];
+    // NEP-141 decimals: coffee 8, USDC 6. Express reserve ratio in USD/kg at 1e8.
+    const spotPriceE8 = coffee > 0n ? (usdc * USDC_TO_PRICE_E8_MULTIPLIER) / coffee : null;
+    return { coffee, usdc, spotPriceE8 };
   }, [pool, asset.tokenId]);
+
+  const quotedExecutionPriceE8 = useMemo(() => {
+    if (!quote || quote.amountIn <= 0n || quote.amountOut <= 0n) return null;
+    const coffeeUnits = direction === "usdc-to-coffee" ? quote.amountOut : quote.amountIn;
+    const usdcUnits = direction === "usdc-to-coffee" ? quote.amountIn : quote.amountOut;
+    return (usdcUnits * USDC_TO_PRICE_E8_MULTIPLIER) / coffeeUnits;
+  }, [direction, quote]);
+
+  const spotReferenceDeviationPct = useMemo(() => {
+    const spot = poolReserves?.spotPriceE8;
+    if (spot === null || spot === undefined || spot <= 0n) return null;
+    const reference = BigInt(Math.round(asset.referenceUsdPerKg * Number(PRICE_E8_SCALE)));
+    if (reference <= 0n) return null;
+    const difference = spot >= reference ? spot - reference : reference - spot;
+    return Number((difference * 10_000n) / reference) / 100;
+  }, [asset.referenceUsdPerKg, poolReserves]);
 
   return (
     <section className="space-y-5">
@@ -679,8 +705,16 @@ export function CoffeeMiniSwap() {
               />
               <Row label="Pool fee" value={`${RHEA_POOL_FEE_PCT.toFixed(2)}%`} />
               <Row
-                label="Reference price"
-                value={`$${asset.referenceUsdPerKg.toFixed(2)} / kg (synthetic Testnet reference)`}
+                label="RHEA spot · live reserve ratio"
+                value={formatUsdPerKgPriceE8(poolReserves?.spotPriceE8 ?? null)}
+              />
+              <Row
+                label="Quoted execution · on-chain"
+                value={formatUsdPerKgPriceE8(quotedExecutionPriceE8)}
+              />
+              <Row
+                label="Synthetic reference · not pool price"
+                value={`${asset.referenceUsdPerKg.toFixed(2)}/kg`}
               />
               <Row label="Price impact" value={math ? `${math.priceImpactPct.toFixed(3)}%` : "—"} />
               <Row
@@ -700,6 +734,13 @@ export function CoffeeMiniSwap() {
                 value={`${inputSymbol} → ${outputSymbol} · pool ${route.poolId}`}
               />
             </dl>
+            {spotReferenceDeviationPct !== null && spotReferenceDeviationPct > 1 && (
+              <p className="mt-3 rounded-md border border-[var(--warn)]/50 bg-[var(--warn-soft)]/20 px-3 py-2 text-xs text-muted-foreground">
+                RHEA pool spot is {spotReferenceDeviationPct.toFixed(2)}% away from the configured
+                synthetic reference. Swaps execute against the live RHEA quote; pool reserves are
+                not automatically rebalanced.
+              </p>
+            )}
             <p className="mt-3 text-xs font-medium text-foreground">
               Backing classification:{" "}
               <span className="font-semibold">{BACKING_CLASSIFICATION}</span>. Tokens are not backed
