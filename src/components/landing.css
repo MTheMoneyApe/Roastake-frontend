@@ -45,7 +45,8 @@
 .landing-products article > * {
   min-inline-size: 0;
 }
-.landing-hero-copy h1,\n.landing-brand-title {
+.landing-hero-copy h1,
+.landing-brand-title {
   max-inline-size: 16ch;
   font-size: clamp(2.5rem, 1.5rem + 3.5vw, 4.75rem);
   font-weight: 450;
