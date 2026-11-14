@@ -361,7 +361,7 @@ describe("Shared brand shells", () => {
     {
       path: "/app/governance/proposals/preview",
       scope: "planned",
-      text: /not deployed capabilities or delivery commitments/,
+      text: /not deployed or operational/,
     },
   ])("discloses implementation status on the $path route surface", ({ path, scope, text }) => {
     location.pathname = path;
@@ -407,7 +407,7 @@ describe("Shared brand shells", () => {
         }),
       ).toHaveAttribute("href", to);
     }
-    expect(screen.getByText(/not deployed or operational/)).toBeInTheDocument();
+    expect(screen.getByText(/design previews, not deployed capabilities or delivery commitments/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Live on NEAR Testnet" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Demo / Illustrative" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Documentation" })).not.toBeInTheDocument();
