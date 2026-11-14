@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -82,7 +82,7 @@ function PerpsNearExecutionBanner() {
             variant="testnet"
             className="max-w-full whitespace-normal leading-relaxed [overflow-wrap:anywhere]"
           >
-            LIVE CONTRACT · {PERPS_CONTRACT_ID}
+            ON-CHAIN TESTNET CONTRACT · {PERPS_CONTRACT_ID}
           </MaturityBadge>
         </div>
         <p className="text-foreground/90">
@@ -218,100 +218,88 @@ function PerpsPriceSourceStrip() {
 
 export function PerpsIndex() {
   const s = useDemo();
-  const [showLegacyDemo, setShowLegacyDemo] = useState(false);
-
   return (
     <div className="space-y-6">
       <PerpsNearExecutionBanner />
       <ThreeMarketPerpsIndex />
 
-      <Panel
-        title={
-          <span className="flex flex-wrap items-center gap-2">
-            <span>Legacy Simulated Orderbook Markets</span>
-            <DemoBadge>OFF-CHAIN DEMO SANDBOX · ISOLATED</DemoBadge>
+      <details className="group overflow-hidden rounded-lg border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset [&::-webkit-details-marker]:hidden">
+          <span className="min-w-0">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-semibold">Legacy simulated orderbook markets</span>
+              <DemoBadge>OFF-CHAIN DEMO · ISOLATED</DemoBadge>
+            </span>
+            <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+              Optional browser-only prototype markets · {s.perpMarkets.length} examples
+            </span>
           </span>
-        }
-        actions={
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={() => setShowLegacyDemo((v) => !v)}
-          >
-            {showLegacyDemo
-              ? "Hide Simulated Sandbox"
-              : `Show Simulated Markets (${s.perpMarkets.length})`}
-          </Button>
-        }
-      >
-        {!showLegacyDemo ? (
+          <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
+        <div className="space-y-4 border-t p-4">
           <p className="text-xs text-muted-foreground">
-            Isolated local browser simulation markets (`DemoState`) kept separate from real NEAR
-            Testnet Circle USDC collateral and `perps-v1.roastake-dev-mta.testnet`. Expand to
-            inspect prototype charts.
+            These orderbooks run only in this browser through <code>DemoState</code>. They do not
+            submit NEAR transactions, use wallet USDC as collateral or interact with the deployed
+            Perpetuals contract. They are separate from the three registered NEAR Testnet markets.
           </p>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-end">
-              <TickButton />
-            </div>
-            <DataTable
-              rowKey={(m) => m.id}
-              rows={s.perpMarkets}
-              cols={[
-                {
-                  key: "m",
-                  label: "Market (Demo)",
-                  render: (m) => (
-                    <Link
-                      to="/app/perps/$market"
-                      params={{ market: m.id }}
-                      className="font-medium hover:underline"
-                    >
-                      {m.id}
-                      <span className="ml-2 text-xs text-muted-foreground">{m.name}</span>
-                    </Link>
-                  ),
-                },
-                {
-                  key: "p",
-                  label: "Mark (Demo)",
-                  align: "right",
-                  render: (m) => <span className="num">{fmt(markPrice(s, m.id), 3)}</span>,
-                },
-                {
-                  key: "f",
-                  label: "Funding / 8h (Demo)",
-                  align: "right",
-                  render: (m) => (
-                    <span className={m.funding >= 0 ? "num text-gain" : "num text-loss"}>
-                      {(m.funding * 100).toFixed(3)}%
-                    </span>
-                  ),
-                },
-                {
-                  key: "oi",
-                  label: "Simulated OI",
-                  align: "right",
-                  render: (m) => <span className="num">{compact(m.oi)}</span>,
-                },
-                {
-                  key: "s",
-                  label: "Mode",
-                  align: "right",
-                  render: (m) =>
-                    m.paused ? (
-                      <Pill tone="loss">Paused (demo)</Pill>
-                    ) : (
-                      <MaturityBadge variant="demo">Demo</MaturityBadge>
-                    ),
-                },
-              ]}
-            />
+          <div className="flex items-center justify-end">
+            <TickButton />
           </div>
-        )}
-      </Panel>
+          <DataTable
+            rowKey={(m) => m.id}
+            rows={s.perpMarkets}
+            cols={[
+              {
+                key: "m",
+                label: "Market (Demo)",
+                render: (m) => (
+                  <Link
+                    to="/app/perps/$market"
+                    params={{ market: m.id }}
+                    className="font-medium hover:underline"
+                  >
+                    {m.id}
+                    <span className="ml-2 text-xs text-muted-foreground">{m.name}</span>
+                  </Link>
+                ),
+              },
+              {
+                key: "p",
+                label: "Mark (Demo)",
+                align: "right",
+                render: (m) => <span className="num">{fmt(markPrice(s, m.id), 3)}</span>,
+              },
+              {
+                key: "f",
+                label: "Funding / 8h (Demo)",
+                align: "right",
+                render: (m) => (
+                  <span className={m.funding >= 0 ? "num text-gain" : "num text-loss"}>
+                    {(m.funding * 100).toFixed(3)}%
+                  </span>
+                ),
+              },
+              {
+                key: "oi",
+                label: "Simulated OI",
+                align: "right",
+                render: (m) => <span className="num">{compact(m.oi)}</span>,
+              },
+              {
+                key: "s",
+                label: "Mode",
+                align: "right",
+                render: (m) =>
+                  m.paused ? (
+                    <Pill tone="loss">Paused (demo)</Pill>
+                  ) : (
+                    <MaturityBadge variant="demo">Demo</MaturityBadge>
+                  ),
+              },
+            ]}
+          />
+        </div>
+      </details>
     </div>
   );
 }
