@@ -218,10 +218,17 @@ export async function fetchMarketHistoryWithFallback(
     // backfill is degraded. Recover only immutable, receipt-verified transaction
     // evidence; never synthesize ticks or OHLC data to fill the chart.
     if (indexedSnapshot.observations.length === 0 && indexedSnapshot.tradeMarkers.length === 0) {
-      const verifiedSeedSnapshot = await fetchMarketVerifiedHistory({
-        ...params,
-        marketId: targetMarketId,
-      });
+      let verifiedSeedSnapshot: PerpsMarketHistorySnapshot;
+      try {
+        verifiedSeedSnapshot = await fetchMarketVerifiedHistory({
+          ...params,
+          marketId: targetMarketId,
+        });
+      } catch {
+        // Preserve the indexer's truthful empty/coverage state if the RPC proof source is
+        // also unavailable; the chart's contract-reference strip can still show live state.
+        return indexedSnapshot;
+      }
       if (
         verifiedSeedSnapshot.observations.length > 0 ||
         verifiedSeedSnapshot.tradeMarkers.length > 0
