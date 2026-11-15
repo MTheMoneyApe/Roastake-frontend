@@ -94,9 +94,7 @@ export function LotList({
           <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
             {[
               ["Token supply", `${fmt(l.supply)} tokens`],
-              ["Illustrative physical quantity", `${fmt(l.physicalKg)} kg`],
-              ["Encumbered", `${fmt(l.encumbered)} kg`],
-              ["Redemption reserves", `${fmt(l.reservedRedemption)} kg`],
+              ["Illustrative quantity", `${fmt(l.physicalKg)} kg`],
             ].map(([k, v]) => (
               <div key={k} className="min-w-0">
                 <dt className="text-muted-foreground">{k}</dt>
@@ -106,14 +104,7 @@ export function LotList({
           </dl>
           <div className="mt-4 border-t pt-3 text-xs">
             <p>{l.grade}</p>
-            <p className="mt-1 text-muted-foreground">
-              {l.custodian} · {l.warehouse}
-            </p>
-            <p className="mt-1 text-muted-foreground">
-              Seeded / browser-only record. Traceability:{" "}
-              {l.certificates.length ? "demo documents recorded" : "documents missing"} · custody
-              not verified
-            </p>
+
             {!compact && (
               <p className="mt-2">
                 {fmt(lotAccounting(l).available)} kg demo available ·{" "}
@@ -173,11 +164,8 @@ export function AssetExplorer() {
           </SelectContent>
         </Select>
       </div>
-      <p className="text-sm text-muted-foreground">
-        Proposed accounting: 1 GCT = 1 kg green coffee; 1 RCT = 1 kg roasted coffee of a specific lot.
-        GCT and RCT are conceptual coffee assets, not backed or redeemable today. This browser demo
-        uses that accounting convention; it does not establish legal claims, verified inventory or
-        custody. Roasting is yield-based, never a 1:1 GCT-to-RCT conversion.
+      <p className="text-xs text-muted-foreground">
+        GCT/RCT units are illustrative accounting conventions, not backed or redeemable assets. Roasting is yield-based, not a 1:1 conversion.
       </p>
       <LotList query={q} kind={kind} />
     </div>
@@ -219,17 +207,17 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
         className="rounded-lg border border-brass/40 bg-brass/5 p-4"
       >
         <DemoBadge>DEMO FIXTURE · NOT VERIFIED</DemoBadge>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Every field on this passport — producer, farm, harvest, grades, quantities, custodian,
-          warehouse and history — is illustrative sample data. ROASTAKE is not connected to producer
-          identity checks, warehouse systems, custody attestations or verified certificates. Nothing
-          here proves that physical coffee exists or is held for these tokens. GCT and RCT are
-          conceptual coffee assets, not backed or redeemable today. Seeded examples and subsequent
-          browser-only simulations are not live inventory.
+        <p className="mt-2 text-xs text-muted-foreground">
+          All passport fields are sample data. Producer identity, physical inventory, custody and certificates are not independently verified; GCT/RCT are not backed or redeemable.
         </p>
       </div>
       <LotJourney lot={l} state={s} />
-      <div className="grid gap-8 md:grid-cols-2">
+      <details className="group rounded-lg border bg-card">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          Origin attributes &amp; token accounting
+          <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+        </summary>
+        <div className="grid gap-8 border-t p-4 md:grid-cols-2">
         <section className="min-w-0">
           <h2 className="brand-section-title mb-3">Illustrative origin records</h2>
           <KV
@@ -276,6 +264,13 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
           </p>
         </section>
       </div>
+      </details>
+      <details className="group rounded-lg border bg-card">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          Lineage &amp; supporting documents
+          <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+        </summary>
+        <div className="space-y-5 border-t p-4">
       <section className="border-t pt-5">
         <h2 className="brand-section-title">Coffee lineage</h2>
         {l.kind === "GCT" ? (
@@ -323,6 +318,8 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
           </p>
         )}
       </section>
+        </div>
+      </details>
       <div className="flex flex-wrap gap-3">
         <Button asChild>
           <Link to="/app/coffee-passport" search={{ lot: l.id }}>
@@ -345,8 +342,12 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
           </Button>
         ))}
       </div>
-      <section className="border-t pt-5">
-        <h2 className="brand-section-title mb-3">Lot history</h2>
+      <details className="group rounded-lg border bg-card">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          Lot history · demo events
+          <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t px-4">
         {s.events
           .filter((e) => e.lotId === l.id)
           .sort((a, b) => b.date.localeCompare(a.date))
@@ -361,7 +362,8 @@ export function LotDetail({ id, passport = false }: { id: string; passport?: boo
               </p>
             </div>
           ))}
-      </section>
+        </div>
+      </details>
     </div>
   );
 }
