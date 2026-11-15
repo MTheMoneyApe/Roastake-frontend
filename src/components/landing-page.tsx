@@ -18,7 +18,7 @@ const copy = {
       "Coffee connects the world. We’re building a bridge from its real economy to digital assets and decentralized markets — starting on NEAR Testnet.",
     primary: "Explore Testnet Markets",
     testnetBadge: "NEAR TESTNET PROTOTYPE · SIMULATED PRICING",
-    heroBridge: "Hedge price volatility on NEAR Testnet perps or explore traceable specialty coffee lots.",
+    heroBridge: "Explore coffee perpetual markets on NEAR Testnet and an illustrative digital coffee-asset journey.",
     lotsCta: "Browse Coffee Lots",
     liveKicker: "LIVE ON NEAR TESTNET",
     liveTitle: "Market tools and a coffee-asset journey.",
@@ -194,7 +194,7 @@ const copy = {
       "El café conecta al mundo. Construimos un puente entre su economía real, los activos digitales y los mercados descentralizados — empezando en NEAR Testnet.",
     primary: "Explorar mercados Testnet",
     testnetBadge: "PROTOTIPO NEAR TESTNET · PRECIOS SIMULADOS",
-    heroBridge: "Cubre la volatilidad de precios con perpetuos en NEAR Testnet o explora lotes de café de especialidad trazables.",
+    heroBridge: "Explora mercados perpetuos de café en NEAR Testnet y un recorrido digital ilustrativo del activo café.",
     lotsCta: "Explorar lotes de café",
     liveKicker: "ACTIVO EN NEAR TESTNET",
     liveTitle: "Herramientas de mercado y recorrido del activo café.",
@@ -518,97 +518,6 @@ export function LandingPage() {
                 </Link>
               ))}
             </div>
-          </div>
-        </Section>
-      </section>
-
-      <section
-        id="harvest-workflow"
-        className="landing-section"
-        aria-labelledby="workflow-title"
-      >
-        <Section>
-          <div className="landing-workflow-heading">
-            <div>
-              <p className="brand-eyebrow">{c.workflowKicker}</p>
-              <h2 id="workflow-title">{c.workflowTitle}</h2>
-            </div>
-            <div className="landing-prose">
-              <p className="landing-lead-strong">{c.workflowLead}</p>
-            </div>
-          </div>
-          <ol className="landing-forward-steps" role="list">
-            {c.workflowSteps.map(([title, text], i) => (
-              <li key={title}>
-                <article>
-                  <span className="landing-step-number" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3>{title}</h3>
-                  <p>{text}</p>
-                </article>
-              </li>
-            ))}
-          </ol>
-          <article className="landing-planned landing-pilot">
-            <div>
-              <p className="brand-eyebrow">{c.pilotKicker}</p>
-              <h3>{c.pilotTitle}</h3>
-              <p className="landing-small">{c.pilotNote}</p>
-            </div>
-            <div className="landing-pilot-metrics" aria-label={c.pilotKicker}>
-              {c.pilotMetrics.map(([value, label]) => (
-                <div className="landing-pilot-metric" key={label}>
-                  <strong>{value}</strong>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-          </article>
-        </Section>
-      </section>
-
-      <section
-        id="built-on-near"
-        className="landing-section landing-tinted"
-        aria-labelledby="built-title"
-      >
-        <Section>
-          <div className="landing-section-head">
-            <p className="brand-eyebrow">{c.builtKicker}</p>
-            <h2 id="built-title">{c.builtTitle}</h2>
-            <p className="landing-lede">{c.builtLead}</p>
-          </div>
-          <div className="landing-built-grid">
-            {c.architectureCards.map(([title, subtitle, description], i) => (
-              <article className="landing-built-card" key={title}>
-                <span className="landing-built-number">{String(i + 1).padStart(2, "0")}</span>
-                <h3>{title}</h3>
-                <p className="landing-built-subtitle">{subtitle}</p>
-                <p>{description}</p>
-              </article>
-            ))}
-          </div>
-        </Section>
-      </section>
-
-      <section
-        id="coffee-capital"
-        className="landing-section"
-        aria-labelledby="capital-title"
-      >
-        <Section className="landing-editorial-grid">
-          <div>
-            <p className="brand-eyebrow">{c.capitalKicker}</p>
-            <h2 id="capital-title">{c.capitalTitle}</h2>
-            <MaturityBadge variant="preview" className="mt-6">
-              <span lang="en">{SCOPE_LABELS.planned}</span>
-            </MaturityBadge>
-          </div>
-          <div className="landing-prose">
-            <p className="landing-lead-strong">{c.capitalLead}</p>
-            <p>{c.capitalText}</p>
-            <p className="landing-small">{c.capitalNote}</p>
           </div>
         </Section>
       </section>
