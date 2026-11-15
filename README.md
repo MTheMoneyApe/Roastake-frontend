@@ -1,13 +1,18 @@
-# ROASTAKE Frontend — NEAR Testnet Coffee Perpetuals Terminal
+# ROASTAKE — Coffee Commodity Finance on NEAR
 
-This repository (`MTheMoneyApe/Roastake-frontend`) is the **companion web frontend** for **ROASTAKE**, a commodity-finance platform built on **NEAR Protocol** starting with coffee perpetuals on NEAR Testnet.
+This repository (`MTheMoneyApe/Roastake-frontend`) contains the **web application** for **ROASTAKE**, a modular coffee-finance prototype built on **NEAR Protocol**. Its first executable on-chain product is a three-market coffee perpetuals engine on NEAR Testnet; the wider interface also presents adjacent coffee-asset and lifecycle workflows with explicit demo boundaries.
+
+- **Live application:** https://roastake.vercel.app/
+- **Primary protocol & backend repository:** https://github.com/MTheMoneyApe/Roastake/tree/hackathon-submission
+- **Product architecture and implementation map:** https://github.com/MTheMoneyApe/Roastake/blob/hackathon-submission/docs/SUBMISSION-ARCHITECTURE.md
+- **This frontend submission branch:** `hackathon-submission`
 
 > [!IMPORTANT]
 > **Hackathon MVP Scope & Transparency (`Testnet Only`)**
 > - **Primary Submission & Smart Contracts Repository:** https://github.com/MTheMoneyApe/Roastake (branch `hackathon-submission`)
 > - **Track Alignment:** `defi` (*Unstoppable DeFi*, eligible Testnet-only under `Q-010` and `Q-011` of [`HACKATHON.md`](https://nearhackathon.com/HACKATHON.md)). Cross-chain execution and Mainnet settlement are **not** implemented or claimed.
 > - **Live Testnet Markets (`3` Active):** `COFFEE-ARABICA-TESTNET/USD` (`$10.00/kg`, `M04.6-G`), `COFFEE-ROBUSTA-TESTNET/USD` (logical slug `COFFEE-ROBUSTA`, `$5.00/kg`, `M04.14`), and `COFFEE-GESHA-TESTNET/USD` (logical slug `COFFEE-GESHA`, `$25.00/kg`, `M04.15`) trading against [`perps-v1.roastake-dev-mta.testnet`](https://explorer.testnet.near.org/accounts/perps-v1.roastake-dev-mta.testnet) using Circle Native Testnet USDC (`no monetary value`) and independent per-market `TESTNET_SANDBOX_FEED` channels.
-> - **Preview / Demo Separation:** Historical Spot Marketplace / DeFi / ecosystem pages remain clearly badged `DEMO` / `PREVIEW` prototypes. `roastake-oracle-v1.testnet` (OutLayer IMF monthly benchmark) is an independent read-only view (`ARABICA-MONTHLY-IMF/USD` live, `GESHA-DEMO/USD` unset `null`) and does **not** price live Perps execution today.
+> - **Product-surface separation:** The live application is published at https://roastake.vercel.app/ from the `hackathon-submission` frontend branch. Historical Spot Marketplace / DeFi / ecosystem pages remain clearly badged `DEMO` / `PREVIEW` prototypes. `roastake-oracle-v1.testnet` (OutLayer IMF monthly benchmark) is an independent read-only view (`ARABICA-MONTHLY-IMF/USD` live, `GESHA-DEMO/USD` unset `null`) and does **not** price live Perps execution today.
 
 ---
 
@@ -107,7 +112,9 @@ Judges can verify live on-chain state **without Testnet funds or wallet signatur
 
 ---
 
-## 6. Hackathon Timeline & Template / Baseline Disclosure
+## 6. Submission Repositories, Timeline & Template / Baseline Disclosure
+
+This frontend is the companion presentation layer, not a replacement for the primary protocol submission. Contract accounts, Testnet transaction evidence, backend services and protocol verification instructions are maintained in [MTheMoneyApe/Roastake](https://github.com/MTheMoneyApe/Roastake/tree/hackathon-submission). The shared product-to-code map is [docs/SUBMISSION-ARCHITECTURE.md](https://github.com/MTheMoneyApe/Roastake/blob/hackathon-submission/docs/SUBMISSION-ARCHITECTURE.md).
 
 - **Backend Repository:** https://github.com/MTheMoneyApe/Roastake (public submission branch `hackathon-submission`; initial commit `0d130ff` on `2026-11-09`).
 - **This Repository (`pixel-perfect-replica`):** Initial commit `4c3b15c` (`2026-11-02 13:30:43 +0000`) started from a **TanStack Start / Vite / Lovable React starter template** (`shadcn/ui`, Tailwind CSS, and simulated coffee demo modules `src/lib/demo/*`, `src/components/coffee/*`).
