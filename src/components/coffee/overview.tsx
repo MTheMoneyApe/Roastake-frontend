@@ -428,7 +428,15 @@ export function Dashboard() {
               </Link>
             </Button>
           </div>
-          <LotList compact />
+          <details className="group rounded-lg border bg-card">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+              Browse illustrative lot cards
+              <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+            </summary>
+            <div className="border-t p-4">
+              <LotList compact />
+            </div>
+          </details>
         </div>
       </section>
 
@@ -451,7 +459,15 @@ export function Dashboard() {
               </Link>
             </Button>
           </div>
-          <ActivityList limit={5} />
+          <details className="group rounded-lg border bg-card">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+              Show recent simulated events
+              <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+            </summary>
+            <div className="border-t p-4">
+              <ActivityList limit={5} />
+            </div>
+          </details>
         </div>
         <div className="border-t pt-5 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0">
           <h2 className="text-lg font-medium">Simulated Coffee Snapshot</h2>
