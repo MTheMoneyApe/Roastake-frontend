@@ -140,13 +140,13 @@ export function Dashboard() {
         : "Read-only active (no obs)";
 
   return (
-    <div className="space-y-9">
+    <div className="space-y-6">
       {/* A. Product Overview */}
       <section aria-label="Protocol overview" className="space-y-4">
         <PageHeader
           title="ROASTAKE Protocol"
           demo={false}
-          subtitle="NEAR Testnet Perpetuals explorer, separate read-only Oracle telemetry via OutLayer, and a simulated coffee marketplace and provenance prototype."
+          subtitle="NEAR Testnet Perpetuals, read-only OutLayer Oracle and an illustrative coffee-asset experience."
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <Button asChild className="gap-1.5">
@@ -214,12 +214,7 @@ export function Dashboard() {
               <MaturityBadge variant="testnet">CIRCLE TESTNET USDC</MaturityBadge>
             </div>
             <p className="max-w-2xl text-xs text-muted-foreground">
-              Market registration and current oracle state are read from finalized NEAR Testnet RPC
-              responses. The contract is configured for 6-decimal Circle Native Testnet USDC
-              (non-monetary) and operator-controlled TESTNET_SANDBOX_FEED prices. Any displayed
-              Testnet price is synthetic, not a commercial coffee quote. The separate read-only
-              OutLayer Oracle exposes an IMF monthly benchmark and a Gesha fixture; it does not
-              power Perps. Marketplace inventory, provenance and demo balances remain simulated.
+              Three registered markets execute on NEAR Testnet with operator-controlled synthetic references. OutLayer is separate and read-only; coffee inventory and balances remain illustrative.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -313,6 +308,12 @@ export function Dashboard() {
       <OracleOverviewCard />
 
       {/* D. Demo Portfolio (Strictly Isolated Simulated Holdings) */}
+      <details className="group rounded-lg border border-brass/35 bg-card/60">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          <span>Demo portfolio · browser-only balances</span>
+          <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-3 sm:p-4">
       <section
         aria-labelledby="demo-portfolio-heading"
         className="space-y-4 rounded-lg border border-brass/35 bg-card/60 p-5"
@@ -356,6 +357,8 @@ export function Dashboard() {
           />
         </Stats>
       </section>
+        </div>
+      </details>
 
       {/* E. Coffee Ecosystem */}
       <section aria-labelledby="coffee-ecosystem-heading" className="space-y-6">
