@@ -1280,16 +1280,24 @@ export function PerpsLiveMarketView({
         </div>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
-        <div className="min-w-0 xl:col-span-7">
-          <LivePositionsPanel
-            protocol={protocol}
-            trader={trader}
-            traderLoading={traderLoading}
-            onTxUpdate={setLatestTx}
-          />
-        </div>
-        <div className="min-w-0 space-y-3 xl:col-span-5">
+      <LivePositionsPanel
+        protocol={protocol}
+        trader={trader}
+        traderLoading={traderLoading}
+        onTxUpdate={setLatestTx}
+      />
+
+      <details className="group overflow-hidden rounded-lg border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset [&::-webkit-details-marker]:hidden">
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold">Market details &amp; operations</span>
+            <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+              Liquidity accounting, risk settings, operator controls and transaction proof
+            </span>
+          </span>
+          <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
+        <div className="space-y-3 border-t p-3 sm:p-4">
           {protocol && (
             <PerpsDisclosure
               title="LP vault & liquidity accounting"
@@ -1350,7 +1358,7 @@ export function PerpsLiveMarketView({
             <TxStatusPanel activeTx={latestTx} onAfterVerify={() => void refreshAll()} />
           </PerpsDisclosure>
         </div>
-      </div>
+      </details>
     </div>
   );
 }
