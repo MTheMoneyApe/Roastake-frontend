@@ -41,30 +41,35 @@ function Page() {
 
         <TxStatusPanel onAfterVerify={() => void refreshAll()} />
 
-        <Panel
-          title={
-            <span className="flex flex-wrap items-center gap-2">
-              <span>Simulated Coffee DeFi Activity & Fees</span>
-              <DemoBadge>DEMO LOGS ONLY</DemoBadge>
+        <details className="group overflow-hidden rounded-lg border bg-card">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset [&::-webkit-details-marker]:hidden">
+            <span>
+              <span className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+                Simulated Coffee DeFi Activity &amp; Fees
+                <DemoBadge>DEMO LOGS ONLY</DemoBadge>
+              </span>
+              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Browser-only events · not NEAR transactions</span>
             </span>
-          }
-          actions={
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger aria-label="Activity category" className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {['All', 'Assets', 'Swap', 'Roasting', 'Redemption', 'Marketplace', 'Fees'].map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          }
-        >
-          <ActivityList category={category} />
-        </Panel>
+            <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+          </summary>
+          <div className="space-y-3 border-t p-4">
+            <div className="flex justify-end">
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger aria-label="Activity category" className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {['All', 'Assets', 'Swap', 'Roasting', 'Redemption', 'Marketplace', 'Fees'].map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <ActivityList category={category} />
+          </div>
+        </details>
       </div>
     </AppShell>
   );
