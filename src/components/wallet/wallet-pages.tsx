@@ -210,7 +210,13 @@ export function MultichainOverviewPage() {
         </div>
       </Panel>
 
-      {/* Isolated Simulated Demo Bridge Section */}
+      {/* Isolated simulated bridge remains available, but is not a primary network feature. */}
+      <details className="group rounded-lg border bg-card">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+          <span className="flex flex-wrap items-center gap-2">Offline bridge prototype <DemoBadge>NOT CONNECTED</DemoBadge></span>
+          <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
+        </summary>
+        <div className="border-t p-3 sm:p-4">
       <Panel
         title={
           <span className="flex flex-wrap items-center gap-2">
@@ -328,6 +334,8 @@ export function MultichainOverviewPage() {
           </div>
         </div>
       </Panel>
+        </div>
+      </details>
     </div>
   );
 }
