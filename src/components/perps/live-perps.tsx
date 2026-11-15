@@ -400,8 +400,21 @@ function LiveMarketOpenOrderForm({
               ) : (
                 <TrendingDown className="size-3.5" aria-hidden="true" />
               )}
-              {degenMode && (
-                <span className="degen-hover-face" aria-hidden="true">
+              {degenMode ? (
+                <img
+                  className="size-7 shrink-0 object-contain"
+                  src={
+                    option === "Long"
+                      ? "https://roastake-git-feat-degen-mode-easter-egg-astrym.vercel.app/images/mascots/mumu-near.webp"
+                      : "https://roastake-git-feat-degen-mode-easter-egg-astrym.vercel.app/images/mascots/bobo-near.webp"
+                  }
+                  alt={option === "Long" ? "Mumu" : "Bobo"}
+                  aria-hidden="true"
+                  draggable={false}
+                  loading="eager"
+                />
+              ) : (
+                <span className="text-base leading-none" aria-hidden="true">
                   {option === "Long" ? "🐂" : "🐻"}
                 </span>
               )}
