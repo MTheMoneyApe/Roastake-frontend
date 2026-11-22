@@ -12,13 +12,13 @@ import "./landing.css";
 const copy = {
   en: {
     kicker: "ROASTAKE / THE PRICE IS SET BEFORE HARVEST.",
-    headline: "The financial layer for the",
-    emphasis: "global coffee economy.",
+    headline: "Set the price today.",
+    emphasis: "Receive in March.",
     intro:
       "Coffee connects the world. We’re building a bridge from its real economy to digital assets and decentralized markets — starting on NEAR Testnet.",
     primary: "Explore Testnet Markets",
     testnetBadge: "NEAR TESTNET PROTOTYPE · SIMULATED PRICING",
-    heroBridge: "Explore coffee perpetual markets on NEAR Testnet and an illustrative digital coffee-asset journey.",
+    heroBridge: "Producer and roaster agree the price before harvest and record it on-chain. Neither has to rely on the other's word.",
     lotsCta: "Browse Coffee Lots",
     liveKicker: "LIVE ON NEAR TESTNET",
     liveTitle: "Market tools and a coffee-asset journey.",
@@ -188,13 +188,13 @@ const copy = {
   },
   es: {
     kicker: "ROASTAKE / EL PRECIO SE FIJA ANTES DE LA COSECHA.",
-    headline: "La capa financiera para la",
-    emphasis: "economía global del café.",
+    headline: "Fija hoy el precio.",
+    emphasis: "Recibe en marzo.",
     intro:
       "El café conecta al mundo. Construimos un puente entre su economía real, los activos digitales y los mercados descentralizados — empezando en NEAR Testnet.",
     primary: "Explorar mercados Testnet",
     testnetBadge: "PROTOTIPO NEAR TESTNET · PRECIOS SIMULADOS",
-    heroBridge: "Explora mercados perpetuos de café en NEAR Testnet y un recorrido digital ilustrativo del activo café.",
+    heroBridge: "El productor y el tostador acuerdan el precio antes de la cosecha y lo registran on-chain. Ninguno depende de la palabra del otro.",
     lotsCta: "Explorar lotes de café",
     liveKicker: "ACTIVO EN NEAR TESTNET",
     liveTitle: "Herramientas de mercado y recorrido del activo café.",
