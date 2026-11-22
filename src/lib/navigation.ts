@@ -51,7 +51,7 @@ export const SCOPE_LABELS = {
 
 export const SCOPE_DESCRIPTIONS = {
   live: "Perps uses operator-controlled synthetic prices. RHEA Mini Swap submits real, non-monetary test-token transactions. OutLayer is a separate read-only oracle; it does not power Perps.",
-  demo: "Marketplace, lots, passport, profiles, orders, balances and yields are browser-only illustrations. No verified coffee custody, physical backing, real payments or shipments.",
+  demo: "Everything here runs on testnet with synthetic prices. No number on this page represents money, real coffee or a verified lot.",
   planned:
     "Design previews only: not deployed or operational. No live contracts, deposits, yields, governance votes or transactions are available in these modules.",
 } as const;

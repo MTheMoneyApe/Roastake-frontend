@@ -556,8 +556,8 @@ function LandingShellContent({ children }: { children: ReactNode }) {
             </p>
             <p className="mt-4 text-xs leading-relaxed text-feature-muted">
               {es
-                ? "ROASTAKE es un prototipo en NEAR Testnet. Los perpetuos usan precios de referencia sintéticos y controlados por un operador; los tokens de prueba no tienen valor monetario. El recorrido de lotes, pasaporte, tueste y canje es demostrativo y no acredita inventario, custodia, respaldo físico, entrega ni canje real. No se ofrecen productos de inversión ni rendimientos."
-                : "ROASTAKE is a NEAR Testnet prototype. Perpetuals use synthetic, operator-controlled reference prices; test tokens have no monetary value. The coffee-lot, passport, roasting and redemption journey is illustrative and does not represent verified inventory, custody, physical backing, delivery or live redemption. No investment products or returns are offered."}
+                ? "Todo lo que ves aquí corre en testnet con precios sintéticos. Ninguna cifra de esta página representa dinero, café real ni un lote verificado."
+                : "Everything here runs on testnet with synthetic prices. No number on this page represents money, real coffee or a verified lot."}
             </p>
           </div>
           <nav aria-label={es ? "Explorar" : "Explore"}>
