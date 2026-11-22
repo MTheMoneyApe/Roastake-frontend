@@ -11,7 +11,7 @@ import "./landing.css";
 // Both languages share the same routes, maturity labels and product boundaries.
 const copy = {
   en: {
-    kicker: "ROASTAKE / REAL COFFEE. NEW FINANCIAL POSSIBILITIES.",
+    kicker: "ROASTAKE / THE PRICE IS SET BEFORE HARVEST.",
     headline: "The financial layer for the",
     emphasis: "global coffee economy.",
     intro:
@@ -187,7 +187,7 @@ const copy = {
     cherriesAlt: "Red coffee cherries ripening among green leaves",
   },
   es: {
-    kicker: "ROASTAKE / CAFÉ REAL. NUEVAS POSIBILIDADES FINANCIERAS.",
+    kicker: "ROASTAKE / EL PRECIO SE FIJA ANTES DE LA COSECHA.",
     headline: "La capa financiera para la",
     emphasis: "economía global del café.",
     intro:
