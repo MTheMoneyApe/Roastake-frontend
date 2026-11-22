@@ -89,7 +89,7 @@ const copy = {
     thesisLead:
       "Price swings between planting, harvest, purchase and roasting leave producers with uncertain income and roasters with unpredictable costs and margins.",
     thesis:
-      "Many small producers and independent roasters have limited access to practical hedging, working capital and financial tools. The gap is access to transparent pricing and risk-management infrastructure.",
+      "They have hedged this with paper contracts and trust for decades. ROASTAKE puts it on-chain, with the same price visible to both from day one.",
     drivers: [
       [
         "Everyday demand",
@@ -265,7 +265,7 @@ const copy = {
     thesisLead:
       "Los cambios de precio entre la siembra, la cosecha, la compra y el tueste generan ingresos inciertos para los productores y costes difíciles de planificar para los tostadores.",
     thesis:
-      "Muchos pequeños productores y tostadores independientes tienen acceso limitado a coberturas prácticas, capital circulante y herramientas financieras. La brecha está en el acceso a precios transparentes e infraestructura de gestión del riesgo.",
+      "Llevan décadas cubriéndolo con contratos de papel y confianza. ROASTAKE lo pone on-chain, con el mismo precio visible para los dos desde el primer día.",
     drivers: [
       [
         "Demanda cotidiana",
