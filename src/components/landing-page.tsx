@@ -174,7 +174,6 @@ const copy = {
       "Our longer-term vision brings producers, digital markets and coffee ventures into a connected ecosystem: financing infrastructure, supporting new businesses and exploring responsible liquidity models. Physical verification, legal frameworks and operating partners would need to come first.",
     capitalNote:
       "Roadmap only. No live investment product, managed fund, staking yield or promised return is offered.",
-    roadmapKicker: "Build with clarity",
     roadmapTitle: "From an agreed price to specialty coffee on-chain.",
     roadmapText:
       "The Testnet foundation is available to explore. Physical integrations, asset backing and real settlement remain future work. The Q1 2027 pilot is a target, not a confirmed launch or delivery promise.",
@@ -350,7 +349,6 @@ const copy = {
       "Nuestra visión a largo plazo conecta productores, mercados digitales y proyectos de café: financiar infraestructura, apoyar nuevos negocios y explorar modelos responsables de liquidez. La verificación física, los marcos legales y los socios operativos tendrían que llegar primero.",
     capitalNote:
       "Solo hoja de ruta. No se ofrece un producto de inversión activo, fondo gestionado, rendimiento de staking ni retorno prometido.",
-    roadmapKicker: "Construir con claridad",
     roadmapTitle: "De un precio pactado al café de especialidad on-chain.",
     roadmapText:
       "La base Testnet está disponible para explorar. Las integraciones físicas, el respaldo de activos y la liquidación real siguen siendo trabajo futuro. El piloto de Q1 2027 es un objetivo, no una fecha de lanzamiento confirmada ni una promesa de entrega.",
@@ -378,12 +376,12 @@ export function LandingPage() {
         <Section className="landing-hero-grid">
           <div className="landing-hero-copy">
             <span className="landing-testnet-badge">{c.testnetBadge}</span>
-            <h1 id="landing-title" className="landing-brand-title text-hero-highlight">
+            <p className="landing-brand-title text-hero-highlight">
               {c.kicker}
-            </h1>
-            <p className="landing-hero-intro text-hero-muted">
-              {c.headline} {c.emphasis}
             </p>
+            <h1 id="landing-title" className="landing-hero-intro text-hero-muted">
+              {c.headline} {c.emphasis}
+            </h1>
             <p className="landing-hero-description text-hero-muted">{c.heroBridge}</p>
             <div className="landing-actions">
               <Button
@@ -526,7 +524,6 @@ export function LandingPage() {
         <Section>
           <div className="landing-editorial-grid">
             <div>
-              <p className="brand-eyebrow">{c.roadmapKicker}</p>
               <h2 id="roadmap-title">{c.roadmapTitle}</h2>
             </div>
             <div className="landing-prose">

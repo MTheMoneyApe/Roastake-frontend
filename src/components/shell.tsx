@@ -550,9 +550,7 @@ function LandingShellContent({ children }: { children: ReactNode }) {
           <div>
             <Logo />
             <p className="mt-2 text-sm text-feature-muted">
-              {es
-                ? "La infraestructura financiera para la economía real del café."
-                : "The financial infrastructure for the real coffee economy."}
+              "One agreed price, from the farm to the roaster."
             </p>
             <p className="mt-4 text-xs leading-relaxed text-feature-muted">
               {es
