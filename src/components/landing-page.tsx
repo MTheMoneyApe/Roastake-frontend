@@ -175,7 +175,7 @@ const copy = {
     capitalNote:
       "Roadmap only. No live investment product, managed fund, staking yield or promised return is offered.",
     roadmapKicker: "Build with clarity",
-    roadmapTitle: "Understand today. Shape what comes next.",
+    roadmapTitle: "From an agreed price to specialty coffee on-chain.",
     roadmapText:
       "The Testnet foundation is available to explore. Physical integrations, asset backing and real settlement remain future work. The Q1 2027 pilot is a target, not a confirmed launch or delivery promise.",
     docsTitle: "Read before you connect.",
@@ -351,7 +351,7 @@ const copy = {
     capitalNote:
       "Solo hoja de ruta. No se ofrece un producto de inversión activo, fondo gestionado, rendimiento de staking ni retorno prometido.",
     roadmapKicker: "Construir con claridad",
-    roadmapTitle: "Entiende el presente. Da forma al futuro.",
+    roadmapTitle: "De un precio pactado al café de especialidad on-chain.",
     roadmapText:
       "La base Testnet está disponible para explorar. Las integraciones físicas, el respaldo de activos y la liquidación real siguen siendo trabajo futuro. El piloto de Q1 2027 es un objetivo, no una fecha de lanzamiento confirmada ni una promesa de entrega.",
     docsTitle: "Lee antes de conectar.",
